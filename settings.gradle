@@ -1,0 +1,1 @@
+include ':app', ':erouter-annotation', ':erouter-compiler', ':erouter'
