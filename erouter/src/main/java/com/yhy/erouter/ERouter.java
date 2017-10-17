@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.Service;
 import android.support.v4.app.Fragment;
 
+import com.yhy.erouter.common.Dispatcher;
+import com.yhy.erouter.utils.EUtils;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -14,6 +17,9 @@ import android.support.v4.app.Fragment;
 public class ERouter {
 
     private static volatile ERouter instance;
+
+    private Dispatcher.Builder mBuilder;
+    private Dispatcher mDispatcher;
 
     private ERouter() {
         if (null != instance) {
@@ -33,21 +39,38 @@ public class ERouter {
     }
 
     public ERouter with(Activity activity) {
+        mBuilder.with(activity);
         return this;
     }
 
     public ERouter with(Fragment fragment) {
+        mBuilder.with(fragment);
         return this;
     }
 
     public ERouter with(Service service) {
+        mBuilder.with(service);
         return this;
     }
 
     public ERouter target(String url) {
+        return target(EUtils.getGroupFromUrl(url), url);
+    }
+
+    public ERouter target(String group, String url) {
+        mBuilder.target(group, url);
         return this;
     }
 
+    public <T> T dispatch() {
+        mDispatcher = mBuilder.build();
+        return mDispatcher.dispatch();
+    }
+
     public void go() {
+    }
+
+    private void reset() {
+        mBuilder = new Dispatcher.Builder();
     }
 }

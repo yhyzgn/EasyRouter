@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.yhy.erouter.annotation.Router;
 
-@Router(url = "/activitiy/main")
+@Router(url = "/activity/main")
 public class MainActivity extends AppCompatActivity {
 
     @Override

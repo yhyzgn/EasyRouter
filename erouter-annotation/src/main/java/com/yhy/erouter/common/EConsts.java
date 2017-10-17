@@ -23,7 +23,7 @@ public interface EConsts {
 
     String METHOD_LOAD = "load";
 
-    String PACKAGE_GROUP = "com.yhy.arouter.group";
+    String PACKAGE_GROUP = "com.yhy.erouter.group";
 
-    String ROUTER_GROUP_INTERFACE = "com.yhy.erouter.RouterGroup";
+    String ROUTER_GROUP_INTERFACE = "com.yhy.erouter.common.RouterGroup";
 }

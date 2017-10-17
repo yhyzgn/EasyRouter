@@ -188,42 +188,6 @@ public class RouterCompiler extends AbstractProcessor {
         }
     }
 
-//    private void parseMeta(RouterMeta meta) {
-//        if (varifyMeta(meta)) {
-//            generateFile(meta);
-//        }
-//    }
-//
-//    private void generateFile(RouterMeta meta) {
-//        FieldSpec routerType = FieldSpec.builder(RouterType.class, EConsts.FIELD_ROUTER_TYPE)
-//                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-//                .initializer(CodeBlock.of("$T." + meta.getType(), RouterType.class))
-//                .addJavadoc("路由目标类型\r\n")
-//                .build();
-//
-//        FieldSpec clazz = FieldSpec.builder(Class.class, EConsts.FIELD_CLASS)
-//                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-//                .initializer(CodeBlock.of("$T.class", meta.getElement()))
-//                .addJavadoc("路由目标字节码对象\r\n")
-//                .build();
-//
-//        TypeSpec classType = TypeSpec.classBuilder(meta.getClassName())
-//                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-//                .addField(routerType)
-//                .addField(clazz)
-//                .addJavadoc("路由目标字节码对象\r\n")
-//                .build();
-//
-//        JavaFile file = JavaFile.builder(meta.getPackage(), classType)
-//                .build();
-//
-//        try {
-//            file.writeTo(mFilter);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private boolean varifyMeta(RouterMeta meta) {
         if (null == meta) {
             return false;

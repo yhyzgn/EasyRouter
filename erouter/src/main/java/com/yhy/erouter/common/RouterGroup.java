@@ -1,4 +1,4 @@
-package com.yhy.erouter;
+package com.yhy.erouter.common;
 
 import com.yhy.erouter.common.RouterMeta;
 
