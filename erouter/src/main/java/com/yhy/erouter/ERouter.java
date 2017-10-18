@@ -56,7 +56,7 @@ public class ERouter {
      * @param activity 当前Activity
      * @return 当前对象
      */
-    public ERouter with(Activity activity) {
+    public ERouter from(Activity activity) {
         reset();
         mBuilder.with(activity);
         return this;
@@ -68,7 +68,7 @@ public class ERouter {
      * @param fragment 当前Fragment
      * @return 当前对象
      */
-    public ERouter with(Fragment fragment) {
+    public ERouter from(Fragment fragment) {
         reset();
         mBuilder.with(fragment);
         return this;
@@ -80,7 +80,7 @@ public class ERouter {
      * @param service 当前Service
      * @return 当前对象
      */
-    public ERouter with(Service service) {
+    public ERouter from(Service service) {
         reset();
         mBuilder.with(service);
         return this;
@@ -92,8 +92,8 @@ public class ERouter {
      * @param url 目标路径
      * @return 当前对象
      */
-    public ERouter target(String url) {
-        return target(EUtils.getGroupFromUrl(url), url);
+    public ERouter to(String url) {
+        return to(EUtils.getGroupFromUrl(url), url);
     }
 
     /**
@@ -103,7 +103,7 @@ public class ERouter {
      * @param url   目标路径
      * @return 当前对象
      */
-    public ERouter target(String group, String url) {
+    public ERouter to(String group, String url) {
         varify();
         mBuilder.target(group, url);
         return this;
@@ -155,7 +155,7 @@ public class ERouter {
      */
     private void varify() {
         if (null == mBuilder) {
-            throw new IllegalOperationException("Must call with to reset dispatcher builder at first.");
+            throw new IllegalOperationException("Must call from to reset dispatcher builder at first.");
         }
     }
 }

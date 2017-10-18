@@ -54,8 +54,8 @@ public class MainActivity extends BaseActivity {
                 Simple simple = mSimpleList.get(position);
 
                 ERouter.getInstance()
-                        .with(MainActivity.this)
-                        .target(simple.mUrl)
+                        .from(MainActivity.this)
+                        .to(simple.mUrl)
                         .go();
             }
         });
