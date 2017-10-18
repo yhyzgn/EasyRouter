@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 
 import com.yhy.erouter.expt.UrlMatchException;
 import com.yhy.erouter.utils.EUtils;
@@ -334,7 +335,7 @@ public class EDispatcher {
          * @return 当前构造器
          */
         public Builder target(String group, String url) {
-            mGroup = group;
+            mGroup = TextUtils.isEmpty(group) ? EUtils.getGroupFromUrl(url) : group;
             mUrl = url;
             return this;
         }

@@ -11,9 +11,11 @@ public class Simple {
 
     public String mName;
     public String mUrl;
+    public String mGroup;
 
-    public Simple(String name, String url) {
+    public Simple(String name, String url, String group) {
         this.mName = name;
         this.mUrl = url;
+        this.mGroup = group;
     }
 }

@@ -19,6 +19,7 @@
 
         <activity android:name=".activity.NormalActivity" />
         <activity android:name=".activity.FMActivity" />
+        <activity android:name=".activity.GroupActivity" />
 
         <service android:name=".service.NormalService" />
     </application>

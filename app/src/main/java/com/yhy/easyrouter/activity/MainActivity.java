@@ -39,9 +39,10 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initData() {
         mSimpleList = new ArrayList<>();
-        mSimpleList.add(new Simple("Normal Activity", "/activity/normal"));
-        mSimpleList.add(new Simple("Normal Fragment", "/activity/fragment"));
-        mSimpleList.add(new Simple("Normal Service", "/service/normal"));
+        mSimpleList.add(new Simple("Normal Activity", "/activity/normal", ""));
+        mSimpleList.add(new Simple("Normal Fragment", "/activity/fragment", ""));
+        mSimpleList.add(new Simple("Normal Service", "/service/normal", ""));
+        mSimpleList.add(new Simple("Group Activity", "/activity/group", "acgp"));
 
         lvSimples.setAdapter(new SimpleAdapter());
     }
@@ -55,7 +56,7 @@ public class MainActivity extends BaseActivity {
 
                 ERouter.getInstance()
                         .from(MainActivity.this)
-                        .to(simple.mUrl)
+                        .to(simple.mGroup, simple.mUrl)
                         .go();
             }
         });
