@@ -16,7 +16,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Router {
 
+    /**
+     * 路由路径
+     *
+     * @return 路由路径
+     */
     String url();
 
+    /**
+     * 路由分组
+     *
+     * @return 路由分组
+     */
     String group() default "";
 }

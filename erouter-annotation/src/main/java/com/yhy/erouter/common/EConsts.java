@@ -9,21 +9,27 @@ package com.yhy.erouter.common;
  */
 public interface EConsts {
 
-    String SUFFIX_OF_ROUTER = "Router";
-
-    String PREFIX_OF_GROUP = "Group";
-
+    // 日志打印前缀
     String PREFIX_OF_LOGGER = "::RouterLogger ";
 
-    // System interface
+    // 路由类型标识
     String ACTIVITY = "android.app.Activity";
     String FRAGMENT = "android.app.Fragment";
     String FRAGMENT_V4 = "android.support.v4.app.Fragment";
     String SERVICE = "android.app.Service";
 
-    String METHOD_LOAD = "load";
-
+    // 生成分组类的包名
     String PACKAGE_GROUP = "com.yhy.erouter.group";
+    // 生成分组类需要实现的接口(路由映射器)
+    String ROUTER_GROUP_MAPPER = "com.yhy.erouter.common.ERouterGroupMapper";
+    // 生成分组类的前缀
+    String PREFIX_OF_GROUP = "RouterGroup";
+    // 分组类中用来加载路由映射的方法名称和参数名称
+    String METHOD_LOAD = "load";
+    String METHOD_LOAD_ARG = "metaMap";
 
-    String ROUTER_GROUP_INTERFACE = "com.yhy.erouter.common.RouterGroup";
+    // ...
+    String AUTHOR = "颜洪毅";
+    String E_MAIL = "yhyzgn@gmail.com";
+    String GITHUB_URL = "https://github.com/yhyzgn";
 }

@@ -5,12 +5,13 @@ package com.yhy.erouter.common;
  * e-mail : yhyzgn@gmail.com
  * time   : 2017-10-17 11:35
  * version: 1.0.0
- * desc   :
+ * desc   : 路由类型枚举
  */
 public enum RouterType {
+    // 定义各种类型
     ACTIVITY(0, "android.app.Activity"),
     SERVICE(1, "android.app.Service"),
-    FRAGMENT(-1, "android.app.Fragment"),
+    FRAGMENT(2, "android.app.Fragment"),
     UNKNOWN(-1, "Unknown route type");
 
     int id;
@@ -21,20 +22,21 @@ public enum RouterType {
         this.name = name;
     }
 
+    /**
+     * 获取id
+     *
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * 获取名称
+     *
+     * @return 名称
+     */
     public String getName() {
         return name;
-    }
-
-    public static RouterType parse(String name) {
-        for (RouterType rt : RouterType.values()) {
-            if (name.equals(rt.name)) {
-                return rt;
-            }
-        }
-        return UNKNOWN;
     }
 }
