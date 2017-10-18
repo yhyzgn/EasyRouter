@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * desc   : 路由注解
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 public @interface Router {
 
     /**
