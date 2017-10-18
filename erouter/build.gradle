@@ -43,7 +43,7 @@ dependencies {
 publish {
     userOrg = 'yhyzgn'
     groupId = 'com.yhy.router'
-    artifactId = 'e-router'
+    artifactId = 'erouter'
     publishVersion = '1.0.0'
     desc = 'Easy router.'
     website = 'https://github.com/yhyzgn/EasyRouter'

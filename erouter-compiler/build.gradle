@@ -23,7 +23,7 @@ tasks.withType(JavaCompile) {
 publish {
     userOrg = 'yhyzgn'
     groupId = 'com.yhy.router'
-    artifactId = 'e-router-compiler'
+    artifactId = 'erouter-compiler'
     publishVersion = '1.0.0'
     desc = 'Compiler of router.'
     website = 'https://github.com/yhyzgn/EasyRouter'

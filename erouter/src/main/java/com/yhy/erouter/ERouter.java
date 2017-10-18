@@ -116,9 +116,9 @@ public class ERouter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity -> XxxxActivity.class
-     * Fragment -> new XxxxFragment()
-     * Service  -> XxxxService.class
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
      */
     public <T> T get() {
         varify();
@@ -133,9 +133,9 @@ public class ERouter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity -> XxxxActivity.class
-     * Fragment -> new XxxxFragment()
-     * Service  -> XxxxService.class
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
      */
     public <T> T go() {
         varify();

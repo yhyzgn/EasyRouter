@@ -60,9 +60,9 @@ public class EDispatcher {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity -> XxxxActivity.class
-     * Fragment -> new XxxxFragment()
-     * Service  -> XxxxService.class
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
      */
     public <T> T get() {
         // 先尝试从缓存中获取
@@ -86,9 +86,9 @@ public class EDispatcher {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity -> XxxxActivity.class
-     * Fragment -> new XxxxFragment()
-     * Service  -> XxxxService.class
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
      */
     public <T> T go() {
         RouterMeta meta = mMetaMap.get(mUrl);
@@ -210,9 +210,9 @@ public class EDispatcher {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity -> XxxxActivity.class
-     * Fragment -> new XxxxFragment()
-     * Service  -> XxxxService.class
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
      */
     private <T> T parseResult(RouterMeta meta) {
         if (null != meta) {
