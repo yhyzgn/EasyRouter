@@ -7,14 +7,17 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.common.EConsts;
 import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.RouterMeta;
 import com.yhy.erouter.common.RouterType;
+import com.yhy.erouter.common.TypeExchanger;
 import com.yhy.erouter.utils.EUtils;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -48,12 +51,13 @@ import javax.lang.model.util.Types;
 @AutoService(Processor.class)
 public class RouterCompiler extends AbstractProcessor {
     // 该编译器所支持的注解
-    private static final Set<String> SUPPORTED_TYPES = new HashSet<>();
+    private static final Set<String> ROUTER_SUPPORTED_TYPES = new HashSet<>();
 
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
     private Logger mLogger;
+    private TypeExchanger mExchanger;
 
     // 存储路由数据按分组分类后的集合
     private Map<String, Set<RouterMeta>> mGroupMap;
@@ -73,11 +77,14 @@ public class RouterCompiler extends AbstractProcessor {
         mEltUtils = proEnv.getElementUtils();
         mLogger = new Logger(proEnv.getMessager());
 
+        mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
+
         mGroupMap = new HashMap<>();
 
         // 设置支持的注解
-        SUPPORTED_TYPES.clear();
-        SUPPORTED_TYPES.add(Router.class.getCanonicalName());
+        ROUTER_SUPPORTED_TYPES.clear();
+        ROUTER_SUPPORTED_TYPES.add(Router.class.getCanonicalName());
+        ROUTER_SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
     }
 
     /**
@@ -124,14 +131,14 @@ public class RouterCompiler extends AbstractProcessor {
             router = el.getAnnotation(Router.class);
 
             if (mTypeUtils.isSubtype(tm, tmActivity)) {
-                // 是Activity
-                rMeta = new RouterMeta(router, el, RouterType.ACTIVITY);
+                // 是Activity，支持自动注入参数
+                rMeta = new RouterMeta(router, el, RouterType.ACTIVITY, genParamsType(el));
             } else if (mTypeUtils.isSubtype(tm, tmFragmentV4) || mTypeUtils.isSubtype(tm, tmFragment)) {
-                // 是Fragment
-                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT);
+                // 是Fragment，支持自动注入参数
+                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT, genParamsType(el));
             } else if (mTypeUtils.isSubtype(tm, tmService)) {
-                // 是Service
-                rMeta = new RouterMeta(router, el, RouterType.SERVICE);
+                // 是Service， 不支持自动注入参数
+                rMeta = new RouterMeta(router, el, RouterType.SERVICE, null);
             }
 
             // 排序并分组
@@ -139,37 +146,64 @@ public class RouterCompiler extends AbstractProcessor {
         }
 
         // 生成分组类
-        gemerate();
+        gemerate(elements);
+    }
+
+    private Map<String, Integer> genParamsType(Element el) {
+        Map<String, Integer> paramsType = new HashMap<>();
+        for (Element field : el.getEnclosedElements()) {
+            if (field.getKind().isField() && null != field.getAnnotation(Autowired.class)) {
+                Autowired autowired = field.getAnnotation(Autowired.class);
+                paramsType.put(StringUtils.isEmpty(autowired.value()) ? field.getSimpleName().toString() : autowired.value(), mExchanger.exchange(field));
+            }
+        }
+        return paramsType;
     }
 
     /**
      * 路由映射器按分组生成Java类
      */
-    private void gemerate() {
+    private void gemerate(Set<? extends Element> elements) {
         // 配置生成路由映射器中加载路由的方法参数
         ParameterizedTypeName groupMap = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class), ClassName.get(RouterMeta.class));
-        ParameterSpec groupPS = ParameterSpec.builder(groupMap, EConsts.METHOD_LOAD_ARG).build();
+        ParameterSpec groupParams = ParameterSpec.builder(groupMap, EConsts.METHOD_ROUTER_LOAD_ARG).build();
 
         // 分组映射器需要实现的接口
-        TypeElement tmGroup = mEltUtils.getTypeElement(EConsts.ROUTER_GROUP_MAPPER);
+        TypeElement teGroup = mEltUtils.getTypeElement(EConsts.ROUTER_GROUP_MAPPER);
 
         String group;
         Set<RouterMeta> metas;
+        MethodSpec.Builder loadGroup;
+        TypeSpec groupType;
+        JavaFile groupFile;
+        StringBuffer sb;
+        Map<String, Integer> paramsType;
+        String paramsBody;
         // 遍历每个分组，并生成相应的映射器
         for (Map.Entry<String, Set<RouterMeta>> et : mGroupMap.entrySet()) {
             group = et.getKey();
             metas = et.getValue();
 
             // 加载路由的方法
-            MethodSpec.Builder loadGroup = MethodSpec.methodBuilder(EConsts.METHOD_LOAD)
+            loadGroup = MethodSpec.methodBuilder(EConsts.METHOD_ROUTER_LOAD)
                     .addAnnotation(Override.class)
                     .addModifiers(Modifier.PUBLIC)
-                    .addJavadoc("Router loader\r\n\r\n@param " + EConsts.METHOD_LOAD_ARG + " Map of saving router\r\n")
-                    .addParameter(groupPS);
+                    .addJavadoc("Router loader\r\n\r\n@param " + EConsts.METHOD_ROUTER_LOAD_ARG + " Map of saving router\r\n")
+                    .addParameter(groupParams);
 
             // 遍历每个分组中的所有路由元素，将每个元素映射到加载路由的方法中
             for (RouterMeta meta : metas) {
-                loadGroup.addStatement(EConsts.METHOD_LOAD_ARG + ".put($S, $T.build($S, $T.class, $T." + meta.getType() + ", $S))",
+                sb = new StringBuffer();
+                paramsType = meta.getParamsType();
+                if (MapUtils.isNotEmpty(paramsType)) {
+                    for (Map.Entry<String, Integer> param : paramsType.entrySet()) {
+                        sb.append("put(\"").append(param.getKey()).append("\", ").append(param.getValue()).append("); ");
+                    }
+                }
+                paramsBody = sb.toString();
+
+                // 这里生成自动注入参数集合的参数不参与格式化，因为有些地方不需要注入，此时该参数为null，无法按HashMap进行格式化，所以这里直接写成java.util.HashMap即可
+                loadGroup.addStatement(EConsts.METHOD_ROUTER_LOAD_ARG + ".put($S, $T.build($S, $T.class, $T." + meta.getType() + ", $S, " + (StringUtils.isEmpty(paramsBody) ? null : "new java.util.HashMap(){{" + paramsBody + "}}") + "))",
                         meta.getUrl(),
                         ClassName.get(RouterMeta.class),
                         meta.getUrl().toLowerCase(),
@@ -181,15 +215,15 @@ public class RouterCompiler extends AbstractProcessor {
 
             // 映射器类
             // 类名为 固定前缀 + 首字母大写的分组名
-            TypeSpec groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group))
+            groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group))
                     .addModifiers(Modifier.PUBLIC)
-                    .addSuperinterface(ClassName.get(tmGroup))
+                    .addSuperinterface(ClassName.get(teGroup))
                     .addMethod(loadGroup.build())
                     .addJavadoc("Router mapper\r\n\r\n@author : " + EConsts.AUTHOR + "\r\n@e-mail : " + EConsts.E_MAIL + "\r\n@github : " + EConsts.GITHUB_URL + "\r\n")
                     .build();
 
             // Java文件 包名固定
-            JavaFile groupFile = JavaFile.builder(EConsts.PACKAGE_GROUP, groupType).build();
+            groupFile = JavaFile.builder(EConsts.PACKAGE_GROUP, groupType).build();
 
             // 生成Java文件
             try {
@@ -253,7 +287,7 @@ public class RouterCompiler extends AbstractProcessor {
      */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return SUPPORTED_TYPES;
+        return ROUTER_SUPPORTED_TYPES;
     }
 
     @Override

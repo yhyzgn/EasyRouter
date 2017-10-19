@@ -2,6 +2,7 @@ package com.yhy.easyrouter.fragment;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseFragment;
+import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 
 /**
@@ -13,6 +14,9 @@ import com.yhy.erouter.annotation.Router;
  */
 @Router(url = "/fragment/normal")
 public class NormalFragment extends BaseFragment {
+    @Autowired("fmNomal")
+    public String fmNomal;
+
     @Override
     protected int getLayout() {
         return R.layout.fragment_normal;

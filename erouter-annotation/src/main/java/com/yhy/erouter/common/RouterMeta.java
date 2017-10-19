@@ -3,6 +3,8 @@ package com.yhy.erouter.common;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.utils.EUtils;
 
+import java.util.Map;
+
 import javax.lang.model.element.Element;
 
 /**
@@ -24,6 +26,8 @@ public class RouterMeta {
     // 路由所注解的目标类
     private Class<?> mDest;
 
+    private Map<String, Integer> mParamsType;
+
     /**
      * 在生成的分组类中解析映射路由调用
      *
@@ -33,8 +37,8 @@ public class RouterMeta {
      * @param group 分组
      * @return 路由数据
      */
-    public static RouterMeta build(String url, Class<?> dest, RouterType type, String group) {
-        return new RouterMeta(url, null, dest, type, group);
+    public static RouterMeta build(String url, Class<?> dest, RouterType type, String group, Map<String, Integer> paramsType) {
+        return new RouterMeta(url, null, dest, type, group, paramsType);
     }
 
     /**
@@ -44,8 +48,8 @@ public class RouterMeta {
      * @param elt    注解元素
      * @param type   类型
      */
-    public RouterMeta(Router router, Element elt, RouterType type) {
-        this(router.url(), elt, null, type, router.group());
+    public RouterMeta(Router router, Element elt, RouterType type, Map<String, Integer> paramsType) {
+        this(router.url(), elt, null, type, router.group(), paramsType);
     }
 
     /**
@@ -56,8 +60,8 @@ public class RouterMeta {
      * @param dest   目标类
      * @param type   类型
      */
-    public RouterMeta(Router router, Element elt, Class<?> dest, RouterType type) {
-        this(router.url(), elt, dest, type, router.group());
+    public RouterMeta(Router router, Element elt, Class<?> dest, RouterType type, Map<String, Integer> paramsType) {
+        this(router.url(), elt, dest, type, router.group(), paramsType);
     }
 
     /**
@@ -68,11 +72,12 @@ public class RouterMeta {
      * @param dest 目标类
      * @param type 类型
      */
-    public RouterMeta(String url, Element elt, Class<?> dest, RouterType type, String group) {
+    public RouterMeta(String url, Element elt, Class<?> dest, RouterType type, String group, Map<String, Integer> paramsType) {
         mUrl = url;
         mElt = elt;
         mType = type;
         mDest = dest;
+        mParamsType = paramsType;
 
         // 检查并得到分组名称。
         // 分组名称默认是路径的第一部分，以手动设置值为主
@@ -122,5 +127,9 @@ public class RouterMeta {
      */
     public Class<?> getDest() {
         return mDest;
+    }
+
+    public Map<String, Integer> getParamsType() {
+        return mParamsType;
     }
 }

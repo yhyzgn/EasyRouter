@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.entity.Simple;
+import com.yhy.easyrouter.entity.User;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
 
@@ -43,6 +44,7 @@ public class MainActivity extends BaseActivity {
         mSimpleList.add(new Simple("Normal Fragment", "/activity/fragment", ""));
         mSimpleList.add(new Simple("Normal Service", "/service/normal", ""));
         mSimpleList.add(new Simple("Group Activity", "/activity/group", "acgp"));
+        mSimpleList.add(new Simple("Autowired Activity", "/activity/autowried", ""));
 
         lvSimples.setAdapter(new SimpleAdapter());
     }
@@ -54,10 +56,23 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Simple simple = mSimpleList.get(position);
 
-                ERouter.getInstance()
-                        .from(MainActivity.this)
-                        .to(simple.mGroup, simple.mUrl)
-                        .go();
+                if (position == 4) {
+                    // 携带参数
+                    User user = new User("张三", 25, "男");
+
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .to(simple.mGroup, simple.mUrl)
+                            .param("defParam", "默认名称参数")
+                            .param("changed", "修改过名称参数")
+                            .param("objParam", user)
+                            .go();
+                } else {
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .to(simple.mGroup, simple.mUrl)
+                            .go();
+                }
             }
         });
     }

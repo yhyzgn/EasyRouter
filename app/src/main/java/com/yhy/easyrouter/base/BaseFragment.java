@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.yhy.erouter.ERouter;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -34,6 +36,9 @@ public abstract class BaseFragment extends Fragment {
         if (layout > 0) {
             mView = inflater.inflate(layout, container, false);
         }
+
+        ERouter.getInstance().inject(this);
+
         initView();
         return mView;
     }

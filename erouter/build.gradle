@@ -38,6 +38,8 @@ dependencies {
 
     compile project(':erouter-annotation')
     annotationProcessor project(':erouter-compiler')
+//    compile 'com.yhy.router:erouter-anno:1.0.0'
+//    annotationProcessor 'com.yhy.router:erouter-compiler:1.0.0'
 }
 
 publish {

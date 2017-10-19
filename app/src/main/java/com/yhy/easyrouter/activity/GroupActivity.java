@@ -2,6 +2,7 @@ package com.yhy.easyrouter.activity;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
+import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 
 /**
@@ -13,6 +14,7 @@ import com.yhy.erouter.annotation.Router;
  */
 @Router(url = "/activity/group", group = "acgp")
 public class GroupActivity extends BaseActivity {
+
     @Override
     protected int getLayout() {
         return R.layout.activity_group;

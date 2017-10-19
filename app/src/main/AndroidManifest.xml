@@ -3,6 +3,7 @@
     package="com.yhy.easyrouter">
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,6 +21,7 @@
         <activity android:name=".activity.NormalActivity" />
         <activity android:name=".activity.FMActivity" />
         <activity android:name=".activity.GroupActivity" />
+        <activity android:name=".activity.AutowiredActivity" />
 
         <service android:name=".service.NormalService" />
     </application>

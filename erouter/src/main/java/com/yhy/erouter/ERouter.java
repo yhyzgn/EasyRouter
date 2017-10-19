@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.Service;
 import android.support.v4.app.Fragment;
 
-import com.yhy.erouter.common.EDispatcher;
+import com.yhy.erouter.common.EJsonParser;
+import com.yhy.erouter.common.EPoster;
 import com.yhy.erouter.expt.IllegalOperationException;
+import com.yhy.erouter.service.AutowiredService;
+import com.yhy.erouter.service.impl.AutowiredServiceImpl;
 import com.yhy.erouter.utils.EUtils;
 
 /**
@@ -20,10 +23,7 @@ public class ERouter {
     // 单例对象
     private static volatile ERouter instance;
 
-    // 转发器构造器
-    private EDispatcher.Builder mBuilder;
-    // 转发器
-    private EDispatcher mDispatcher;
+    private EJsonParser mJsonParser;
 
     /**
      * 构造函数
@@ -50,112 +50,51 @@ public class ERouter {
         return instance;
     }
 
+    public ERouter init() {
+        return init(null);
+    }
+
+    public ERouter init(EJsonParser parser) {
+        mJsonParser = parser;
+        return this;
+    }
+
+    public EJsonParser getJsonParser() {
+        return mJsonParser;
+    }
+
     /**
      * 设置当前Activity
      *
      * @param activity 当前Activity
-     * @return 当前对象
+     * @return 当前转发器
      */
-    public ERouter from(Activity activity) {
-        reset();
-        mBuilder.with(activity);
-        return this;
+    public EPoster with(Activity activity) {
+        return new EPoster(activity);
     }
 
     /**
      * 设置当前Fragment
      *
      * @param fragment 当前Fragment
-     * @return 当前对象
+     * @return 当前转发器
      */
-    public ERouter from(Fragment fragment) {
-        reset();
-        mBuilder.with(fragment);
-        return this;
+    public EPoster with(Fragment fragment) {
+        return new EPoster(fragment);
     }
 
     /**
      * 设置当前Service
      *
      * @param service 当前Service
-     * @return 当前对象
+     * @return 当前转发器
      */
-    public ERouter from(Service service) {
-        reset();
-        mBuilder.with(service);
-        return this;
+    public EPoster with(Service service) {
+        return new EPoster(service);
     }
 
-    /**
-     * 设置目标路径
-     *
-     * @param url 目标路径
-     * @return 当前对象
-     */
-    public ERouter to(String url) {
-        return to(EUtils.getGroupFromUrl(url), url);
-    }
-
-    /**
-     * 设置目标路径
-     *
-     * @param group 分组名称
-     * @param url   目标路径
-     * @return 当前对象
-     */
-    public ERouter to(String group, String url) {
-        varify();
-        mBuilder.target(group, url);
-        return this;
-    }
-
-    /**
-     * 获取目标
-     *
-     * @param <T> 目标对象类型
-     * @return 目标对象
-     * <p>
-     * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
-     */
-    public <T> T get() {
-        varify();
-        mDispatcher = mBuilder.build();
-        return mDispatcher.get();
-    }
-
-    /**
-     * 转发路由
-     *
-     * @param <T> 目标对象类型
-     * @return 目标对象
-     * <p>
-     * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
-     */
-    public <T> T go() {
-        varify();
-        mDispatcher = mBuilder.build();
-        return mDispatcher.go();
-    }
-
-    /**
-     * 重置构造器
-     */
-    private void reset() {
-        mBuilder = new EDispatcher.Builder();
-    }
-
-    /**
-     * 检查构造器
-     */
-    private void varify() {
-        if (null == mBuilder) {
-            throw new IllegalOperationException("Must call from to reset dispatcher builder at first.");
-        }
+    public void inject(Object target) {
+        AutowiredService service = new AutowiredServiceImpl();
+        service.autowired(target);
     }
 }
