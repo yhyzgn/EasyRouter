@@ -5,10 +5,10 @@ package com.yhy.erouter.common;
  * e-mail : yhyzgn@gmail.com
  * time   : 2017-10-19 14:04
  * version: 1.0.0
- * desc   :
+ * desc   : Java类型枚举
  */
 public enum TypeKind {
-    // Base type
+    // 一些基础类型
     BOOLEAN,
     BYTE,
     SHORT,
@@ -18,7 +18,7 @@ public enum TypeKind {
     FLOAT,
     DOUBLE,
 
-    // Other type
+    // 其他包装类型
     STRING,
     PARCELABLE,
     OBJECT;

@@ -20,7 +20,7 @@ import static com.yhy.erouter.common.EConsts.STRING;
  * e-mail : yhyzgn@gmail.com
  * time   : 2017-10-19 13:59
  * version: 1.0.0
- * desc   :
+ * desc   : Java类型判断工具
  */
 public class TypeExchanger {
 

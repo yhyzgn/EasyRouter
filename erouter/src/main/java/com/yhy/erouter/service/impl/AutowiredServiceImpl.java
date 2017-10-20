@@ -14,10 +14,12 @@ import java.util.List;
  * e-mail : yhyzgn@gmail.com
  * time   : 2017-10-19 10:42
  * version: 1.0.0
- * desc   :
+ * desc   : 自动注入服务实现
  */
 public class AutowiredServiceImpl implements AutowiredService {
+    // 缓存
     private LruCache<String, EAutowiredMapper> mClassCache;
+    // 解析器黑名单，保存找不到自动注入解析器的类
     private List<String> mBlackList;
 
     public AutowiredServiceImpl() {
@@ -30,14 +32,17 @@ public class AutowiredServiceImpl implements AutowiredService {
         String className = target.getClass().getName();
         try {
             if (!mBlackList.contains(className)) {
+                // 先从缓存中获取解析器
                 EAutowiredMapper mapper = mClassCache.get(className);
                 if (null == mapper) {
+                    // 通过反射获取对应解析器
                     mapper = (EAutowiredMapper) Class.forName(className + EConsts.SUFFIX_AUTOWIRED).newInstance();
                 }
                 mapper.inject(target);
                 mClassCache.put(className, mapper);
             }
         } catch (Exception e) {
+            // 如果解析器获取失败，就将该类放到黑名单中
             mBlackList.add(className);
             e.printStackTrace();
         }

@@ -93,6 +93,11 @@ public class ERouter {
         return new EPoster(service);
     }
 
+    /**
+     * 成员自动注入入口
+     *
+     * @param target 当前需要自动注入的类，一般传this即可
+     */
     public void inject(Object target) {
         AutowiredService service = new AutowiredServiceImpl();
         service.autowired(target);

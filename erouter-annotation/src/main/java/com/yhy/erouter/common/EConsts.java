@@ -39,6 +39,8 @@ public interface EConsts {
 
     // Json解析器接口
     String JSON_PARSER = "com.yhy.erouter.common.EJsonParser";
+    // private字段名称，反射中使用
+    String PRIVATE_FIELD_NAME = "field";
     // Json解析字段名称
     String JSON_PARSER_NAME = "mJsonParser";
 

@@ -59,6 +59,7 @@ public class MainActivity extends BaseActivity {
                 if (position == 4) {
                     // 携带参数
                     User user = new User("张三", 25, "男");
+                    User user1 = new User("李四", 33, "女");
 
                     ERouter.getInstance()
                             .with(MainActivity.this)
@@ -66,6 +67,8 @@ public class MainActivity extends BaseActivity {
                             .param("defParam", "默认名称参数")
                             .param("changed", "修改过名称参数")
                             .param("objParam", user)
+                            .param("privParam", "private参数")
+                            .param("privObjParam", user1)
                             .go();
                 } else {
                     ERouter.getInstance()

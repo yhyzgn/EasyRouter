@@ -23,10 +23,19 @@ public class AutowiredActivity extends BaseActivity {
     public String chgParam;
     @Autowired
     public User objParam;
+    @Autowired
+    private String privParam;
+    @Autowired
+    private User privObjParam;
+
+    // 不自动注入
+    private String param;
 
     private TextView tvDef;
     private TextView tvChg;
     private TextView tvObj;
+    private TextView tvPriv;
+    private TextView tvPrivObj;
 
     @Override
     protected int getLayout() {
@@ -38,6 +47,8 @@ public class AutowiredActivity extends BaseActivity {
         tvDef = $(R.id.tv_def);
         tvChg = $(R.id.tv_chg);
         tvObj = $(R.id.tv_obj);
+        tvPriv = $(R.id.tv_priv);
+        tvPrivObj = $(R.id.tv_priv_obj);
     }
 
     @Override
@@ -45,5 +56,7 @@ public class AutowiredActivity extends BaseActivity {
         tvDef.setText("默认参数：" + defParam);
         tvChg.setText("改变过参数：" + chgParam);
         tvObj.setText("对象参数：" + objParam.toString());
+        tvPriv.setText("私有成员参数：" + privParam);
+        tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
     }
 }

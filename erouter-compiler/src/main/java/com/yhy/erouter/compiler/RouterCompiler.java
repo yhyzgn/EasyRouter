@@ -146,7 +146,7 @@ public class RouterCompiler extends AbstractProcessor {
         }
 
         // 生成分组类
-        gemerate(elements);
+        generate();
     }
 
     private Map<String, Integer> genParamsType(Element el) {
@@ -163,7 +163,7 @@ public class RouterCompiler extends AbstractProcessor {
     /**
      * 路由映射器按分组生成Java类
      */
-    private void gemerate(Set<? extends Element> elements) {
+    private void generate() {
         // 配置生成路由映射器中加载路由的方法参数
         ParameterizedTypeName groupMap = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class), ClassName.get(RouterMeta.class));
         ParameterSpec groupParams = ParameterSpec.builder(groupMap, EConsts.METHOD_ROUTER_LOAD_ARG).build();
@@ -179,6 +179,7 @@ public class RouterCompiler extends AbstractProcessor {
         StringBuffer sb;
         Map<String, Integer> paramsType;
         String paramsBody;
+
         // 遍历每个分组，并生成相应的映射器
         for (Map.Entry<String, Set<RouterMeta>> et : mGroupMap.entrySet()) {
             group = et.getKey();
@@ -290,6 +291,11 @@ public class RouterCompiler extends AbstractProcessor {
         return ROUTER_SUPPORTED_TYPES;
     }
 
+    /**
+     * 获取该编译器所支持的Java版本
+     *
+     * @return 该编译器所支持的Java版本
+     */
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latest();
