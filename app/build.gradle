@@ -32,8 +32,8 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.2'
 
-    compile project(':erouter')
-    annotationProcessor project(':erouter-compiler')
-//    compile 'com.yhy.router:erouter:1.0.0'
-//    annotationProcessor 'com.yhy.router:erouter-compiler:1.0.0'
+//    compile project(':erouter')
+//    annotationProcessor project(':erouter-compiler')
+    compile 'com.yhy.router:erouter:1.1.0'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.0'
 }

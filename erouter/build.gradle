@@ -36,17 +36,17 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
 
-    compile project(':erouter-annotation')
-    annotationProcessor project(':erouter-compiler')
-//    compile 'com.yhy.router:erouter-anno:1.0.0'
-//    annotationProcessor 'com.yhy.router:erouter-compiler:1.0.0'
+//    compile project(':erouter-annotation')
+//    annotationProcessor project(':erouter-compiler')
+    compile 'com.yhy.router:erouter-anno:1.1.0'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.0'
 }
 
 publish {
     userOrg = 'yhyzgn'
     groupId = 'com.yhy.router'
     artifactId = 'erouter'
-    publishVersion = '1.0.0'
+    publishVersion = '1.1.0'
     desc = 'Easy router.'
     website = 'https://github.com/yhyzgn/EasyRouter'
 }
