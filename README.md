@@ -119,6 +119,13 @@ public void onCreate() {
     private TextView tvPrivObj;
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+      // 注入当前对象，触发自动注入操作
+      ERouter.getInstance().inject(this);
+      super.onCreate(savedInstanceState);
+    }
+
+    @Override
     protected int getLayout() {
       return R.layout.activity_autowired;
     }
@@ -236,4 +243,4 @@ public class LoginInterceptor implements EInterceptor {
 }
 ```
 
-> `That's all, enjoy yourself !!!`
+> `That's all, enjoy it !!!`
