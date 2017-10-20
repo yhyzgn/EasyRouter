@@ -2,6 +2,7 @@ package com.yhy.erouter.common;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -9,14 +10,19 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import com.yhy.erouter.ERouter;
+import com.yhy.erouter.callback.Callback;
 import com.yhy.erouter.expt.IllegalOperationException;
 import com.yhy.erouter.expt.UrlMatchException;
+import com.yhy.erouter.interceptor.EInterceptor;
+import com.yhy.erouter.mapper.EInterceptorMapper;
 import com.yhy.erouter.mapper.ERouterGroupMapper;
 import com.yhy.erouter.utils.EUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,7 +47,15 @@ public class EPoster {
     // 保存url和路由数据的集合
     private Map<String, RouterMeta> mMetaMap;
 
+    // 路由参数
     private Bundle mParams;
+
+    // 拦截器名称集合
+    private List<String> mInterList;
+    // 拦截器名称和实例映射集合
+    private Map<String, EInterceptor> mInterMap;
+    // 路由回调
+    private Callback mCallback;
 
     /**
      * 构造函数
@@ -82,9 +96,11 @@ public class EPoster {
         mFragment = fragment;
         mService = service;
 
+        // 初始化
         mMetaMap = new HashMap<>();
         mParams = new Bundle();
-
+        mInterMap = new HashMap<>();
+        mInterList = new ArrayList<>();
     }
 
     /**
@@ -110,44 +126,127 @@ public class EPoster {
         return this;
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, int value) {
         return setParam(TypeKind.INT.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, byte value) {
         return setParam(TypeKind.BYTE.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, short value) {
         return setParam(TypeKind.SHORT.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, boolean value) {
         return setParam(TypeKind.BOOLEAN.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, long value) {
         return setParam(TypeKind.LONG.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, float value) {
         return setParam(TypeKind.FLOAT.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, double value) {
         return setParam(TypeKind.DOUBLE.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, String value) {
         return setParam(TypeKind.STRING.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, Parcelable value) {
         return setParam(TypeKind.PARCELABLE.ordinal(), name, value);
     }
 
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, Object value) {
         return setParam(TypeKind.OBJECT.ordinal(), name, value);
+    }
+
+    /**
+     * 设置拦截器
+     *
+     * @param name 拦截器名称
+     * @return 当前对象
+     */
+    public EPoster interceptor(String name) {
+        if (!mInterList.contains(name)) {
+            mInterList.add(name);
+        }
+        return this;
     }
 
     /**
@@ -188,6 +287,25 @@ public class EPoster {
      * Service  :: XxxxService.class
      */
     public <T> T go() {
+        return go(null);
+    }
+
+    /**
+     * 转发路由
+     *
+     * @param callback 回调
+     * @param <T>      目标对象类型
+     * @return 目标对象
+     * <p>
+     * 值：
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
+     */
+    public <T> T go(Callback callback) {
+        mCallback = callback;
+
+        // 执行路由
         RouterMeta meta = mMetaMap.get(mUrl);
         if (null != meta) {
             return post(meta);
@@ -201,6 +319,15 @@ public class EPoster {
     }
 
     /**
+     * 获取当前路由上下文
+     *
+     * @return 当前路由上下文
+     */
+    public Context getContext() {
+        return null != mActivity ? mActivity : null != mFragment ? mFragment.getActivity() : mService;
+    }
+
+    /**
      * 路由转发
      *
      * @param meta 路由数据
@@ -209,6 +336,23 @@ public class EPoster {
      */
     private <T> T post(RouterMeta meta) {
         if (null != meta) {
+            // 先执行拦截器
+            if (null != mInterList && !mInterList.isEmpty()) {
+                loadInterceptors();
+                createCurrentInterceptors();
+
+                // 执行拦截器队列
+                EInterceptor interceptor;
+                for (String name : mInterList) {
+                    interceptor = mInterMap.get(name);
+                    if (interceptor.execute(this)) {
+                        // 中断路由
+                        return null;
+                    }
+                }
+            }
+
+            // 所有拦截器都通过后
             // 针对不同的路由类型，选择对应的路由转发
             switch (meta.getType()) {
                 case ACTIVITY: {
@@ -233,6 +377,68 @@ public class EPoster {
     }
 
     /**
+     * 根据设置的拦截器名称列表，创建对应的拦截器对象，并保存到Map集合中
+     */
+    private void createCurrentInterceptors() {
+        Class<? extends EInterceptor> clazz;
+        EInterceptor interceptor;
+        for (String name : mInterList) {
+            // 先从映射器缓存中获取到映射器
+            clazz = EInterMapCache.getInstance().get(name);
+            if (null != clazz) {
+                try {
+                    interceptor = clazz.newInstance();
+                    mInterMap.put(name, interceptor);
+                } catch (InstantiationException e) {
+                    if (null != mCallback) {
+                        mCallback.onError(this, e);
+                    }
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    if (null != mCallback) {
+                        mCallback.onError(this, e);
+                    }
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 加载拦截器映射器，并保存到拦截器映射器缓存中
+     */
+    private void loadInterceptors() {
+        if (EInterMapCache.getInstance().get().isEmpty()) {
+            try {
+                // 加载映射器
+                Class<? extends EInterceptorMapper> clazz = (Class<? extends EInterceptorMapper>) Class.forName(EConsts.INTERCEPTOR_PACKAGE + "." + EInterceptorMapper.class.getSimpleName() + EConsts.SUFFIX_INTERCEPTOR_CLASS);
+                EInterceptorMapper interMapper = clazz.newInstance();
+                // 定义接收拦截器映射关系的集合
+                Map<String, Class<? extends EInterceptor>> interMap = new HashMap<>();
+                // 执行映射器的加载方法
+                interMapper.load(interMap);
+                // 将映射关系集合保存到缓存中
+                EInterMapCache.getInstance().putAll(interMap);
+            } catch (ClassNotFoundException e) {
+                if (null != mCallback) {
+                    mCallback.onError(this, e);
+                }
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                if (null != mCallback) {
+                    mCallback.onError(this, e);
+                }
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                if (null != mCallback) {
+                    mCallback.onError(this, e);
+                }
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * 转发Fragment路由，创建目标Fragment实例
      *
      * @param meta 路由数据
@@ -242,10 +448,19 @@ public class EPoster {
         try {
             Fragment fm = (Fragment) meta.getDest().newInstance();
             fm.setArguments(mParams);
+            if (null != mCallback) {
+                mCallback.onPosted(this);
+            }
             return fm;
         } catch (InstantiationException e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
             e.printStackTrace();
         }
         return null;
@@ -259,21 +474,31 @@ public class EPoster {
      */
     private Intent postService(RouterMeta meta) {
         Intent intent = null;
-        if (null != mActivity) {
-            // Activity中创建服务
-            intent = new Intent(mActivity, meta.getDest());
-            intent.putExtras(mParams);
-            mActivity.startService(intent);
-        } else if (null != mFragment) {
-            // Fragment中创建服务
-            intent = new Intent(mFragment.getActivity(), meta.getDest());
-            intent.putExtras(mParams);
-            mFragment.getActivity().startService(intent);
-        } else if (null != mService) {
-            // Service中创建服务
-            intent = new Intent(mService, meta.getDest());
-            intent.putExtras(mParams);
-            mService.startService(intent);
+        try {
+            if (null != mActivity) {
+                // Activity中创建服务
+                intent = new Intent(mActivity, meta.getDest());
+                intent.putExtras(mParams);
+                mActivity.startService(intent);
+            } else if (null != mFragment) {
+                // Fragment中创建服务
+                intent = new Intent(mFragment.getActivity(), meta.getDest());
+                intent.putExtras(mParams);
+                mFragment.getActivity().startService(intent);
+            } else if (null != mService) {
+                // Service中创建服务
+                intent = new Intent(mService, meta.getDest());
+                intent.putExtras(mParams);
+                mService.startService(intent);
+            }
+            // 成功转发回调
+            if (null != mCallback) {
+                mCallback.onPosted(this);
+            }
+        } catch (Exception e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
         }
         return intent;
     }
@@ -286,46 +511,46 @@ public class EPoster {
      */
     private Intent postActivity(RouterMeta meta) {
         Intent intent = null;
-        if (null != mActivity) {
-            // Activity中跳转Activity
-            intent = new Intent(mActivity, meta.getDest());
-            intent.putExtras(mParams);
-            mActivity.startActivity(intent);
-        } else if (null != mFragment) {
-            // Fragment中跳转Activity
-            intent = new Intent(mFragment.getActivity(), meta.getDest());
-            intent.putExtras(mParams);
-            mFragment.startActivity(intent);
-        } else if (null != mService) {
-            // Service中跳转Activity页面
-            intent = new Intent(mService, meta.getDest());
-            // 此时需要添加新Activity栈的标识
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtras(mParams);
-            mService.startActivity(intent);
+        try {
+            if (null != mActivity) {
+                // Activity中跳转Activity
+                intent = new Intent(mActivity, meta.getDest());
+                intent.putExtras(mParams);
+                mActivity.startActivity(intent);
+            } else if (null != mFragment) {
+                // Fragment中跳转Activity
+                intent = new Intent(mFragment.getActivity(), meta.getDest());
+                intent.putExtras(mParams);
+                mFragment.startActivity(intent);
+            } else if (null != mService) {
+                // Service中跳转Activity页面
+                intent = new Intent(mService, meta.getDest());
+                // 此时需要添加新Activity栈的标识
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtras(mParams);
+                mService.startActivity(intent);
+            }
+            // 成功转发回调
+            if (null != mCallback) {
+                mCallback.onPosted(this);
+            }
+        } catch (Exception e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
         }
         return intent;
     }
 
-//    private void equipParams(RouterMeta meta) {
-//        if (null == meta || null == meta.getParamsType()) {
-//            return;
-//        }
-//
-//        Map<String, Integer> paramsType = meta.getParamsType();
-//        int type;
-//        String name;
-//        for (Map.Entry<String, Integer> et : paramsType.entrySet()) {
-//            name = et.getKey();
-//            type = et.getValue();
-//            if (type == TypeKind.PARCELABLE.ordinal()) {
-//                mParams.putParcelable(name, mParams.getParcelable(name));
-//            } else {
-//                setParam(type, name, mParams.get(name));
-//            }
-//        }
-//    }
-
+    /**
+     * 设置参数
+     *
+     * @param type  参数类型
+     * @param name  参数名称
+     * @param value 参数值
+     * @param <T>   具体参数类型
+     * @return 当前对象
+     */
     private <T> EPoster setParam(Integer type, String name, T value) {
         if (null == type || TextUtils.isEmpty(name) || null == value) {
             return this;
@@ -423,7 +648,7 @@ public class EPoster {
         metaMap = new HashMap<>();
         try {
             // 加载当前分组对应的java类
-            Class<?> clazz = Class.forName(EConsts.PACKAGE_GROUP + "." + EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup));
+            Class<?> clazz = Class.forName(EConsts.GROUP_PACKAGE + "." + EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup));
             // 获取到加载路由的方法
             Method loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
             // 创建当前分组的路由映射器对象

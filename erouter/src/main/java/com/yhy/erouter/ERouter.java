@@ -2,6 +2,7 @@ package com.yhy.erouter;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import com.yhy.erouter.common.EJsonParser;
@@ -50,17 +51,46 @@ public class ERouter {
         return instance;
     }
 
+    /**
+     * 初始化
+     *
+     * @return 当前对象
+     */
     public ERouter init() {
         return init(null);
     }
 
+    /**
+     * 初始化
+     *
+     * @param parser Json解析器
+     * @return 当前对象
+     */
     public ERouter init(EJsonParser parser) {
         mJsonParser = parser;
         return this;
     }
 
+    /**
+     * 获取EJsonParser
+     *
+     * @return Json解析器
+     */
     public EJsonParser getJsonParser() {
         return mJsonParser;
+    }
+
+    /**
+     * 设置当前上下文
+     *
+     * @param ctx 上下文
+     * @return 当前对象
+     */
+    public EPoster with(Context ctx) {
+        if (ctx instanceof Activity) {
+            return with((Activity) ctx);
+        }
+        return with((Service) ctx);
     }
 
     /**
@@ -100,6 +130,7 @@ public class ERouter {
      */
     public void inject(Object target) {
         AutowiredService service = new AutowiredServiceImpl();
+        // 执行自动注入
         service.autowired(target);
     }
 }

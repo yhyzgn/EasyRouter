@@ -3,6 +3,7 @@ package com.yhy.easyrouter;
 import android.app.Application;
 
 import com.google.gson.Gson;
+import com.yhy.easyrouter.entity.User;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EJsonParser;
 
@@ -14,10 +15,15 @@ import com.yhy.erouter.common.EJsonParser;
  * desc   :
  */
 public class App extends Application {
+    private static App instance;
+
+    private User mUser;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        instance = this;
 
         ERouter.getInstance().init(new EJsonParser() {
             Gson gson = new Gson();
@@ -32,5 +38,17 @@ public class App extends Application {
                 return gson.toJson(obj);
             }
         });
+    }
+
+    public static App getInstance() {
+        return instance;
+    }
+
+    public void setUser(User user) {
+        mUser = user;
+    }
+
+    public User getUser() {
+        return mUser;
     }
 }

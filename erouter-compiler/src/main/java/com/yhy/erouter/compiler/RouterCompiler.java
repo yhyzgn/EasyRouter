@@ -146,7 +146,11 @@ public class RouterCompiler extends AbstractProcessor {
         }
 
         // 生成分组类
-        generate();
+        try {
+            generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Map<String, Integer> genParamsType(Element el) {
@@ -163,7 +167,7 @@ public class RouterCompiler extends AbstractProcessor {
     /**
      * 路由映射器按分组生成Java类
      */
-    private void generate() {
+    private void generate() throws IOException {
         // 配置生成路由映射器中加载路由的方法参数
         ParameterizedTypeName groupMap = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class), ClassName.get(RouterMeta.class));
         ParameterSpec groupParams = ParameterSpec.builder(groupMap, EConsts.METHOD_ROUTER_LOAD_ARG).build();
@@ -224,14 +228,10 @@ public class RouterCompiler extends AbstractProcessor {
                     .build();
 
             // Java文件 包名固定
-            groupFile = JavaFile.builder(EConsts.PACKAGE_GROUP, groupType).build();
+            groupFile = JavaFile.builder(EConsts.GROUP_PACKAGE, groupType).build();
 
             // 生成Java文件
-            try {
-                groupFile.writeTo(mFilter);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            groupFile.writeTo(mFilter);
         }
     }
 

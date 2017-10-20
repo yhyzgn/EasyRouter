@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity {
         mSimpleList.add(new Simple("Normal Service", "/service/normal", ""));
         mSimpleList.add(new Simple("Group Activity", "/activity/group", "acgp"));
         mSimpleList.add(new Simple("Autowired Activity", "/activity/autowried", ""));
+        mSimpleList.add(new Simple("Interceptor Activity", "/activity/interceptor", ""));
 
         lvSimples.setAdapter(new SimpleAdapter());
     }
@@ -63,12 +64,19 @@ public class MainActivity extends BaseActivity {
 
                     ERouter.getInstance()
                             .with(MainActivity.this)
-                            .to(simple.mGroup, simple.mUrl)
+                            .to(simple.mUrl)
                             .param("defParam", "默认名称参数")
                             .param("changed", "修改过名称参数")
                             .param("objParam", user)
                             .param("privParam", "private参数")
                             .param("privObjParam", user1)
+                            .go();
+                } else if (position == 5) {
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .to(simple.mUrl)
+                            .interceptor("login")
+                            .interceptor("LastInterceptor")
                             .go();
                 } else {
                     ERouter.getInstance()

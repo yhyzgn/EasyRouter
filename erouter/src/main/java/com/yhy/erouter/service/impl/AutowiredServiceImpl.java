@@ -19,7 +19,7 @@ import java.util.List;
 public class AutowiredServiceImpl implements AutowiredService {
     // 缓存
     private LruCache<String, EAutowiredMapper> mClassCache;
-    // 解析器黑名单，保存找不到自动注入解析器的类
+    // 解析器黑名单，保存找不到自动注入解析器的类，也就是当前类没有自动注入字段
     private List<String> mBlackList;
 
     public AutowiredServiceImpl() {
@@ -44,7 +44,6 @@ public class AutowiredServiceImpl implements AutowiredService {
         } catch (Exception e) {
             // 如果解析器获取失败，就将该类放到黑名单中
             mBlackList.add(className);
-            e.printStackTrace();
         }
     }
 }

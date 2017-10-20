@@ -62,6 +62,11 @@ public class AutowiredCompiler extends AbstractProcessor {
     // 按父元素保存被注解的成员字段的集合（如保存某个Activity下的所有被注解的字段）
     private Map<TypeElement, List<Element>> mTypeMap;
 
+    /**
+     * 初始化
+     *
+     * @param proEnv 编译起环境
+     */
     @Override
     public synchronized void init(ProcessingEnvironment proEnv) {
         super.init(proEnv);
@@ -80,6 +85,13 @@ public class AutowiredCompiler extends AbstractProcessor {
         AUTOWIRED_SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
     }
 
+    /**
+     * 执行操作
+     *
+     * @param set      所有注解的元素
+     * @param roundEnv 编译环境
+     * @return 是否截断执行链
+     */
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
         if (CollectionUtils.isNotEmpty(set)) {

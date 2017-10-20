@@ -22,6 +22,8 @@
         <activity android:name=".activity.FMActivity" />
         <activity android:name=".activity.GroupActivity" />
         <activity android:name=".activity.AutowiredActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.InterceptorActivity" />
 
         <service android:name=".service.NormalService" />
     </application>

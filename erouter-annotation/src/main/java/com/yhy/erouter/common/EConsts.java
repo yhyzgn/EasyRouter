@@ -9,6 +9,7 @@ package com.yhy.erouter.common;
  */
 public interface EConsts {
 
+    // 路由入口
     String E_ROUTER = "com.yhy.erouter.ERouter";
 
     // 日志打印前缀
@@ -21,7 +22,7 @@ public interface EConsts {
     String SERVICE = "android.app.Service";
 
     // 生成分组类的包名
-    String PACKAGE_GROUP = "com.yhy.erouter.group";
+    String GROUP_PACKAGE = "com.yhy.erouter.group";
     // 生成分组类需要实现的接口(路由映射器)
     String ROUTER_GROUP_MAPPER = "com.yhy.erouter.mapper.ERouterGroupMapper";
     // 生成分组类的前缀
@@ -43,6 +44,19 @@ public interface EConsts {
     String PRIVATE_FIELD_NAME = "field";
     // Json解析字段名称
     String JSON_PARSER_NAME = "mJsonParser";
+
+    // 自定义拦截器需要实现的接口
+    String INTERCEPTOR_INTERFACE = "com.yhy.erouter.interceptor.EInterceptor";
+    // 拦截器映射器接口
+    String INTERCEPTOR_MAPPER = "com.yhy.erouter.mapper.EInterceptorMapper";
+    // 生成拦截器的包名
+    String INTERCEPTOR_PACKAGE = "com.yhy.erouter.interceptor";
+    // 拦截器映射器实现类后缀
+    String SUFFIX_INTERCEPTOR_CLASS = "Impl";
+    // 拦截器映射器加载映射关系的方法名称
+    String INTERCEPTOR_MAPPER_LOAD = "load";
+    // 拦截器映射器加载映射关系的方法参数名称
+    String INTERCEPTOR_MAPPER_LOAD_ARG = "interMap";
 
     // Java类型
     String LANG = "java.lang";
