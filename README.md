@@ -1,5 +1,5 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.0-brightgreen.svg)![erouter-compiler](https://img.shields.io/badge/erouter compiler-1.1.0-brightgreen.svg)![erouter-anno](https://img.shields.io/badge/erouter anno-1.1.0-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.0-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter compiler-1.1.0-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter anno-1.1.0-brightgreen.svg)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，使用方便，支持路由分组，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
@@ -191,6 +191,7 @@ public void onCreate() {
   > 如果中间某个拦截器中断了路由，操作将会被中断
 
   ```java
+  // 多个拦截器按设置顺序执行
   ERouter.getInstance()
     .with(MainActivity.this)
     .to(simple.mUrl)
@@ -199,7 +200,40 @@ public void onCreate() {
     .go();
   ```
 
-* 大撒发射点发生
 
-* asdfasdfasd
 
+#### 定义拦截器
+
+> 实现`EInterceptor`接口，在`execute(EPoster poster)`方法中完成拦截操作
+>
+> 注：默认返回`false`，表示不中断路由，如需要中断路由操作返回`true`即可
+
+```java
+@Interceptor(name = "login")// 不指定名称时拦截器将以类名作为名称
+public class LoginInterceptor implements EInterceptor {
+
+  @Override
+  public boolean execute(EPoster poster) {
+    // 拦截登录状态
+    User user = App.getInstance().getUser();
+    if (null == user) {
+      Toast.makeText(poster.getContext(), "未登录，先去登录", Toast.LENGTH_SHORT).show();
+
+      // 跳转到登录页面
+      ERouter.getInstance()
+        .with(poster.getContext())
+        .to("/activity/login")
+        .go();
+      
+      // 返回true表示中断原本的路由
+      return true;
+    }
+
+    Toast.makeText(poster.getContext(), "已经登录，往下执行", Toast.LENGTH_SHORT).show();
+    // 返回false表示继续往下执行
+    return false;
+  }
+}
+```
+
+> `That's all, enjoy yourself !!!`
