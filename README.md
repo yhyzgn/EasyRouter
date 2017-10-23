@@ -105,6 +105,8 @@ public void onCreate() {
     private String privParam;
     @Autowired
     private User privObjParam;
+    @Autowired
+    public SeriaEntity seriaParam;
 
     // 不自动注入
     private String param;
@@ -134,6 +136,7 @@ public void onCreate() {
       tvObj = $(R.id.tv_obj);
       tvPriv = $(R.id.tv_priv);
       tvPrivObj = $(R.id.tv_priv_obj);
+      tvPrivSeria = $(R.id.tv_priv_seria);
     }
 
     @Override
@@ -143,6 +146,7 @@ public void onCreate() {
       tvObj.setText("对象参数：" + objParam.toString());
       tvPriv.setText("私有成员参数：" + privParam);
       tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
+      tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
     }
   }
   ```
@@ -151,7 +155,7 @@ public void onCreate() {
 
   > 目前不支持直接跳转`Fragment`，路由只是获取到确定的`Fragment`实例，然后需要手动通过事务设置`Fragment`显示
   >
-  > 为了方便起见，这里使用了一个`Fragment`开简易源库：[FragmentHelper](https://github.com/yhyzgn/FragmentHelper)
+  > 为了方便起见，这里使用了一个`Fragment`简易开源库：[FragmentHelper](https://github.com/yhyzgn/FragmentHelper)
 
   ```java
   FmHelper helper = new FmHelper.Builder(this, R.id.fl_content).build();
