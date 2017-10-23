@@ -25,19 +25,23 @@ public class App extends Application {
 
         instance = this;
 
-        ERouter.getInstance().init(new EJsonParser() {
-            Gson gson = new Gson();
+        // 初始化
+        ERouter.getInstance()
+                .init(this)
+                .log(BuildConfig.DEBUG)
+                .jsonParser(new EJsonParser() {
+                    Gson gson = new Gson();
 
-            @Override
-            public <T> T fromJson(String json, Class<T> clazz) {
-                return gson.fromJson(json, clazz);
-            }
+                    @Override
+                    public <T> T fromJson(String json, Class<T> clazz) {
+                        return gson.fromJson(json, clazz);
+                    }
 
-            @Override
-            public <T> String toJson(T obj) {
-                return gson.toJson(obj);
-            }
-        });
+                    @Override
+                    public <T> String toJson(T obj) {
+                        return gson.toJson(obj);
+                    }
+                });
     }
 
     public static App getInstance() {

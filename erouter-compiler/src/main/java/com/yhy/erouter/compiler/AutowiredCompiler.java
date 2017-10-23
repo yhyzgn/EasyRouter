@@ -163,7 +163,7 @@ public class AutowiredCompiler extends AbstractProcessor {
 
                 // 服务不支持参数自动注入
                 if (mTypeUtils.isSubtype(type.asType(), tmService)) {
-                    throw new UnsupportedOperationException("Service [" + type.getQualifiedName() + "] unsurpported autowired arguments.");
+                    throw new UnsupportedOperationException("Service [" + type.getQualifiedName() + "] unsupported autowired arguments.");
                 }
 
                 // 最终生成Java类的包名和目标类的包名相同，确保除private外其他字段都可以直接赋值
@@ -234,7 +234,11 @@ public class AutowiredCompiler extends AbstractProcessor {
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
+                        } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
+                            // private Serializable
+                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, elt.asType(), StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         } else {
+                            // private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         }
                         inject.nextControlFlow("catch($T e)", ClassName.get(Exception.class));
@@ -261,7 +265,12 @@ public class AutowiredCompiler extends AbstractProcessor {
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
+                        } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
+                            // not private Serializable
+                            statement = "instance." + fieldName + " = " + statement;
+                            inject.addStatement(statement, elt.asType(), StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         } else {
+                            // not private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         }
                     }
@@ -308,7 +317,11 @@ public class AutowiredCompiler extends AbstractProcessor {
             statement += (isActivity ? ("getStringExtra($S)") : ("getString($S)"));
         } else if (type == TypeKind.PARCELABLE.ordinal()) {
             statement += (isActivity ? ("getParcelableExtra($S)") : ("getParcelable($S)"));
+        } else if (type == TypeKind.SERIALIZABLE.ordinal()) {
+            // 需要强转成Serializable
+            statement = "($T) instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getSerializableExtra($S)" : "getSerializable($S)");
         } else if (type == TypeKind.OBJECT.ordinal()) {
+            // 需要Json解析
             statement = EConsts.JSON_PARSER_NAME + ".fromJson(instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getStringExtra($S)" : "getString($S)") + ", $T.class)";
         }
         return statement;

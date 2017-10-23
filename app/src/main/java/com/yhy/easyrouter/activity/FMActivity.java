@@ -29,7 +29,7 @@ public class FMActivity extends BaseActivity {
     @Override
     protected void initView() {
         mHelper = new FmHelper.Builder(this, R.id.fl_content).build();
-        Fragment fm = ERouter.getInstance().with(this).to("/fragment/normal").go();
+        Fragment fm = ERouter.getInstance().with(this).to("/fragment/v4/normal").go();
         mHelper.open(fm);
     }
 }

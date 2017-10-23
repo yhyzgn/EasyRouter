@@ -133,7 +133,10 @@ public class RouterCompiler extends AbstractProcessor {
             if (mTypeUtils.isSubtype(tm, tmActivity)) {
                 // 是Activity，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.ACTIVITY, genParamsType(el));
-            } else if (mTypeUtils.isSubtype(tm, tmFragmentV4) || mTypeUtils.isSubtype(tm, tmFragment)) {
+            } else if (mTypeUtils.isSubtype(tm, tmFragmentV4)) {
+                // 是Fragment，支持自动注入参数
+                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT_V4, genParamsType(el));
+            } else if (mTypeUtils.isSubtype(tm, tmFragment)) {
                 // 是Fragment，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.FRAGMENT, genParamsType(el));
             } else if (mTypeUtils.isSubtype(tm, tmService)) {

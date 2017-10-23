@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.callback.Callback;
@@ -18,6 +22,7 @@ import com.yhy.erouter.mapper.EInterceptorMapper;
 import com.yhy.erouter.mapper.ERouterGroupMapper;
 import com.yhy.erouter.utils.EUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -36,11 +41,13 @@ public class EPoster {
 
     // 当前环境
     private Activity mActivity;
-    private Fragment mFragment;
+    private Fragment mFragmentV4;
+    private android.app.Fragment mFragment;
     private Service mService;
 
     // 分组
     private String mGroup;
+
     // 路径
     private String mUrl;
 
@@ -49,13 +56,24 @@ public class EPoster {
 
     // 路由参数
     private Bundle mParams;
-
     // 拦截器名称集合
     private List<String> mInterList;
     // 拦截器名称和实例映射集合
     private Map<String, EInterceptor> mInterMap;
+    // 请求码，只有startActivityForResult时使用
+    private int mRequestCode;
     // 路由回调
     private Callback mCallback;
+
+    // Activity切换动画
+    private int mTransEnter;
+    private int mTransExit;
+    // Activity共享元素动画
+    private Pair<View, String>[] mAnimArr;
+    private ActivityOptionsCompat mOptions;
+
+    // Intent Flag List
+    private List<Integer> mFlagList;
 
     /**
      * 构造函数
@@ -63,7 +81,16 @@ public class EPoster {
      * @param activity 当前Activity
      */
     public EPoster(Activity activity) {
-        this(activity, null, null);
+        this(activity, null, null, null);
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param fragmentV4 当前Fragment
+     */
+    public EPoster(Fragment fragmentV4) {
+        this(null, fragmentV4, null, null);
     }
 
     /**
@@ -71,8 +98,8 @@ public class EPoster {
      *
      * @param fragment 当前Fragment
      */
-    public EPoster(Fragment fragment) {
-        this(null, fragment, null);
+    public EPoster(android.app.Fragment fragment) {
+        this(null, null, fragment, null);
     }
 
     /**
@@ -81,26 +108,30 @@ public class EPoster {
      * @param service 当前Service
      */
     public EPoster(Service service) {
-        this(null, null, service);
+        this(null, null, null, service);
     }
 
     /**
      * 构造函数
      *
-     * @param activity 构造器
-     * @param fragment 构造器
-     * @param service  构造器
+     * @param activity   当前Activity
+     * @param fragmentV4 当前Fragment
+     * @param fragment   当前Fragment
+     * @param service    当前Service
      */
-    public EPoster(Activity activity, Fragment fragment, Service service) {
+    private EPoster(Activity activity, Fragment fragmentV4, android.app.Fragment fragment, Service service) {
         mActivity = activity;
+        mFragmentV4 = fragmentV4;
         mFragment = fragment;
         mService = service;
 
         // 初始化
+        mRequestCode = -1;
         mMetaMap = new HashMap<>();
         mParams = new Bundle();
-        mInterMap = new HashMap<>();
         mInterList = new ArrayList<>();
+        mInterMap = new HashMap<>();
+        mFlagList = new ArrayList<>();
     }
 
     /**
@@ -221,6 +252,17 @@ public class EPoster {
      * @param value 参数值
      * @return 当前对象
      */
+    public EPoster param(String name, Serializable value) {
+        return setParam(TypeKind.SERIALIZABLE.ordinal(), name, value);
+    }
+
+    /**
+     * 设置参数
+     *
+     * @param name  参数名称
+     * @param value 参数值
+     * @return 当前对象
+     */
     public EPoster param(String name, Parcelable value) {
         return setParam(TypeKind.PARCELABLE.ordinal(), name, value);
     }
@@ -237,7 +279,22 @@ public class EPoster {
     }
 
     /**
-     * 设置拦截器
+     * 设置参数
+     *
+     * @param bundle bundle参数
+     * @return 当前对象
+     */
+    public EPoster param(Bundle bundle) {
+        if (null == mParams) {
+            mParams = bundle;
+        } else {
+            mParams.putAll(bundle);
+        }
+        return this;
+    }
+
+    /**
+     * 添加拦截器
      *
      * @param name 拦截器名称
      * @return 当前对象
@@ -246,6 +303,55 @@ public class EPoster {
         if (!mInterList.contains(name)) {
             mInterList.add(name);
         }
+        return this;
+    }
+
+    /**
+     * Activity切换动画
+     *
+     * @param enter 进入动画
+     * @param exit  退出动画
+     * @return 当前对象
+     */
+    public EPoster transition(int enter, int exit) {
+        mTransEnter = enter;
+        mTransExit = exit;
+        return this;
+    }
+
+    /**
+     * 添加Activity共享元素动画
+     * <p>
+     * API 16+ 有效
+     *
+     * @param name 共享名称
+     * @param view 共享控件
+     * @return 当前对象
+     */
+    @SuppressWarnings("unchecked")
+    public EPoster animate(String name, View view) {
+        // 需要动态控制数组大小，不能直接使用List或者Vector的toArray()方法（类型强制转换失败）
+        if (null == mAnimArr) {
+            mAnimArr = new Pair[]{Pair.create(view, name)};
+        } else {
+            Pair<View, String>[] temp = mAnimArr;
+            // 扩容 +1
+            mAnimArr = new Pair[mAnimArr.length + 1];
+            // 拷贝数组
+            System.arraycopy(temp, 0, mAnimArr, 0, temp.length);
+            mAnimArr[mAnimArr.length - 1] = Pair.create(view, name);
+        }
+        return this;
+    }
+
+    /**
+     * 添加Intent flag
+     *
+     * @param flag Intent flag
+     * @return 当前对象
+     */
+    public EPoster flag(int flag) {
+        mFlagList.add(flag);
         return this;
     }
 
@@ -287,7 +393,23 @@ public class EPoster {
      * Service  :: XxxxService.class
      */
     public <T> T go() {
-        return go(null);
+        return go(mRequestCode, null);
+    }
+
+    /**
+     * 转发路由
+     *
+     * @param requestCode 请求码
+     * @param <T>         目标对象类型
+     * @return 目标对象
+     * <p>
+     * 值：
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
+     */
+    public <T> T go(int requestCode) {
+        return go(requestCode, null);
     }
 
     /**
@@ -303,6 +425,24 @@ public class EPoster {
      * Service  :: XxxxService.class
      */
     public <T> T go(Callback callback) {
+        return go(mRequestCode, callback);
+    }
+
+    /**
+     * 转发路由
+     *
+     * @param requestCode 请求码
+     * @param callback    回调
+     * @param <T>         目标对象类型
+     * @return 目标对象
+     * <p>
+     * 值：
+     * Activity :: XxxxActivity.class
+     * Fragment :: new XxxxFragment()
+     * Service  :: XxxxService.class
+     */
+    public <T> T go(int requestCode, Callback callback) {
+        mRequestCode = requestCode;
         mCallback = callback;
 
         // 执行路由
@@ -324,7 +464,7 @@ public class EPoster {
      * @return 当前路由上下文
      */
     public Context getContext() {
-        return null != mActivity ? mActivity : null != mFragment ? mFragment.getActivity() : mService;
+        return null != mActivity ? mActivity : null != mFragmentV4 ? mFragmentV4.getActivity() : mService;
     }
 
     /**
@@ -334,6 +474,7 @@ public class EPoster {
      * @param <T>  目标对象类型
      * @return 目标对象
      */
+    @SuppressWarnings("unchecked")
     private <T> T post(RouterMeta meta) {
         if (null != meta) {
             // 先执行拦截器
@@ -363,8 +504,12 @@ public class EPoster {
                     Intent svInte = postService(meta);
                     return null == svInte ? null : (T) svInte;
                 }
+                case FRAGMENT_V4: {
+                    Fragment fm = postFragmentV4(meta);
+                    return null == fm ? null : (T) fm;
+                }
                 case FRAGMENT: {
-                    Fragment fm = postFragment(meta);
+                    android.app.Fragment fm = postFragment(meta);
                     return null == fm ? null : (T) fm;
                 }
                 case UNKNOWN:
@@ -407,6 +552,7 @@ public class EPoster {
     /**
      * 加载拦截器映射器，并保存到拦截器映射器缓存中
      */
+    @SuppressWarnings("unchecked")
     private void loadInterceptors() {
         if (EInterMapCache.getInstance().get().isEmpty()) {
             try {
@@ -444,9 +590,37 @@ public class EPoster {
      * @param meta 路由数据
      * @return 目标Fragment实例
      */
-    private Fragment postFragment(RouterMeta meta) {
+    private Fragment postFragmentV4(RouterMeta meta) {
         try {
             Fragment fm = (Fragment) meta.getDest().newInstance();
+            fm.setArguments(mParams);
+            if (null != mCallback) {
+                mCallback.onPosted(this);
+            }
+            return fm;
+        } catch (InstantiationException e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            if (null != mCallback) {
+                mCallback.onError(this, e);
+            }
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 转发Fragment路由，创建目标Fragment实例
+     *
+     * @param meta 路由数据
+     * @return 目标Fragment实例
+     */
+    private android.app.Fragment postFragment(RouterMeta meta) {
+        try {
+            android.app.Fragment fm = (android.app.Fragment) meta.getDest().newInstance();
             fm.setArguments(mParams);
             if (null != mCallback) {
                 mCallback.onPosted(this);
@@ -478,16 +652,25 @@ public class EPoster {
             if (null != mActivity) {
                 // Activity中创建服务
                 intent = new Intent(mActivity, meta.getDest());
+                addFlags(intent);
                 intent.putExtras(mParams);
                 mActivity.startService(intent);
+            } else if (null != mFragmentV4) {
+                // Fragment中创建服务
+                intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                addFlags(intent);
+                intent.putExtras(mParams);
+                mFragmentV4.getActivity().startService(intent);
             } else if (null != mFragment) {
                 // Fragment中创建服务
                 intent = new Intent(mFragment.getActivity(), meta.getDest());
+                addFlags(intent);
                 intent.putExtras(mParams);
                 mFragment.getActivity().startService(intent);
             } else if (null != mService) {
                 // Service中创建服务
                 intent = new Intent(mService, meta.getDest());
+                addFlags(intent);
                 intent.putExtras(mParams);
                 mService.startService(intent);
             }
@@ -515,18 +698,61 @@ public class EPoster {
             if (null != mActivity) {
                 // Activity中跳转Activity
                 intent = new Intent(mActivity, meta.getDest());
+                addFlags(intent);
                 intent.putExtras(mParams);
-                mActivity.startActivity(intent);
+                // 设置共享元素动画
+                makeAnimate(mActivity);
+                if (mRequestCode == -1) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mActivity.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
+                    } else {
+                        mActivity.startActivity(intent);
+                    }
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mActivity.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
+                    } else {
+                        mActivity.startActivityForResult(intent, mRequestCode);
+                    }
+                }
+                // 设置切换动画
+                overrideTransition(mActivity);
+            } else if (null != mFragmentV4) {
+                // Fragment中跳转Activity
+                intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                addFlags(intent);
+                intent.putExtras(mParams);
+                makeAnimate(mFragmentV4.getActivity());
+                if (mRequestCode == -1) {
+                    mFragmentV4.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
+                } else {
+                    mFragmentV4.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
+                }
+                overrideTransition(mFragmentV4.getActivity());
             } else if (null != mFragment) {
                 // Fragment中跳转Activity
                 intent = new Intent(mFragment.getActivity(), meta.getDest());
+                addFlags(intent);
                 intent.putExtras(mParams);
-                mFragment.startActivity(intent);
+                makeAnimate(mFragment.getActivity());
+                if (mRequestCode == -1) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mFragment.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
+                    } else {
+                        mFragment.startActivity(intent);
+                    }
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mFragment.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
+                    } else {
+                        mFragment.startActivityForResult(intent, mRequestCode);
+                    }
+                }
+                overrideTransition(mFragment.getActivity());
             } else if (null != mService) {
                 // Service中跳转Activity页面
                 intent = new Intent(mService, meta.getDest());
-                // 此时需要添加新Activity栈的标识
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                addFlags(intent);
                 intent.putExtras(mParams);
                 mService.startActivity(intent);
             }
@@ -543,6 +769,41 @@ public class EPoster {
     }
 
     /**
+     * Activity切换动画
+     *
+     * @param activity 当前Activity
+     */
+    private void overrideTransition(Activity activity) {
+        if (null != activity && mTransEnter > 0 && mTransExit > 0) {
+            activity.overridePendingTransition(mTransEnter, mTransExit);
+        }
+    }
+
+    /**
+     * Activity共享元素动画
+     *
+     * @param activity 当前Activity
+     */
+    private void makeAnimate(Activity activity) {
+        if (null != activity && null != mAnimArr && mAnimArr.length > 0) {
+            mOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, mAnimArr);
+        }
+    }
+
+    /**
+     * 向Intent中添加Flag
+     *
+     * @param intent Intent
+     */
+    private void addFlags(Intent intent) {
+        if (null != intent && null != mFlagList && !mFlagList.isEmpty()) {
+            for (int flag : mFlagList) {
+                intent.addFlags(flag);
+            }
+        }
+    }
+
+    /**
      * 设置参数
      *
      * @param type  参数类型
@@ -556,7 +817,10 @@ public class EPoster {
             return this;
         }
 
-        if (type == TypeKind.PARCELABLE.ordinal()) {
+        if (type == TypeKind.SERIALIZABLE.ordinal()) {
+            // Serializable 无法从字符串解析
+            mParams.putSerializable(name, (Serializable) value);
+        } else if (type == TypeKind.PARCELABLE.ordinal()) {
             // Parcelable 无法从字符串解析
             mParams.putParcelable(name, (Parcelable) value);
         } else if (type == TypeKind.OBJECT.ordinal()) {
@@ -605,6 +869,7 @@ public class EPoster {
      * Fragment :: new XxxxFragment()
      * Service  :: XxxxService.class
      */
+    @SuppressWarnings("unchecked")
     private <T> T parseResult(RouterMeta meta) {
         if (null != meta) {
             switch (meta.getType()) {
@@ -613,6 +878,7 @@ public class EPoster {
                     // Activity和Service都返回Xxxx.class
                     return (T) meta.getDest();
                 }
+                case FRAGMENT_V4:
                 case FRAGMENT: {
                     // Fragment返回new XxxxFragment()
                     try {

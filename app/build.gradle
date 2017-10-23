@@ -34,6 +34,6 @@ dependencies {
 
 //    compile project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
-    compile 'com.yhy.router:erouter:1.1.0'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.0'
+    compile 'com.yhy.router:erouter:1.1.1'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.1'
 }

@@ -20,6 +20,7 @@ public enum TypeKind {
 
     // 其他包装类型
     STRING,
+    SERIALIZABLE,
     PARCELABLE,
     OBJECT;
 }

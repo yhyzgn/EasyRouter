@@ -68,6 +68,7 @@ public interface EConsts {
     String DOUBEL = LANG + ".Double";
     String BOOLEAN = LANG + ".Boolean";
     String STRING = LANG + ".String";
+    String SERIALIZABLE = "java.io.Serializable";
     String PARCELABLE = "android.os.Parcelable";
 
     // ...

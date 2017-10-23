@@ -11,6 +11,7 @@ import static com.yhy.erouter.common.EConsts.DOUBEL;
 import static com.yhy.erouter.common.EConsts.FLOAT;
 import static com.yhy.erouter.common.EConsts.INTEGER;
 import static com.yhy.erouter.common.EConsts.LONG;
+import static com.yhy.erouter.common.EConsts.SERIALIZABLE;
 import static com.yhy.erouter.common.EConsts.PARCELABLE;
 import static com.yhy.erouter.common.EConsts.SHORT;
 import static com.yhy.erouter.common.EConsts.STRING;
@@ -26,12 +27,14 @@ public class TypeExchanger {
 
     private Types mTypeUtils;
     private Elements mEltUtils;
+    private TypeMirror mSerializableType;
     private TypeMirror mParcelableType;
 
     public TypeExchanger(Types typeUtils, Elements eltUtils) {
         this.mTypeUtils = typeUtils;
         this.mEltUtils = eltUtils;
 
+        mSerializableType = mEltUtils.getTypeElement(SERIALIZABLE).asType();
         mParcelableType = mEltUtils.getTypeElement(PARCELABLE).asType();
     }
 
@@ -67,8 +70,11 @@ public class TypeExchanger {
             case STRING:
                 return TypeKind.STRING.ordinal();
             default:
-                // 其他类型，包括Parcelable
-                if (mTypeUtils.isSubtype(typeMirror, mParcelableType)) {
+                // 其他类型，包括Serializable和Parcelable
+                if (mTypeUtils.isSubtype(typeMirror, mSerializableType)) {
+                    // Serializable
+                    return TypeKind.SERIALIZABLE.ordinal();
+                } else if (mTypeUtils.isSubtype(typeMirror, mParcelableType)) {
                     // Parcelable
                     return TypeKind.PARCELABLE.ordinal();
                 } else {

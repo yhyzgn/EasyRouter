@@ -1,13 +1,14 @@
 package com.yhy.easyrouter.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 
 import com.yhy.easyrouter.base.BaseService;
+import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
+import com.yhy.erouter.callback.Callback;
+import com.yhy.erouter.common.EPoster;
 
 /**
  * author : 颜洪毅
@@ -33,6 +34,21 @@ public class NormalService extends BaseService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        ERouter.getInstance()
+                .with(this)
+                .to("/activity/service")
+                .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
+                .go(new Callback() {
+                    @Override
+                    public void onPosted(EPoster poster) {
+                        toast("服务跳转Activity成功");
+                    }
+
+                    @Override
+                    public void onError(EPoster poster, Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
         return super.onStartCommand(intent, flags, startId);
     }
 }
