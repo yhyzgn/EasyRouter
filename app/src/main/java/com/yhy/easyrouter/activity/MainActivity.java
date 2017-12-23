@@ -1,6 +1,8 @@
 package com.yhy.easyrouter.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,7 @@ public class MainActivity extends BaseActivity {
         mSimpleList.add(new Simple("拦截器Activity", "/activity/interceptor", ""));
         mSimpleList.add(new Simple("Activity切换动画", "/activity/transition", ""));
         mSimpleList.add(new Simple("Activity共享元素动画", "/activity/make/anim", ""));
+        mSimpleList.add(new Simple("Uri跳转", null, null));
 
         mCallback = new TestCallback();
 
@@ -99,6 +102,14 @@ public class MainActivity extends BaseActivity {
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
                             .animate("tvAnim", view)
+                            .go(mCallback); // 设置回调
+                } else if (position == 8) {
+                    // Uri跳转
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .uri(Uri.parse("http://www.baidu.com"))
+                            .action(Intent.ACTION_VIEW)
+                            .transition(R.anim.slide_in_right, R.anim.slide_out_right)
                             .go(mCallback); // 设置回调
                 } else {
                     // 普通跳转

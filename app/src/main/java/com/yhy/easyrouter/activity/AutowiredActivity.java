@@ -58,6 +58,7 @@ public class AutowiredActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        getIntent().hasExtra("");
         tvDef.setText("默认参数：" + defParam);
         tvChg.setText("改变过参数：" + chgParam);
         tvObj.setText("对象参数：" + objParam.toString());

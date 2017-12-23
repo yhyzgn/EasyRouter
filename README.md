@@ -1,5 +1,5 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.1-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.1-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.1-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.2-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.2-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.1-brightgreen.svg)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
@@ -248,6 +248,19 @@ public void onCreate() {
     .to("/activity/service")
     .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
     .go();
+  ```
+
+* 根据`Uri`打开`Activity`
+
+  > 设置`Uri`后，不在根据`Url`跳转，切目标只能是`Activity`。不过设置参数、`flag`等功能还是支持的
+
+  ```java
+  ERouter.getInstance()
+    .with(MainActivity.this)
+    .uri(Uri.parse("http://www.baidu.com"))
+    .action(Intent.ACTION_VIEW)
+    .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+    .go(mCallback); // 设置回调
   ```
 
 #### 定义拦截器

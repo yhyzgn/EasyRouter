@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.common.EConsts;
-import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.RouterMeta;
 import com.yhy.erouter.common.RouterType;
 import com.yhy.erouter.common.TypeExchanger;
@@ -56,7 +55,6 @@ public class RouterCompiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private Logger mLogger;
     private TypeExchanger mExchanger;
 
     // 存储路由数据按分组分类后的集合
@@ -75,7 +73,6 @@ public class RouterCompiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
-        mLogger = new Logger(proEnv.getMessager());
 
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
@@ -254,7 +251,7 @@ public class RouterCompiler extends AbstractProcessor {
                         try {
                             return r1.getUrl().compareTo(r2.getUrl());
                         } catch (NullPointerException npe) {
-                            mLogger.error(npe.getMessage());
+                            npe.printStackTrace();
                             return 0;
                         }
                     }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -21,6 +22,7 @@ import com.yhy.erouter.interceptor.EInterceptor;
 import com.yhy.erouter.mapper.EInterceptorMapper;
 import com.yhy.erouter.mapper.ERouterGroupMapper;
 import com.yhy.erouter.utils.EUtils;
+import com.yhy.erouter.utils.LogUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -37,23 +39,24 @@ import java.util.Map;
  * version: 1.0.0
  * desc   : 路由转发器
  */
+@SuppressWarnings("unchecked")
 public class EPoster {
-
+    private final String TAG = getClass().getSimpleName();
     // 当前环境
     private Activity mActivity;
     private Fragment mFragmentV4;
     private android.app.Fragment mFragment;
     private Service mService;
-
     // 分组
     private String mGroup;
-
     // 路径
     private String mUrl;
-
     // 保存url和路由数据的集合
     private Map<String, RouterMeta> mMetaMap;
-
+    // 目标Activity的Uri
+    private Uri mUri;
+    // Activity跳转时的Action
+    private String mAction;
     // 路由参数
     private Bundle mParams;
     // 拦截器名称集合
@@ -64,7 +67,6 @@ public class EPoster {
     private int mRequestCode;
     // 路由回调
     private Callback mCallback;
-
     // Activity切换动画
     private int mTransEnter;
     private int mTransExit;
@@ -154,6 +156,7 @@ public class EPoster {
     public EPoster to(String group, String url) {
         mGroup = TextUtils.isEmpty(group) ? EUtils.getGroupFromUrl(url) : group;
         mUrl = url;
+        LogUtils.i(TAG, "Set url as '" + mUrl + "'.");
         return this;
     }
 
@@ -302,6 +305,7 @@ public class EPoster {
     public EPoster interceptor(String name) {
         if (!mInterList.contains(name)) {
             mInterList.add(name);
+            LogUtils.i(TAG, "Add interceptor '" + name + "' successfully.");
         }
         return this;
     }
@@ -316,6 +320,7 @@ public class EPoster {
     public EPoster transition(int enter, int exit) {
         mTransEnter = enter;
         mTransExit = exit;
+        LogUtils.i(TAG, "Set animation of enter and exit are '" + enter + "' and '" + exit + "' successfully.");
         return this;
     }
 
@@ -341,6 +346,7 @@ public class EPoster {
             System.arraycopy(temp, 0, mAnimArr, 0, temp.length);
             mAnimArr[mAnimArr.length - 1] = Pair.create(view, name);
         }
+        LogUtils.i(TAG, "Add shared animation '" + name + "' on '" + view + "' successfully.");
         return this;
     }
 
@@ -352,6 +358,31 @@ public class EPoster {
      */
     public EPoster flag(int flag) {
         mFlagList.add(flag);
+        LogUtils.i(TAG, "Add flag '" + flag + "' successfully.");
+        return this;
+    }
+
+    /**
+     * 设置目标Activity的Uri
+     *
+     * @param uri 目标Activity的Uri
+     * @return 当前对象
+     */
+    public EPoster uri(Uri uri) {
+        mUri = uri;
+        LogUtils.i(TAG, "Set uri as '" + uri + "'.");
+        return this;
+    }
+
+    /**
+     * 设置Activity跳转的Action
+     *
+     * @param action Activity跳转的Action
+     * @return 当前对象
+     */
+    public EPoster action(String action) {
+        mAction = action;
+        LogUtils.i(TAG, "Set action as '" + action + "'.");
         return this;
     }
 
@@ -445,12 +476,20 @@ public class EPoster {
         mRequestCode = requestCode;
         mCallback = callback;
 
-        // 执行路由
+        LogUtils.i(TAG, "Post to '" + mUrl + "' start.");
+
+        // 优先判断Uri跳转，Uri跳转的目标只有Activity
+        if (null != mUri) {
+            return (T) postActivity(null);
+        }
+
+        // 执行路由，先从缓存中获取，不存在再加载
         RouterMeta meta = mMetaMap.get(mUrl);
         if (null != meta) {
             return post(meta);
         }
 
+        // 缓存中没有，加载路由
         Map<String, RouterMeta> metaMap = getMetaMap();
         if (null != metaMap) {
             return post(metaMap.get(mUrl));
@@ -486,8 +525,10 @@ public class EPoster {
                 EInterceptor interceptor;
                 for (String name : mInterList) {
                     interceptor = mInterMap.get(name);
+                    LogUtils.i(TAG, "Execute interceptor named '" + name + "' that '" + interceptor + "'.");
                     if (interceptor.execute(this)) {
                         // 中断路由
+                        LogUtils.i(TAG, "The interceptor named '" + name + "' that '" + interceptor + "' interrupted current router.");
                         return null;
                     }
                 }
@@ -534,16 +575,17 @@ public class EPoster {
                 try {
                     interceptor = clazz.newInstance();
                     mInterMap.put(name, interceptor);
+                    LogUtils.i(TAG, "Load interceptor '" + name + "' that '" + interceptor + "'.");
                 } catch (InstantiationException e) {
                     if (null != mCallback) {
                         mCallback.onError(this, e);
                     }
-                    e.printStackTrace();
+                    LogUtils.e(e);
                 } catch (IllegalAccessException e) {
                     if (null != mCallback) {
                         mCallback.onError(this, e);
                     }
-                    e.printStackTrace();
+                    LogUtils.e(e);
                 }
             }
         }
@@ -569,17 +611,17 @@ public class EPoster {
                 if (null != mCallback) {
                     mCallback.onError(this, e);
                 }
-                e.printStackTrace();
+                LogUtils.e(e);
             } catch (InstantiationException e) {
                 if (null != mCallback) {
                     mCallback.onError(this, e);
                 }
-                e.printStackTrace();
+                LogUtils.e(e);
             } catch (IllegalAccessException e) {
                 if (null != mCallback) {
                     mCallback.onError(this, e);
                 }
-                e.printStackTrace();
+                LogUtils.e(e);
             }
         }
     }
@@ -597,17 +639,18 @@ public class EPoster {
             if (null != mCallback) {
                 mCallback.onPosted(this);
             }
+            LogUtils.i(TAG, "Post fragment v4.");
             return fm;
         } catch (InstantiationException e) {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
-            e.printStackTrace();
+            LogUtils.e(e);
         } catch (IllegalAccessException e) {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
-            e.printStackTrace();
+            LogUtils.e(e);
         }
         return null;
     }
@@ -625,6 +668,7 @@ public class EPoster {
             if (null != mCallback) {
                 mCallback.onPosted(this);
             }
+            LogUtils.i(TAG, "Post fragment.");
             return fm;
         } catch (InstantiationException e) {
             if (null != mCallback) {
@@ -655,24 +699,28 @@ public class EPoster {
                 addFlags(intent);
                 intent.putExtras(mParams);
                 mActivity.startService(intent);
+                LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mActivity + "'.");
             } else if (null != mFragmentV4) {
                 // Fragment中创建服务
                 intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
                 addFlags(intent);
                 intent.putExtras(mParams);
                 mFragmentV4.getActivity().startService(intent);
+                LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragmentV4 + "'.");
             } else if (null != mFragment) {
                 // Fragment中创建服务
                 intent = new Intent(mFragment.getActivity(), meta.getDest());
                 addFlags(intent);
                 intent.putExtras(mParams);
                 mFragment.getActivity().startService(intent);
+                LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragment + "'.");
             } else if (null != mService) {
                 // Service中创建服务
                 intent = new Intent(mService, meta.getDest());
                 addFlags(intent);
                 intent.putExtras(mParams);
                 mService.startService(intent);
+                LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mService + "'.");
             }
             // 成功转发回调
             if (null != mCallback) {
@@ -682,6 +730,7 @@ public class EPoster {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
+            LogUtils.e(e);
         }
         return intent;
     }
@@ -693,11 +742,19 @@ public class EPoster {
      * @return 目标Activity.class
      */
     private Intent postActivity(RouterMeta meta) {
+        if (null == meta && null == mUri) {
+            throw new UrlMatchException("Either 'url' or 'uri' is not null, but both of them are null.");
+        }
         Intent intent = null;
         try {
             if (null != mActivity) {
                 // Activity中跳转Activity
-                intent = new Intent(mActivity, meta.getDest());
+                if (null == mUri) {
+                    intent = new Intent(mActivity, meta.getDest());
+                } else {
+                    intent = new Intent(mAction, mUri);
+                    LogUtils.i(TAG, "Post to uri '" + mUri + "' from '" + mActivity + "' with action '" + mAction + "'.");
+                }
                 addFlags(intent);
                 intent.putExtras(mParams);
                 // 设置共享元素动画
@@ -719,7 +776,12 @@ public class EPoster {
                 overrideTransition(mActivity);
             } else if (null != mFragmentV4) {
                 // Fragment中跳转Activity
-                intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                if (null == mUri) {
+                    intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                } else {
+                    intent = new Intent(mAction, mUri);
+                    LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragmentV4 + "' with action '" + mAction + "'.");
+                }
                 addFlags(intent);
                 intent.putExtras(mParams);
                 makeAnimate(mFragmentV4.getActivity());
@@ -731,7 +793,12 @@ public class EPoster {
                 overrideTransition(mFragmentV4.getActivity());
             } else if (null != mFragment) {
                 // Fragment中跳转Activity
-                intent = new Intent(mFragment.getActivity(), meta.getDest());
+                if (null == mUri) {
+                    intent = new Intent(mFragment.getActivity(), meta.getDest());
+                } else {
+                    intent = new Intent(mAction, mUri);
+                    LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragment + "' with action '" + mAction + "'.");
+                }
                 addFlags(intent);
                 intent.putExtras(mParams);
                 makeAnimate(mFragment.getActivity());
@@ -751,7 +818,12 @@ public class EPoster {
                 overrideTransition(mFragment.getActivity());
             } else if (null != mService) {
                 // Service中跳转Activity页面
-                intent = new Intent(mService, meta.getDest());
+                if (null == mUri) {
+                    intent = new Intent(mService, meta.getDest());
+                } else {
+                    intent = new Intent(mAction, mUri);
+                    LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mService + "' with action '" + mAction + "'.");
+                }
                 addFlags(intent);
                 intent.putExtras(mParams);
                 mService.startActivity(intent);
@@ -854,6 +926,7 @@ public class EPoster {
                 mParams.putString(name, strVal);
             }
         }
+        LogUtils.i(TAG, "Add arg '" + name + "' successfully, value is '" + value + "'.");
         return this;
     }
 
@@ -884,9 +957,9 @@ public class EPoster {
                     try {
                         return (T) meta.getDest().newInstance();
                     } catch (InstantiationException e) {
-                        e.printStackTrace();
+                        LogUtils.e(e);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LogUtils.e(e);
                     }
                 }
                 case UNKNOWN:
@@ -922,15 +995,15 @@ public class EPoster {
             // 执行映射器的加载路由方法
             loadGroup.invoke(erg, metaMap);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LogUtils.e(e);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            LogUtils.e(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LogUtils.e(e);
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            LogUtils.e(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            LogUtils.e(e);
         }
         // 存放到缓存中
         EGroupMapCache.getInstance().put(mGroup, metaMap);

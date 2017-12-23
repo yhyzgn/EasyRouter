@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.common.EConsts;
-import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.TypeExchanger;
 import com.yhy.erouter.common.TypeKind;
 
@@ -56,7 +55,6 @@ public class AutowiredCompiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private Logger mLogger;
     private TypeExchanger mExchanger;
 
     // 按父元素保存被注解的成员字段的集合（如保存某个Activity下的所有被注解的字段）
@@ -75,7 +73,6 @@ public class AutowiredCompiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
-        mLogger = new Logger(proEnv.getMessager());
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
         mTypeMap = new HashMap<>();
@@ -236,7 +233,8 @@ public class AutowiredCompiler extends AbstractProcessor {
                             inject.endControlFlow();
                         } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
                             // private Serializable
-                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, elt.asType(), StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
+                            String argName = StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value();
+                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, argName, elt.asType(), argName);
                         } else {
                             // private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
@@ -268,7 +266,8 @@ public class AutowiredCompiler extends AbstractProcessor {
                         } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
                             // not private Serializable
                             statement = "instance." + fieldName + " = " + statement;
-                            inject.addStatement(statement, elt.asType(), StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
+                            String argName = StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value();
+                            inject.addStatement(statement, argName, elt.asType(), argName);
                         } else {
                             // not private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
@@ -319,7 +318,7 @@ public class AutowiredCompiler extends AbstractProcessor {
             statement += (isActivity ? ("getParcelableExtra($S)") : ("getParcelable($S)"));
         } else if (type == TypeKind.SERIALIZABLE.ordinal()) {
             // 需要强转成Serializable
-            statement = "($T) instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getSerializableExtra($S)" : "getSerializable($S)");
+            statement = "instance." + (isActivity ? "getIntent().hasExtra($S)" : "getArguments().containsKey($S)") + " ? ($T) instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getSerializableExtra($S)" : "getSerializable($S)") + " : null";
         } else if (type == TypeKind.OBJECT.ordinal()) {
             // 需要Json解析
             statement = EConsts.JSON_PARSER_NAME + ".fromJson(instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getStringExtra($S)" : "getString($S)") + ", $T.class)";

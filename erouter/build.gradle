@@ -4,7 +4,7 @@ apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 14
@@ -14,6 +14,11 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
 
     buildTypes {
@@ -39,14 +44,14 @@ dependencies {
 //    compile project(':erouter-annotation')
 //    annotationProcessor project(':erouter-compiler')
     compile 'com.yhy.router:erouter-anno:1.1.1'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.1'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.2'
 }
 
 publish {
     userOrg = 'yhyzgn'
     groupId = 'com.yhy.router'
     artifactId = 'erouter'
-    publishVersion = '1.1.1'
+    publishVersion = '1.1.2'
     desc = 'Easy router.'
     website = 'https://github.com/yhyzgn/EasyRouter'
 }

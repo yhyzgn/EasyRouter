@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 import com.yhy.erouter.annotation.Interceptor;
 import com.yhy.erouter.common.EConsts;
-import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.TypeExchanger;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,7 +50,6 @@ public class InterceptorComiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private Logger mLogger;
     private TypeExchanger mExchanger;
 
     // 用来保存拦截器名称及其所注解元素的集合
@@ -70,7 +68,6 @@ public class InterceptorComiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
-        mLogger = new Logger(proEnv.getMessager());
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
         mEltMap = new HashMap<>();

@@ -2,20 +2,31 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.yhy.easyrouter"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -34,6 +45,6 @@ dependencies {
 
 //    compile project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
-    compile 'com.yhy.router:erouter:1.1.1'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.1'
+    compile 'com.yhy.router:erouter:1.1.2'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.2'
 }
