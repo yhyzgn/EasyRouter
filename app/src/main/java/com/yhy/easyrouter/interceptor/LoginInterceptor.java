@@ -1,9 +1,8 @@
 package com.yhy.easyrouter.interceptor;
 
-import android.widget.Toast;
-
 import com.yhy.easyrouter.App;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Interceptor;
 import com.yhy.erouter.common.EPoster;
@@ -23,7 +22,7 @@ public class LoginInterceptor implements EInterceptor {
     public boolean execute(EPoster poster) {
         User user = App.getInstance().getUser();
         if (null == user) {
-            Toast.makeText(poster.getContext(), "未登录，先去登录", Toast.LENGTH_SHORT).show();
+            ToastUtils.toast("未登录，先去登录");
 
             ERouter.getInstance()
                     .with(poster.getContext())
@@ -32,7 +31,7 @@ public class LoginInterceptor implements EInterceptor {
             return true;
         }
 
-        Toast.makeText(poster.getContext(), "已经登录，往下执行", Toast.LENGTH_SHORT).show();
+        ToastUtils.toast("已经登录，往下执行");
         return false;
     }
 }

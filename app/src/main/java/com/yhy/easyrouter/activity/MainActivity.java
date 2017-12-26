@@ -17,6 +17,7 @@ import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.entity.Simple;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.callback.Callback;
@@ -156,6 +157,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onPosted(EPoster poster) {
             // 路由转发成功
+            ToastUtils.toast("路由转发成功");
         }
 
         @Override

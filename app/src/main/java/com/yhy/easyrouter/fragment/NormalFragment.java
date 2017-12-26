@@ -3,6 +3,7 @@ package com.yhy.easyrouter.fragment;
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseFragment;
 import com.yhy.easyrouter.entity.SeriaEntity;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 
@@ -27,6 +28,6 @@ public class NormalFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        toast(seriaParam + "");
+        ToastUtils.toast(seriaParam + "");
     }
 }

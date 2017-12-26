@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.google.gson.Gson;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EJsonParser;
 
@@ -24,6 +25,8 @@ public class App extends Application {
         super.onCreate();
 
         instance = this;
+
+        ToastUtils.init(this);
 
         // 初始化
         ERouter.getInstance()

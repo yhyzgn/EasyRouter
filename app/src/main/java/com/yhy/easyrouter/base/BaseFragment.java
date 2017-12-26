@@ -7,8 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 
 /**
@@ -62,9 +62,5 @@ public abstract class BaseFragment extends Fragment {
 
     public <T extends View> T $(int id) {
         return mView.findViewById(id);
-    }
-
-    public void toast(String text) {
-        Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
     }
 }

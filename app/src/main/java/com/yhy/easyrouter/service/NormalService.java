@@ -5,6 +5,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.yhy.easyrouter.base.BaseService;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.callback.Callback;
@@ -29,7 +30,7 @@ public class NormalService extends BaseService {
     @Override
     public void onCreate() {
         super.onCreate();
-        toast("普通服务创建成功");
+        ToastUtils.toast("普通服务创建成功");
     }
 
     @Override
@@ -41,7 +42,7 @@ public class NormalService extends BaseService {
                 .go(new Callback() {
                     @Override
                     public void onPosted(EPoster poster) {
-                        toast("服务跳转Activity成功");
+                        ToastUtils.toast("服务跳转Activity成功");
                     }
 
                     @Override
