@@ -201,8 +201,6 @@ public class AutowiredCompiler extends AbstractProcessor {
                     autowired = elt.getAnnotation(Autowired.class);
                     fieldName = elt.getSimpleName().toString();
 
-                    // 字段默认值
-                    defValue = "instance." + fieldName;
 
                     // 如果字段为private，就通过反射注入，否则直接给字段赋值即可
                     if (elt.getModifiers().contains(Modifier.PRIVATE)) {
@@ -223,7 +221,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                             statement += "getArguments().";
                         }
                         // 拼接statement语句
-                        statement = buildStatement(isActivity, defValue, statement, mExchanger.exchange(elt)) + ")";
+                        statement = buildStatement(isActivity, getPrivateParamDefValue(mExchanger.exchange(elt)), statement, mExchanger.exchange(elt)) + ")";
                         // 如果是普通对象类型，就使用EJsonParser解析对象，并设置给获取到的字段，否则就直接将值设置给获取到的字段
                         if (statement.startsWith(EConsts.JSON_PARSER_NAME)) {
                             inject.beginControlFlow("if(null != " + EConsts.JSON_PARSER_NAME + ")", ClassName.get(EConsts.class));
@@ -244,6 +242,9 @@ public class AutowiredCompiler extends AbstractProcessor {
                         inject.endControlFlow();
                     } else {
                         // 不是私有字段，直接赋值
+
+                        // 字段默认值
+                        defValue = "instance." + fieldName;
                         statement = "instance." + fieldName + " = instance.";
 
                         isActivity = false;
@@ -284,6 +285,33 @@ public class AutowiredCompiler extends AbstractProcessor {
                 JavaFile.builder(packageName, clazz.build()).build().writeTo(mFilter);
             }
         }
+    }
+
+    /**
+     * 反射获取私有字段的默认值
+     *
+     * @param type 字段那类型
+     * @return 默认值
+     */
+    private String getPrivateParamDefValue(int type) {
+        if (type == TypeKind.BOOLEAN.ordinal()) {
+            return "field.getBoolean(instance)";
+        } else if (type == TypeKind.BYTE.ordinal()) {
+            return "field.getByte(instance)";
+        } else if (type == TypeKind.SHORT.ordinal()) {
+            return "field.getShort(instance)";
+        } else if (type == TypeKind.INT.ordinal()) {
+            return "field.getInt(instance)";
+        } else if (type == TypeKind.LONG.ordinal()) {
+            return "field.getLong(instance)";
+        } else if (type == TypeKind.CHAR.ordinal()) {
+            return "field.getChar(instance)";
+        } else if (type == TypeKind.FLOAT.ordinal()) {
+            return "field.getFloat(instance)";
+        } else if (type == TypeKind.DOUBLE.ordinal()) {
+            return "field.getDouble(instance)";
+        }
+        return "field.get(instance)";
     }
 
     /**

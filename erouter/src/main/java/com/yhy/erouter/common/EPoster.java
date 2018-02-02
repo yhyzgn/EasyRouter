@@ -902,6 +902,9 @@ public class EPoster {
                 throw new IllegalOperationException("If you want to use EJsonParser, must set EJsonParser in initialization of ERouter!");
             }
             mParams.putString(name, jsonParser.toJson(value));
+        } else if (type == TypeKind.BOOLEAN.ordinal()) {
+            // Boolean强转为String时导致转换异常，需要单独处理
+            mParams.putBoolean(name, (Boolean) value);
         } else {
             String strVal = (String) value;
 
@@ -911,8 +914,6 @@ public class EPoster {
                 mParams.putByte(name, Byte.valueOf(strVal));
             } else if (type == TypeKind.SHORT.ordinal()) {
                 mParams.putShort(name, Short.valueOf(strVal));
-            } else if (type == TypeKind.INT.ordinal()) {
-                mParams.putBoolean(name, Boolean.valueOf(strVal));
             } else if (type == TypeKind.LONG.ordinal()) {
                 mParams.putLong(name, Long.valueOf(strVal));
             } else if (type == TypeKind.FLOAT.ordinal()) {
