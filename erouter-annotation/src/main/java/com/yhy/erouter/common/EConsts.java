@@ -15,7 +15,7 @@ public interface EConsts {
     // 日志打印前缀
     String PREFIX_OF_LOGGER = "::RouterLogger::";
 
-    String SEPARATOR = "$$";
+    String SEPARATOR = "_$$_";
 
     // 路由类型标识
     String ACTIVITY = "android.app.Activity";

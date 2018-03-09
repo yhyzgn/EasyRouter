@@ -158,6 +158,15 @@ public class EPoster {
     }
 
     /**
+     * 获取当前Application
+     *
+     * @return 当前Application
+     */
+    public Application getApp() {
+        return mApp;
+    }
+
+    /**
      * 设置目标路径
      *
      * @param url 目标路径
@@ -601,12 +610,12 @@ public class EPoster {
                     if (null != mCallback) {
                         mCallback.onError(this, e);
                     }
-                    LogUtils.e(e);
+                    e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     if (null != mCallback) {
                         mCallback.onError(this, e);
                     }
-                    LogUtils.e(e);
+                    e.printStackTrace();
                 }
             }
         }
@@ -620,29 +629,35 @@ public class EPoster {
         if (EInterMapCache.getInstance().get().isEmpty()) {
             try {
                 // 加载映射器
-                Class<? extends EInterceptorMapper> clazz = (Class<? extends EInterceptorMapper>) Class.forName(EConsts.INTERCEPTOR_PACKAGE + "." + EInterceptorMapper.class.getSimpleName() + EConsts.SUFFIX_INTERCEPTOR_CLASS);
-                EInterceptorMapper interMapper = clazz.newInstance();
+                List<Class<?>> classList = ClassUtils.getClassListInPackage(mApp, EConsts.INTERCEPTOR_PACKAGE, EInterceptorMapper.class.getSimpleName() + EConsts.SUFFIX_INTERCEPTOR_CLASS + EConsts.SEPARATOR);
+                Class<?>[] interfaces;
+                EInterceptorMapper interMapper;
                 // 定义接收拦截器映射关系的集合
                 Map<String, Class<? extends EInterceptor>> interMap = new HashMap<>();
-                // 执行映射器的加载方法
-                interMapper.load(interMap);
+
+                for (Class<?> clazz : classList) {
+                    // 由于按包名获取类，所以必定含有内部类，而内部类中没有加载路由映射的方法
+                    // 所以先要判断当前class是否实现了ERouterGroupMapper接口，只有实现了该接口的类才能加载路由映射
+                    interfaces = clazz.getInterfaces();
+                    if (null == interfaces || interfaces.length == 0 || interfaces[0] != EInterceptorMapper.class) {
+                        continue;
+                    }
+                    interMapper = (EInterceptorMapper) clazz.newInstance();
+                    // 执行映射器的加载方法
+                    interMapper.load(interMap);
+                }
                 // 将映射关系集合保存到缓存中
                 EInterMapCache.getInstance().putAll(interMap);
-            } catch (ClassNotFoundException e) {
-                if (null != mCallback) {
-                    mCallback.onError(this, e);
-                }
-                LogUtils.e(e);
             } catch (InstantiationException e) {
                 if (null != mCallback) {
                     mCallback.onError(this, e);
                 }
-                LogUtils.e(e);
+                e.printStackTrace();
             } catch (IllegalAccessException e) {
                 if (null != mCallback) {
                     mCallback.onError(this, e);
                 }
-                LogUtils.e(e);
+                e.printStackTrace();
             }
         }
     }
@@ -666,12 +681,12 @@ public class EPoster {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (IllegalAccessException e) {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
-            LogUtils.e(e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -758,7 +773,7 @@ public class EPoster {
             if (null != mCallback) {
                 mCallback.onError(this, e);
             }
-            LogUtils.e(e);
+            e.printStackTrace();
         }
         return intent;
     }
@@ -1000,9 +1015,9 @@ public class EPoster {
                     try {
                         return (T) meta.getDest().newInstance();
                     } catch (InstantiationException e) {
-                        LogUtils.e(e);
+                        e.printStackTrace();
                     } catch (IllegalAccessException e) {
-                        LogUtils.e(e);
+                        e.printStackTrace();
                     }
                 }
                 case UNKNOWN:
@@ -1029,32 +1044,38 @@ public class EPoster {
         // 缓存中不存在时再从路由映射器中获取
         metaMap = new HashMap<>();
         try {
-//            // 加载当前分组对应的java类
-//            Class<?> clazz = Class.forName(EConsts.GROUP_PACKAGE + "." + EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup));
-//            // 获取到加载路由的方法
-//            Method loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
-//            // 创建当前分组的路由映射器对象
-//            ERouterGroupMapper erg = (ERouterGroupMapper) clazz.newInstance();
-//            // 执行映射器的加载路由方法
-//            loadGroup.invoke(erg, metaMap);
-
-            List<Class<?>> clazzList = ClassUtils.getClassInPackage(mApp, EConsts.GROUP_PACKAGE, EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup) + EConsts.SEPARATOR);
+            // 加载当前分组对应的java类
+            List<Class<?>> clazzList = ClassUtils.getClassListInPackage(mApp, EConsts.GROUP_PACKAGE, EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup) + EConsts.SEPARATOR);
+            Class<?>[] interfaces;
             Method loadGroup;
             ERouterGroupMapper erg;
+            LogUtils.i(TAG, clazzList.toString());
             for (Class<?> clazz : clazzList) {
-                LogUtils.i("RouterClass", clazz.getName());
+                // 由于按包名获取类，所以必定含有内部类，而内部类中没有加载路由映射的方法
+                // 所以先要判断当前class是否实现了ERouterGroupMapper接口，只有实现了该接口的类才能加载路由映射
+                interfaces = clazz.getInterfaces();
+                if (null == interfaces || interfaces.length == 0 || interfaces[0] != ERouterGroupMapper.class) {
+                    continue;
+                }
+
+                LogUtils.i(TAG, clazz.getName());
+
+                // 开始映射路由
+                // 获取到加载路由的方法
                 loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
+                // 创建当前分组的路由映射器对象
                 erg = (ERouterGroupMapper) clazz.newInstance();
+                // 执行映射器的加载路由方法
                 loadGroup.invoke(erg, metaMap);
             }
         } catch (NoSuchMethodException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (InstantiationException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (InvocationTargetException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         }
         // 存放到缓存中
         EGroupMapCache.getInstance().put(mGroup, metaMap);

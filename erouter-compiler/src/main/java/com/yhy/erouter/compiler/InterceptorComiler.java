@@ -11,6 +11,7 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.yhy.erouter.annotation.Interceptor;
 import com.yhy.erouter.common.EConsts;
 import com.yhy.erouter.common.TypeExchanger;
+import com.yhy.erouter.utils.EUtils;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -50,6 +51,7 @@ public class InterceptorComiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
+    private String mModuleName;
     private TypeExchanger mExchanger;
 
     // 用来保存拦截器名称及其所注解元素的集合
@@ -68,6 +70,18 @@ public class InterceptorComiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
+
+        // 获取模块名称
+        Map<String, String> options = processingEnv.getOptions();
+        if (MapUtils.isNotEmpty(options) && options.containsKey("moduleName")) {
+            mModuleName = options.get("moduleName");
+        }
+        if (StringUtils.isEmpty(mModuleName)) {
+            mModuleName = EConsts.DEF_MODULE_NAME;
+        } else {
+            mModuleName = EUtils.upCaseFirst(EUtils.line2Hump(mModuleName));
+        }
+
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
         mEltMap = new HashMap<>();
@@ -156,7 +170,7 @@ public class InterceptorComiler extends AbstractProcessor {
         }
 
         // 创建映射器类
-        TypeSpec clazz = TypeSpec.classBuilder(teInterMapper.getSimpleName() + EConsts.SUFFIX_INTERCEPTOR_CLASS)
+        TypeSpec clazz = TypeSpec.classBuilder(teInterMapper.getSimpleName() + EConsts.SUFFIX_INTERCEPTOR_CLASS + EConsts.SEPARATOR + mModuleName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(teInterMapper))
                 .addJavadoc("Interceptors loader\r\n\r\n@author : " + EConsts.AUTHOR + "\r\n@e-mail : " + EConsts.E_MAIL + "\r\n@github : " + EConsts.GITHUB_URL + "\r\n")

@@ -32,6 +32,8 @@ public class AutowiredActivity extends BaseActivity {
     public SeriaEntity seriaParam;
     @Autowired
     private boolean boolTest;
+    @Autowired
+    private int intTest;
 
     // 不自动注入
     private String param;
@@ -43,6 +45,7 @@ public class AutowiredActivity extends BaseActivity {
     private TextView tvPrivObj;
     private TextView tvPrivSeria;
     private TextView tvPrivBool;
+    private TextView tvPrivInt;
 
     @Override
     protected int getLayout() {
@@ -58,6 +61,7 @@ public class AutowiredActivity extends BaseActivity {
         tvPrivObj = $(R.id.tv_priv_obj);
         tvPrivSeria = $(R.id.tv_priv_seria);
         tvPrivBool = $(R.id.tv_priv_bool);
+        tvPrivInt = $(R.id.tv_priv_int);
     }
 
     @Override
@@ -70,5 +74,6 @@ public class AutowiredActivity extends BaseActivity {
         tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
         tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
         tvPrivBool.setText("Boolean私有参数：" + boolTest);
+        tvPrivInt.setText("Integer私有参数：" + intTest);
     }
 }

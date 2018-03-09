@@ -83,6 +83,7 @@ public class MainActivity extends BaseActivity {
                             .param("privObjParam", new User("李四", 33, "女"))
                             .param("seriaParam", new SeriaEntity("test-test"))
                             .param("boolTest", true)
+                            .param("intTest", 6666)
                             .go();
                 } else if (position == 5) {
                     // 拦截器
