@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.common.EConsts;
-import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.RouterMeta;
 import com.yhy.erouter.common.RouterType;
 import com.yhy.erouter.common.TypeExchanger;
@@ -19,6 +18,7 @@ import com.yhy.erouter.utils.EUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ public class RouterCompiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private Logger mLogger;
+    private String mModuleName;
     private TypeExchanger mExchanger;
 
     // 存储路由数据按分组分类后的集合
@@ -75,7 +75,17 @@ public class RouterCompiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
-        mLogger = new Logger(proEnv.getMessager());
+
+        // 获取模块名称
+        Map<String, String> options = processingEnv.getOptions();
+        if (MapUtils.isNotEmpty(options) && options.containsKey("moduleName")) {
+            mModuleName = options.get("moduleName");
+        }
+        if (StringUtils.isEmpty(mModuleName)) {
+            mModuleName = EConsts.DEF_MODULE_NAME;
+        } else {
+            mModuleName = EUtils.upCaseFirst(EUtils.line2Hump(mModuleName));
+        }
 
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
@@ -133,7 +143,10 @@ public class RouterCompiler extends AbstractProcessor {
             if (mTypeUtils.isSubtype(tm, tmActivity)) {
                 // 是Activity，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.ACTIVITY, genParamsType(el));
-            } else if (mTypeUtils.isSubtype(tm, tmFragmentV4) || mTypeUtils.isSubtype(tm, tmFragment)) {
+            } else if (mTypeUtils.isSubtype(tm, tmFragmentV4)) {
+                // 是Fragment，支持自动注入参数
+                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT_V4, genParamsType(el));
+            } else if (mTypeUtils.isSubtype(tm, tmFragment)) {
                 // 是Fragment，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.FRAGMENT, genParamsType(el));
             } else if (mTypeUtils.isSubtype(tm, tmService)) {
@@ -220,7 +233,7 @@ public class RouterCompiler extends AbstractProcessor {
 
             // 映射器类
             // 类名为 固定前缀 + 首字母大写的分组名
-            groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group))
+            groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group) + EConsts.SEPARATOR + mModuleName)
                     .addModifiers(Modifier.PUBLIC)
                     .addSuperinterface(ClassName.get(teGroup))
                     .addMethod(loadGroup.build())
@@ -251,7 +264,7 @@ public class RouterCompiler extends AbstractProcessor {
                         try {
                             return r1.getUrl().compareTo(r2.getUrl());
                         } catch (NullPointerException npe) {
-                            mLogger.error(npe.getMessage());
+                            npe.printStackTrace();
                             return 0;
                         }
                     }

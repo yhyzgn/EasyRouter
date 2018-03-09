@@ -11,8 +11,8 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.commons:commons-collections4:4.1'
 
-//    compile project(':erouter-annotation')
-    compile 'com.yhy.router:erouter-anno:1.1.0'
+    compile project(':erouter-annotation')
+//    compile 'com.yhy.router:erouter-anno:1.1.1'
 }
 
 sourceCompatibility = "1.7"
@@ -26,7 +26,7 @@ publish {
     userOrg = 'yhyzgn'
     groupId = 'com.yhy.router'
     artifactId = 'erouter-compiler'
-    publishVersion = '1.1.0'
+    publishVersion = '1.1.3'
     desc = 'Compiler of router.'
     website = 'https://github.com/yhyzgn/EasyRouter'
 }

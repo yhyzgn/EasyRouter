@@ -2,6 +2,8 @@ package com.yhy.easyrouter.fragment;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseFragment;
+import com.yhy.easyrouter.entity.SeriaEntity;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 
@@ -12,10 +14,12 @@ import com.yhy.erouter.annotation.Router;
  * version: 1.0.0
  * desc   :
  */
-@Router(url = "/fragment/normal")
+@Router(url = "/fragment/v4/normal")
 public class NormalFragment extends BaseFragment {
     @Autowired("fmNomal")
     public String fmNomal;
+    @Autowired
+    private SeriaEntity seriaParam;
 
     @Override
     protected int getLayout() {
@@ -24,5 +28,6 @@ public class NormalFragment extends BaseFragment {
 
     @Override
     protected void initView() {
+        ToastUtils.toast(seriaParam + "");
     }
 }

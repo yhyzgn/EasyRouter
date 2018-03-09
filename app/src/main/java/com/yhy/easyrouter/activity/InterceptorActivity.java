@@ -33,6 +33,6 @@ public class InterceptorActivity extends BaseActivity {
     @Override
     protected void initData() {
         User user = App.getInstance().getUser();
-        tvInter.setText(tvInter.getText() + "\r\n" + user.toString());
+        tvInter.setText(tvInter.getText() + "\r\n" + (null != user ? user.toString() : " 空的..."));
     }
 }

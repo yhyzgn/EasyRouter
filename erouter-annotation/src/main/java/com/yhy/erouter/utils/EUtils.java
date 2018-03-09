@@ -1,5 +1,8 @@
 package com.yhy.erouter.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -45,6 +48,26 @@ public class EUtils {
             return (new StringBuilder()).append(Character.toUpperCase(str.charAt(0))).append(str.substring(1)).toString();
         }
         return str;
+    }
+
+    /**
+     * 将下划线和减号转换为驼峰字符串
+     *
+     * @param line 原始字符串
+     * @return 转换后字符串
+     */
+    public static String line2Hump(String line) {
+        if (isEmpty(line)) {
+            return line;
+        }
+        Pattern linePattern = Pattern.compile("(-|_)(\\w)");
+        Matcher matcher = linePattern.matcher(line);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(2).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**

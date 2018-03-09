@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.common.EConsts;
-import com.yhy.erouter.common.Logger;
 import com.yhy.erouter.common.TypeExchanger;
 import com.yhy.erouter.common.TypeKind;
 
@@ -56,7 +55,6 @@ public class AutowiredCompiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private Logger mLogger;
     private TypeExchanger mExchanger;
 
     // 按父元素保存被注解的成员字段的集合（如保存某个Activity下的所有被注解的字段）
@@ -75,7 +73,6 @@ public class AutowiredCompiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
-        mLogger = new Logger(proEnv.getMessager());
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
         mTypeMap = new HashMap<>();
@@ -163,7 +160,7 @@ public class AutowiredCompiler extends AbstractProcessor {
 
                 // 服务不支持参数自动注入
                 if (mTypeUtils.isSubtype(type.asType(), tmService)) {
-                    throw new UnsupportedOperationException("Service [" + type.getQualifiedName() + "] unsurpported autowired arguments.");
+                    throw new UnsupportedOperationException("Service [" + type.getQualifiedName() + "] unsupported autowired arguments.");
                 }
 
                 // 最终生成Java类的包名和目标类的包名相同，确保除private外其他字段都可以直接赋值
@@ -204,8 +201,6 @@ public class AutowiredCompiler extends AbstractProcessor {
                     autowired = elt.getAnnotation(Autowired.class);
                     fieldName = elt.getSimpleName().toString();
 
-                    // 字段默认值
-                    defValue = "instance." + fieldName;
 
                     // 如果字段为private，就通过反射注入，否则直接给字段赋值即可
                     if (elt.getModifiers().contains(Modifier.PRIVATE)) {
@@ -226,7 +221,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                             statement += "getArguments().";
                         }
                         // 拼接statement语句
-                        statement = buildStatement(isActivity, defValue, statement, mExchanger.exchange(elt)) + ")";
+                        statement = buildStatement(isActivity, getPrivateParamDefValue(mExchanger.exchange(elt)), statement, mExchanger.exchange(elt)) + ")";
                         // 如果是普通对象类型，就使用EJsonParser解析对象，并设置给获取到的字段，否则就直接将值设置给获取到的字段
                         if (statement.startsWith(EConsts.JSON_PARSER_NAME)) {
                             inject.beginControlFlow("if(null != " + EConsts.JSON_PARSER_NAME + ")", ClassName.get(EConsts.class));
@@ -234,7 +229,12 @@ public class AutowiredCompiler extends AbstractProcessor {
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
+                        } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
+                            // private Serializable
+                            String argName = StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value();
+                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, argName, elt.asType(), argName);
                         } else {
+                            // private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         }
                         inject.nextControlFlow("catch($T e)", ClassName.get(Exception.class));
@@ -242,6 +242,9 @@ public class AutowiredCompiler extends AbstractProcessor {
                         inject.endControlFlow();
                     } else {
                         // 不是私有字段，直接赋值
+
+                        // 字段默认值
+                        defValue = "instance." + fieldName;
                         statement = "instance." + fieldName + " = instance.";
 
                         isActivity = false;
@@ -261,7 +264,13 @@ public class AutowiredCompiler extends AbstractProcessor {
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
+                        } else if (mExchanger.exchange(elt) == TypeKind.SERIALIZABLE.ordinal()) {
+                            // not private Serializable
+                            statement = "instance." + fieldName + " = " + statement;
+                            String argName = StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value();
+                            inject.addStatement(statement, argName, elt.asType(), argName);
                         } else {
+                            // not private Object
                             inject.addStatement(statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value());
                         }
                     }
@@ -276,6 +285,33 @@ public class AutowiredCompiler extends AbstractProcessor {
                 JavaFile.builder(packageName, clazz.build()).build().writeTo(mFilter);
             }
         }
+    }
+
+    /**
+     * 反射获取私有字段的默认值
+     *
+     * @param type 字段那类型
+     * @return 默认值
+     */
+    private String getPrivateParamDefValue(int type) {
+        if (type == TypeKind.BOOLEAN.ordinal()) {
+            return "field.getBoolean(instance)";
+        } else if (type == TypeKind.BYTE.ordinal()) {
+            return "field.getByte(instance)";
+        } else if (type == TypeKind.SHORT.ordinal()) {
+            return "field.getShort(instance)";
+        } else if (type == TypeKind.INT.ordinal()) {
+            return "field.getInt(instance)";
+        } else if (type == TypeKind.LONG.ordinal()) {
+            return "field.getLong(instance)";
+        } else if (type == TypeKind.CHAR.ordinal()) {
+            return "field.getChar(instance)";
+        } else if (type == TypeKind.FLOAT.ordinal()) {
+            return "field.getFloat(instance)";
+        } else if (type == TypeKind.DOUBLE.ordinal()) {
+            return "field.getDouble(instance)";
+        }
+        return "field.get(instance)";
     }
 
     /**
@@ -308,7 +344,11 @@ public class AutowiredCompiler extends AbstractProcessor {
             statement += (isActivity ? ("getStringExtra($S)") : ("getString($S)"));
         } else if (type == TypeKind.PARCELABLE.ordinal()) {
             statement += (isActivity ? ("getParcelableExtra($S)") : ("getParcelable($S)"));
+        } else if (type == TypeKind.SERIALIZABLE.ordinal()) {
+            // 需要强转成Serializable
+            statement = "instance." + (isActivity ? "getIntent().hasExtra($S)" : "getArguments().containsKey($S)") + " ? ($T) instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getSerializableExtra($S)" : "getSerializable($S)") + " : null";
         } else if (type == TypeKind.OBJECT.ordinal()) {
+            // 需要Json解析
             statement = EConsts.JSON_PARSER_NAME + ".fromJson(instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getStringExtra($S)" : "getString($S)") + ", $T.class)";
         }
         return statement;

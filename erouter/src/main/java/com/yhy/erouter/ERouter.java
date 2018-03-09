@@ -1,16 +1,17 @@
 package com.yhy.erouter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import com.yhy.erouter.common.EJsonParser;
 import com.yhy.erouter.common.EPoster;
-import com.yhy.erouter.expt.IllegalOperationException;
 import com.yhy.erouter.service.AutowiredService;
 import com.yhy.erouter.service.impl.AutowiredServiceImpl;
-import com.yhy.erouter.utils.EUtils;
+import com.yhy.erouter.utils.LogUtils;
 
 /**
  * author : 颜洪毅
@@ -22,8 +23,11 @@ import com.yhy.erouter.utils.EUtils;
 public class ERouter {
 
     // 单例对象
+    @SuppressLint("StaticFieldLeak")
     private static volatile ERouter instance;
 
+    private Application mApp;
+    private boolean mLogEnable;
     private EJsonParser mJsonParser;
 
     /**
@@ -54,10 +58,29 @@ public class ERouter {
     /**
      * 初始化
      *
+     * @param app 当前应用Application
      * @return 当前对象
      */
-    public ERouter init() {
-        return init(null);
+    public ERouter init(Application app) {
+        mApp = app;
+        LogUtils.getConfig().setApp(mApp).setGlobalTag(getClass().getSimpleName());
+        return this;
+    }
+
+    /**
+     * 是否开启log
+     *
+     * @param enable 是否开启log
+     * @return 当前对象
+     */
+    public ERouter log(boolean enable) {
+        mLogEnable = enable;
+        LogUtils.getConfig()
+                .setLogEnable(mLogEnable)
+                .setConsoleEnable(mLogEnable)
+                .setLogHeadEnable(mLogEnable)
+                .setBorderEnable(mLogEnable);
+        return this;
     }
 
     /**
@@ -66,9 +89,27 @@ public class ERouter {
      * @param parser Json解析器
      * @return 当前对象
      */
-    public ERouter init(EJsonParser parser) {
+    public ERouter jsonParser(EJsonParser parser) {
         mJsonParser = parser;
         return this;
+    }
+
+    /**
+     * 获取当前应用Application
+     *
+     * @return 当前应用Application
+     */
+    public Application getApp() {
+        return mApp;
+    }
+
+    /**
+     * 获取log开关
+     *
+     * @return log开关
+     */
+    public boolean getLogEnable() {
+        return mLogEnable;
     }
 
     /**
@@ -89,8 +130,10 @@ public class ERouter {
     public EPoster with(Context ctx) {
         if (ctx instanceof Activity) {
             return with((Activity) ctx);
+        } else if (ctx instanceof Service) {
+            return with((Service) ctx);
         }
-        return with((Service) ctx);
+        return new EPoster(ctx).init(mApp);
     }
 
     /**
@@ -100,7 +143,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Activity activity) {
-        return new EPoster(activity);
+        return new EPoster(activity).init(mApp);
     }
 
     /**
@@ -110,7 +153,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Fragment fragment) {
-        return new EPoster(fragment);
+        return new EPoster(fragment).init(mApp);
     }
 
     /**
@@ -120,7 +163,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Service service) {
-        return new EPoster(service);
+        return new EPoster(service).init(mApp);
     }
 
     /**

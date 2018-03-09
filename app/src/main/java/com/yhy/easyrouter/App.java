@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.google.gson.Gson;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EJsonParser;
 
@@ -25,19 +26,25 @@ public class App extends Application {
 
         instance = this;
 
-        ERouter.getInstance().init(new EJsonParser() {
-            Gson gson = new Gson();
+        ToastUtils.init(this);
 
-            @Override
-            public <T> T fromJson(String json, Class<T> clazz) {
-                return gson.fromJson(json, clazz);
-            }
+        // 初始化
+        ERouter.getInstance()
+                .init(this)
+                .log(BuildConfig.DEBUG)
+                .jsonParser(new EJsonParser() {
+                    Gson gson = new Gson();
 
-            @Override
-            public <T> String toJson(T obj) {
-                return gson.toJson(obj);
-            }
-        });
+                    @Override
+                    public <T> T fromJson(String json, Class<T> clazz) {
+                        return gson.fromJson(json, clazz);
+                    }
+
+                    @Override
+                    public <T> String toJson(T obj) {
+                        return gson.toJson(obj);
+                    }
+                });
     }
 
     public static App getInstance() {

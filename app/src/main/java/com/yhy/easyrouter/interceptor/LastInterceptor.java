@@ -1,7 +1,6 @@
 package com.yhy.easyrouter.interceptor;
 
-import android.widget.Toast;
-
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.annotation.Interceptor;
 import com.yhy.erouter.common.EPoster;
 import com.yhy.erouter.interceptor.EInterceptor;
@@ -18,7 +17,7 @@ public class LastInterceptor implements EInterceptor {
 
     @Override
     public boolean execute(EPoster poster) {
-        Toast.makeText(poster.getContext(), "最后一个拦截器执行完毕", Toast.LENGTH_SHORT).show();
+        ToastUtils.toast("最后一个拦截器执行完毕");
         return false;
     }
 }

@@ -1,7 +1,7 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.0-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.0-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.0-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.3-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.3-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.1-brightgreen.svg)
 
-> `EasyRouter`是专门针对`Android`开发的简易路由框架，使用方便，支持路由分组，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
+> `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
 ### 效果展示
 
@@ -36,26 +36,23 @@ dependencies {
 @Override
 public void onCreate() {
   super.onCreate();
-  
+
   // 初始化
-  ERouter.getInstance().init();
-  
-  // 如果路由跳转过程中需要传递普通对象的参数，就需要传入Json解析器
-  ERouter.getInstance().init(new EJsonParser() {
-    Gson gson = new Gson();
-
-    @Override
-    public <T> T fromJson(String json, Class<T> clazz) {
-      return gson.fromJson(json, clazz);
-    }
-
-    @Override
-    public <T> String toJson(T obj) {
-      return gson.toJson(obj);
-    }
-  });
-  
-  // 以上初始化方法二选一
+  ERouter.getInstance()
+    .init(this)
+    .log(BuildConfig.DEBUG)
+    .jsonParser(new EJsonParser() {
+      Gson gson = new Gson();
+      @Override
+      public <T> T fromJson(String json, Class<T> clazz) {
+        return gson.fromJson(json, clazz);
+      }
+      
+      @Override
+      public <T> String toJson(T obj) {
+        return gson.toJson(obj);
+      }
+    });
 }
 ```
 
@@ -94,6 +91,8 @@ public void onCreate() {
   > 支持参数字段自动注入，包括私有成员
   >
   > 注：如果不手动设置参数名的话，需要保持这里的字段名和设置参数时的参数名相同
+  >
+  > 使用自动注入参数时不推荐`private`修饰（私有成员通过反射注入）
 
   ```java
   @Router(url = "/activity/autowried")
@@ -108,6 +107,8 @@ public void onCreate() {
     private String privParam;
     @Autowired
     private User privObjParam;
+    @Autowired
+    public SeriaEntity seriaParam;
 
     // 不自动注入
     private String param;
@@ -137,6 +138,7 @@ public void onCreate() {
       tvObj = $(R.id.tv_obj);
       tvPriv = $(R.id.tv_priv);
       tvPrivObj = $(R.id.tv_priv_obj);
+      tvPrivSeria = $(R.id.tv_priv_seria);
     }
 
     @Override
@@ -146,8 +148,21 @@ public void onCreate() {
       tvObj.setText("对象参数：" + objParam.toString());
       tvPriv.setText("私有成员参数：" + privParam);
       tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
+      tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
     }
   }
+  ```
+
+* `Fragment`路由转发
+
+  > 目前不支持直接跳转`Fragment`，路由只是获取到确定的`Fragment`实例，然后需要手动通过事务设置`Fragment`显示
+  >
+  > 为了方便起见，这里使用了一个`Fragment`简易开源库：[FragmentHelper](https://github.com/yhyzgn/FragmentHelper)
+
+  ```java
+  FmHelper helper = new FmHelper.Builder(this, R.id.fl_content).build();
+  Fragment fm = ERouter.getInstance().with(this).to("/fragment/v4/normal").go();
+  helper.open(fm);
   ```
 
 #### 路由转发
@@ -175,17 +190,15 @@ public void onCreate() {
   > 注：如果目标中不手动设置参数名的话，需要保持设置的参数名与目标成员字段名相同
 
   ```java
-  User user = new User("张三", 25, "男");
-  User user1 = new User("李四", 33, "女");
-
   ERouter.getInstance()
     .with(MainActivity.this)
     .to("/activity/autowried")
     .param("defParam", "默认名称参数")
     .param("changed", "修改过名称参数")
-    .param("objParam", user)
+    .param("objParam", new User("张三", 25, "男"))
     .param("privParam", "private参数")
-    .param("privObjParam", user1)
+    .param("privObjParam", new User("李四", 33, "女"))
+    .param("seriaParam", new SeriaEntity("test-test"))
     .go();
   ```
 
@@ -193,7 +206,7 @@ public void onCreate() {
 
   > 路由添加拦截器，执行顺序与设置顺序一致
   >
-  > 拦截器名称与`@Interceptor`注解的名称一直，不设置名称时默认使用拦截器类名
+  > 拦截器名称与`@Interceptor`注解的名称一致，不设置名称时默认使用拦截器类名
   >
   > 如果中间某个拦截器中断了路由，操作将会被中断
 
@@ -201,13 +214,56 @@ public void onCreate() {
   // 多个拦截器按设置顺序执行
   ERouter.getInstance()
     .with(MainActivity.this)
-    .to(simple.mUrl)
+    .to("/activity/interceptor")
     .interceptor("login")
     .interceptor("LastInterceptor")
     .go();
   ```
 
+* `Activity`切换动画
 
+  ```java
+  ERouter.getInstance()
+    .with(MainActivity.this)
+    .to("/activity/transition")
+    .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+    .go();
+  ```
+
+* `Activity`共享元素动画
+
+  ```java
+  ERouter.getInstance()
+    .with(MainActivity.this)
+    .to("/activity/make/anim")
+    .animate("tvAnim", view)
+    .go();
+  ```
+
+* `Service`中打开`Activity`
+
+  > 这里主要说明针对`Intent`的`flag`方法
+
+  ```java
+  ERouter.getInstance()
+    .with(this)
+    .to("/activity/service")
+    .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
+    .go();
+  ```
+
+* 根据`Uri`打开`Activity`
+
+  > 设置`Uri`后，不在根据`Url`跳转，切目标只能是`Activity`。不过设置参数、`flag`等功能还是支持的
+
+  ```java
+  ERouter.getInstance()
+    .with(MainActivity.this)
+    .uri(Uri.parse("http://www.baidu.com"))
+    .action(Intent.ACTION_VIEW)
+    .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+    .go(mCallback); // 设置回调
+  ```
 
 #### 定义拦截器
 

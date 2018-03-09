@@ -1,7 +1,8 @@
 package com.yhy.easyrouter.base;
 
 import android.app.Service;
-import android.widget.Toast;
+
+import com.yhy.easyrouter.utils.ToastUtils;
 
 /**
  * author : 颜洪毅
@@ -11,8 +12,4 @@ import android.widget.Toast;
  * desc   :
  */
 public abstract class BaseService extends Service {
-
-    public void toast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
 }

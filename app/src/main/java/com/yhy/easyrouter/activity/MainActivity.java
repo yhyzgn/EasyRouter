@@ -1,6 +1,8 @@
 package com.yhy.easyrouter.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +12,16 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.R;
+import com.yhy.easyrouter.base.BaseActivity;
+import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.entity.Simple;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
+import com.yhy.erouter.callback.Callback;
+import com.yhy.erouter.common.EPoster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,8 @@ public class MainActivity extends BaseActivity {
     private ListView lvSimples;
 
     private List<Simple> mSimpleList;
+
+    private TestCallback mCallback;
 
     @Override
     protected int getLayout() {
@@ -40,12 +48,18 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initData() {
         mSimpleList = new ArrayList<>();
-        mSimpleList.add(new Simple("Normal Activity", "/activity/normal", ""));
-        mSimpleList.add(new Simple("Normal Fragment", "/activity/fragment", ""));
-        mSimpleList.add(new Simple("Normal Service", "/service/normal", ""));
-        mSimpleList.add(new Simple("Group Activity", "/activity/group", "acgp"));
-        mSimpleList.add(new Simple("Autowired Activity", "/activity/autowried", ""));
-        mSimpleList.add(new Simple("Interceptor Activity", "/activity/interceptor", ""));
+        mSimpleList.add(new Simple("普通Activity", "/activity/normal", ""));
+        mSimpleList.add(new Simple("普通Fragment", "/activity/fragment", ""));
+        mSimpleList.add(new Simple("普通Service", "/service/normal", ""));
+        mSimpleList.add(new Simple("分组Activity", "/activity/group", "acgp"));
+        mSimpleList.add(new Simple("参数自动注入Activity", "/activity/autowried", ""));
+        mSimpleList.add(new Simple("拦截器Activity", "/activity/interceptor", ""));
+        mSimpleList.add(new Simple("Activity切换动画", "/activity/transition", ""));
+        mSimpleList.add(new Simple("Activity共享元素动画", "/activity/make/anim", ""));
+        mSimpleList.add(new Simple("Uri跳转", null, null));
+        mSimpleList.add(new Simple("另一个Module", "/activity/test/module", null));
+
+        mCallback = new TestCallback();
 
         lvSimples.setAdapter(new SimpleAdapter());
     }
@@ -59,26 +73,49 @@ public class MainActivity extends BaseActivity {
 
                 if (position == 4) {
                     // 携带参数
-                    User user = new User("张三", 25, "男");
-                    User user1 = new User("李四", 33, "女");
-
                     ERouter.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mUrl)
                             .param("defParam", "默认名称参数")
                             .param("changed", "修改过名称参数")
-                            .param("objParam", user)
+                            .param("objParam", new User("张三", 25, "男"))
                             .param("privParam", "private参数")
-                            .param("privObjParam", user1)
+                            .param("privObjParam", new User("李四", 33, "女"))
+                            .param("seriaParam", new SeriaEntity("test-test"))
+                            .param("boolTest", true)
                             .go();
                 } else if (position == 5) {
+                    // 拦截器
                     ERouter.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mUrl)
                             .interceptor("login")
                             .interceptor("LastInterceptor")
                             .go();
+                } else if (position == 6) {
+                    // 切换动画
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .to(simple.mGroup, simple.mUrl)
+                            .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+                            .go();
+                } else if (position == 7) {
+                    // 共享元素动画
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .to(simple.mGroup, simple.mUrl)
+                            .animate("tvAnim", view)
+                            .go(mCallback); // 设置回调
+                } else if (position == 8) {
+                    // Uri跳转
+                    ERouter.getInstance()
+                            .with(MainActivity.this)
+                            .uri(Uri.parse("http://www.baidu.com"))
+                            .action(Intent.ACTION_VIEW)
+                            .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+                            .go(mCallback); // 设置回调
                 } else {
+                    // 普通跳转
                     ERouter.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
@@ -115,6 +152,20 @@ public class MainActivity extends BaseActivity {
             tv.setBackgroundColor(Color.WHITE);
             tv.setText(getItem(position).mName);
             return tv;
+        }
+    }
+
+    private class TestCallback implements Callback {
+        @Override
+        public void onPosted(EPoster poster) {
+            // 路由转发成功
+            ToastUtils.toast("路由转发成功");
+        }
+
+        @Override
+        public void onError(EPoster poster, Throwable e) {
+            // 发生错误
+            e.printStackTrace();
         }
     }
 }

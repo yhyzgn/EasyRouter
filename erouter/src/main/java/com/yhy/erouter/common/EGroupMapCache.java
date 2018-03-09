@@ -1,5 +1,7 @@
 package com.yhy.erouter.common;
 
+import com.yhy.erouter.utils.LogUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import java.util.Map;
  * desc   : 路由的分组缓存
  */
 public class EGroupMapCache {
+    private final String TAG = getClass().getSimpleName();
 
     // 单例对象
     private static volatile EGroupMapCache instance;
@@ -49,6 +52,7 @@ public class EGroupMapCache {
      */
     public void put(String group, Map<String, RouterMeta> value) {
         mMap.put(group, value);
+        LogUtils.i(TAG, "Cache router map of group '" + group + "'.");
     }
 
     /**
@@ -58,6 +62,7 @@ public class EGroupMapCache {
      * @return 对应的路由集合
      */
     public Map<String, RouterMeta> get(String group) {
+        LogUtils.i(TAG, "Get router map of '" + group + "'.");
         return mMap.get(group);
     }
 }

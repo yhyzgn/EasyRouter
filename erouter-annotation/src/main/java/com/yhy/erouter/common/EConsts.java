@@ -15,6 +15,8 @@ public interface EConsts {
     // 日志打印前缀
     String PREFIX_OF_LOGGER = "::RouterLogger::";
 
+    String SEPARATOR = "$$";
+
     // 路由类型标识
     String ACTIVITY = "android.app.Activity";
     String FRAGMENT = "android.app.Fragment";
@@ -27,6 +29,8 @@ public interface EConsts {
     String ROUTER_GROUP_MAPPER = "com.yhy.erouter.mapper.ERouterGroupMapper";
     // 生成分组类的前缀
     String PREFIX_OF_GROUP = "RouterGroup";
+    // 默认的模块名称
+    String DEF_MODULE_NAME = "DefaultModule";
     // 分组类中用来加载路由映射的方法名称和参数名称
     String METHOD_ROUTER_LOAD = "load";
     String METHOD_ROUTER_LOAD_ARG = "metaMap";
@@ -68,6 +72,7 @@ public interface EConsts {
     String DOUBEL = LANG + ".Double";
     String BOOLEAN = LANG + ".Boolean";
     String STRING = LANG + ".String";
+    String SERIALIZABLE = "java.io.Serializable";
     String PARCELABLE = "android.os.Parcelable";
 
     // ...

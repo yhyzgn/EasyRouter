@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.yhy.erouter.ERouter;
 
@@ -44,9 +43,5 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public <T extends View> T $(int id) {
         return (T) findViewById(id);
-    }
-
-    public void toast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
