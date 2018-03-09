@@ -11,8 +11,8 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.commons:commons-collections4:4.1'
 
-//    compile project(':erouter-annotation')
-    compile 'com.yhy.router:erouter-anno:1.1.1'
+    compile project(':erouter-annotation')
+//    compile 'com.yhy.router:erouter-anno:1.1.1'
 }
 
 sourceCompatibility = "1.7"

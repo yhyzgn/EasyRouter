@@ -1,6 +1,7 @@
 package com.yhy.erouter.common;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import com.yhy.erouter.expt.UrlMatchException;
 import com.yhy.erouter.interceptor.EInterceptor;
 import com.yhy.erouter.mapper.EInterceptorMapper;
 import com.yhy.erouter.mapper.ERouterGroupMapper;
+import com.yhy.erouter.utils.ClassUtils;
 import com.yhy.erouter.utils.EUtils;
 import com.yhy.erouter.utils.LogUtils;
 
@@ -42,7 +44,9 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class EPoster {
     private final String TAG = getClass().getSimpleName();
+    private Application mApp;
     // 当前环境
+    private Context mContext;
     private Activity mActivity;
     private Fragment mFragmentV4;
     private android.app.Fragment mFragment;
@@ -77,13 +81,17 @@ public class EPoster {
     // Intent Flag List
     private List<Integer> mFlagList;
 
+    public EPoster(Context context) {
+        this(context, null, null, null, null);
+    }
+
     /**
      * 构造函数
      *
      * @param activity 当前Activity
      */
     public EPoster(Activity activity) {
-        this(activity, null, null, null);
+        this(null, activity, null, null, null);
     }
 
     /**
@@ -92,7 +100,7 @@ public class EPoster {
      * @param fragmentV4 当前Fragment
      */
     public EPoster(Fragment fragmentV4) {
-        this(null, fragmentV4, null, null);
+        this(null, null, fragmentV4, null, null);
     }
 
     /**
@@ -101,7 +109,7 @@ public class EPoster {
      * @param fragment 当前Fragment
      */
     public EPoster(android.app.Fragment fragment) {
-        this(null, null, fragment, null);
+        this(null, null, null, fragment, null);
     }
 
     /**
@@ -110,18 +118,20 @@ public class EPoster {
      * @param service 当前Service
      */
     public EPoster(Service service) {
-        this(null, null, null, service);
+        this(null, null, null, null, service);
     }
 
     /**
      * 构造函数
      *
+     * @param context    当前上下文
      * @param activity   当前Activity
      * @param fragmentV4 当前Fragment
      * @param fragment   当前Fragment
      * @param service    当前Service
      */
-    private EPoster(Activity activity, Fragment fragmentV4, android.app.Fragment fragment, Service service) {
+    private EPoster(Context context, Activity activity, Fragment fragmentV4, android.app.Fragment fragment, Service service) {
+        mContext = context;
         mActivity = activity;
         mFragmentV4 = fragmentV4;
         mFragment = fragment;
@@ -134,6 +144,17 @@ public class EPoster {
         mInterList = new ArrayList<>();
         mInterMap = new HashMap<>();
         mFlagList = new ArrayList<>();
+    }
+
+    /**
+     * 初始化Application
+     *
+     * @param app 当前Application
+     * @return 当前对象
+     */
+    public EPoster init(Application app) {
+        mApp = app;
+        return this;
     }
 
     /**
@@ -693,7 +714,14 @@ public class EPoster {
     private Intent postService(RouterMeta meta) {
         Intent intent = null;
         try {
-            if (null != mActivity) {
+            if (null != mContext) {
+                // Context中创建服务
+                intent = new Intent(mContext, meta.getDest());
+                addFlags(intent);
+                intent.putExtras(mParams);
+                mContext.startService(intent);
+                LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mContext + "'.");
+            } else if (null != mActivity) {
                 // Activity中创建服务
                 intent = new Intent(mActivity, meta.getDest());
                 addFlags(intent);
@@ -747,7 +775,22 @@ public class EPoster {
         }
         Intent intent = null;
         try {
-            if (null != mActivity) {
+            if (null != mContext) {
+                // Activity中跳转Activity
+                if (null == mUri) {
+                    intent = new Intent(mContext, meta.getDest());
+                } else {
+                    throw new UnsupportedOperationException("Can not post uri from context.");
+                }
+                addFlags(intent);
+                intent.putExtras(mParams);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mContext.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
+                } else {
+                    mContext.startActivity(intent);
+                }
+            } else if (null != mActivity) {
                 // Activity中跳转Activity
                 if (null == mUri) {
                     intent = new Intent(mActivity, meta.getDest());
@@ -902,11 +945,8 @@ public class EPoster {
                 throw new IllegalOperationException("If you want to use EJsonParser, must set EJsonParser in initialization of ERouter!");
             }
             mParams.putString(name, jsonParser.toJson(value));
-        } else if (type == TypeKind.BOOLEAN.ordinal()) {
-            // Boolean强转为String时导致转换异常，需要单独处理
-            mParams.putBoolean(name, (Boolean) value);
         } else {
-            String strVal = (String) value;
+            String strVal = (value instanceof String) ? (String) value : value.toString();
 
             if (type == TypeKind.INT.ordinal()) {
                 mParams.putInt(name, Integer.valueOf(strVal));
@@ -920,6 +960,8 @@ public class EPoster {
                 mParams.putFloat(name, Float.valueOf(strVal));
             } else if (type == TypeKind.DOUBLE.ordinal()) {
                 mParams.putDouble(name, Double.valueOf(strVal));
+            } else if (type == TypeKind.BOOLEAN.ordinal()) {
+                mParams.putBoolean(name, Boolean.valueOf(strVal));
             } else if (type == TypeKind.STRING.ordinal()) {
                 mParams.putString(name, strVal);
             } else {
@@ -987,16 +1029,24 @@ public class EPoster {
         // 缓存中不存在时再从路由映射器中获取
         metaMap = new HashMap<>();
         try {
-            // 加载当前分组对应的java类
-            Class<?> clazz = Class.forName(EConsts.GROUP_PACKAGE + "." + EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup));
-            // 获取到加载路由的方法
-            Method loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
-            // 创建当前分组的路由映射器对象
-            ERouterGroupMapper erg = (ERouterGroupMapper) clazz.newInstance();
-            // 执行映射器的加载路由方法
-            loadGroup.invoke(erg, metaMap);
-        } catch (ClassNotFoundException e) {
-            LogUtils.e(e);
+//            // 加载当前分组对应的java类
+//            Class<?> clazz = Class.forName(EConsts.GROUP_PACKAGE + "." + EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup));
+//            // 获取到加载路由的方法
+//            Method loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
+//            // 创建当前分组的路由映射器对象
+//            ERouterGroupMapper erg = (ERouterGroupMapper) clazz.newInstance();
+//            // 执行映射器的加载路由方法
+//            loadGroup.invoke(erg, metaMap);
+
+            List<Class<?>> clazzList = ClassUtils.getClassInPackage(mApp, EConsts.GROUP_PACKAGE, EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(mGroup) + EConsts.SEPARATOR);
+            Method loadGroup;
+            ERouterGroupMapper erg;
+            for (Class<?> clazz : clazzList) {
+                LogUtils.i("RouterClass", clazz.getName());
+                loadGroup = clazz.getDeclaredMethod(EConsts.METHOD_ROUTER_LOAD, Map.class);
+                erg = (ERouterGroupMapper) clazz.newInstance();
+                loadGroup.invoke(erg, metaMap);
+            }
         } catch (NoSuchMethodException e) {
             LogUtils.e(e);
         } catch (IllegalAccessException e) {

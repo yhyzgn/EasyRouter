@@ -57,6 +57,7 @@ public class MainActivity extends BaseActivity {
         mSimpleList.add(new Simple("Activity切换动画", "/activity/transition", ""));
         mSimpleList.add(new Simple("Activity共享元素动画", "/activity/make/anim", ""));
         mSimpleList.add(new Simple("Uri跳转", null, null));
+        mSimpleList.add(new Simple("另一个Module", "/activity/test/module", null));
 
         mCallback = new TestCallback();
 

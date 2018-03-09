@@ -18,6 +18,7 @@ import com.yhy.erouter.utils.EUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -55,6 +56,7 @@ public class RouterCompiler extends AbstractProcessor {
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
+    private String mModuleName;
     private TypeExchanger mExchanger;
 
     // 存储路由数据按分组分类后的集合
@@ -73,6 +75,17 @@ public class RouterCompiler extends AbstractProcessor {
         mFilter = proEnv.getFiler();
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
+
+        // 获取模块名称
+        Map<String, String> options = processingEnv.getOptions();
+        if (MapUtils.isNotEmpty(options) && options.containsKey("moduleName")) {
+            mModuleName = options.get("moduleName");
+        }
+        if (StringUtils.isEmpty(mModuleName)) {
+            mModuleName = EConsts.DEF_MODULE_NAME;
+        } else {
+            mModuleName = EUtils.upCaseFirst(EUtils.line2Hump(mModuleName));
+        }
 
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
 
@@ -220,7 +233,7 @@ public class RouterCompiler extends AbstractProcessor {
 
             // 映射器类
             // 类名为 固定前缀 + 首字母大写的分组名
-            groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group))
+            groupType = TypeSpec.classBuilder(EConsts.PREFIX_OF_GROUP + EUtils.upCaseFirst(group) + EConsts.SEPARATOR + mModuleName)
                     .addModifiers(Modifier.PUBLIC)
                     .addSuperinterface(ClassName.get(teGroup))
                     .addMethod(loadGroup.build())

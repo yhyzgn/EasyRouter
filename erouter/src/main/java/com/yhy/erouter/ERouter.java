@@ -130,8 +130,10 @@ public class ERouter {
     public EPoster with(Context ctx) {
         if (ctx instanceof Activity) {
             return with((Activity) ctx);
+        } else if (ctx instanceof Service) {
+            return with((Service) ctx);
         }
-        return with((Service) ctx);
+        return new EPoster(ctx).init(mApp);
     }
 
     /**
@@ -141,7 +143,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Activity activity) {
-        return new EPoster(activity);
+        return new EPoster(activity).init(mApp);
     }
 
     /**
@@ -151,7 +153,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Fragment fragment) {
-        return new EPoster(fragment);
+        return new EPoster(fragment).init(mApp);
     }
 
     /**
@@ -161,7 +163,7 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Service service) {
-        return new EPoster(service);
+        return new EPoster(service).init(mApp);
     }
 
     /**

@@ -13,7 +13,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                includeCompileClasspath true
+                arguments = [moduleName: "app"]
             }
         }
     }
@@ -43,8 +43,10 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.2'
 
-//    compile project(':erouter')
-//    annotationProcessor project(':erouter-compiler')
-    compile 'com.yhy.router:erouter:1.1.3'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.3'
+    compile project(':erouter')
+    annotationProcessor project(':erouter-compiler')
+//    compile 'com.yhy.router:erouter:1.1.3'
+//    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.3'
+
+    compile project(':test-module')
 }
