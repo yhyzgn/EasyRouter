@@ -13,6 +13,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
+                includeCompileClasspath true
                 arguments = [moduleName: "app"]
             }
         }
@@ -35,7 +36,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
@@ -43,10 +44,10 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.2'
 
-    compile project(':erouter')
-    annotationProcessor project(':erouter-compiler')
-//    compile 'com.yhy.router:erouter:1.1.3'
-//    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.3'
+//    compile project(':erouter')
+//    annotationProcessor project(':erouter-compiler')
+    compile 'com.yhy.router:erouter:1.1.4'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.4'
 
     compile project(':test-module')
 }

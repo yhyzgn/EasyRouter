@@ -8,7 +8,6 @@
       <module fileurl="file://$PROJECT_DIR$/erouter-annotation/erouter-annotation.iml" filepath="$PROJECT_DIR$/erouter-annotation/erouter-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/erouter-compiler/erouter-compiler.iml" filepath="$PROJECT_DIR$/erouter-compiler/erouter-compiler.iml" />
       <module fileurl="file://$PROJECT_DIR$/test-module/test-module.iml" filepath="$PROJECT_DIR$/test-module/test-module.iml" />
-      <module fileurl="file://D:\Files\Android\yhy\EasyRouter\test-module\test-module.iml" filepath="D:\Files\Android\yhy\EasyRouter\test-module\test-module.iml" />
     </modules>
   </component>
 </project>

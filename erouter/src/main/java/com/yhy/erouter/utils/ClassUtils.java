@@ -1,5 +1,6 @@
 package com.yhy.erouter.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -29,8 +30,9 @@ import dalvik.system.DexFile;
  * e-mail : yhyzgn@gmail.com
  * time   : 2018-03-09 17:10
  * version: 1.0.0
- * desc   :
+ * desc   : Class工具类
  */
+@SuppressWarnings({"deprecation", "unchecked", "PointlessBitwiseExpression"})
 public class ClassUtils {
     private static final String TAG = "ClassUtils";
 
@@ -49,15 +51,36 @@ public class ClassUtils {
         throw new UnsupportedOperationException("Can not be instantiate.");
     }
 
+    /**
+     * 获取SP
+     *
+     * @param context 上下文
+     * @return SP
+     */
+    @SuppressLint("ObsoleteSdkInt")
     private static SharedPreferences getMultiDexSP(Context context) {
         return context.getSharedPreferences(PREFS_FILE, Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ? Context.MODE_PRIVATE : Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
     }
 
-
+    /**
+     * 获取包名下的所有类
+     *
+     * @param context     上下文
+     * @param packageName 包名
+     * @return 包名下的所有类
+     */
     public static List<Class<?>> getClassListInPackage(Context context, String packageName) {
         return getClassListInPackage(context, packageName, null);
     }
 
+    /**
+     * 获取包名下的所有类
+     *
+     * @param context         上下文
+     * @param packageName     包名
+     * @param classNamePrefix 类名前缀（不包括包名）
+     * @return 包名下的所有类
+     */
     public static List<Class<?>> getClassListInPackage(Context context, String packageName, String classNamePrefix) {
         if (null != context && !TextUtils.isEmpty(packageName)) {
             try {
@@ -83,10 +106,31 @@ public class ClassUtils {
         return null;
     }
 
+    /**
+     * 获取包名下的所有类名（包括包名）
+     *
+     * @param context     上下文
+     * @param packageName 包名
+     * @return 包名下的所有类名
+     * @throws PackageManager.NameNotFoundException 找不到对应的包信息
+     * @throws IOException                          IO异常
+     * @throws InterruptedException                 线程中断异常
+     */
     public static Set<String> getClassNameInPackage(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
         return getClassNameInPackage(context, packageName, null);
     }
 
+    /**
+     * 获取包名下的所有类名（包括包名）
+     *
+     * @param context         上下文
+     * @param packageName     包名
+     * @param classNamePrefix 类名前缀（不包括包名）
+     * @return 包名下的所有类名
+     * @throws PackageManager.NameNotFoundException 找不到对应的包信息
+     * @throws IOException                          IO异常
+     * @throws InterruptedException                 线程中断异常
+     */
     public static Set<String> getClassNameInPackage(Context context, final String packageName, String classNamePrefix) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
         if (null != context && !TextUtils.isEmpty(packageName)) {
             final Set<String> classNameSet = new HashSet<>();
@@ -137,6 +181,14 @@ public class ClassUtils {
         return null;
     }
 
+    /**
+     * 获取源码路劲（dex、apk、zip等路径）
+     *
+     * @param context 上下文
+     * @return 源码路劲
+     * @throws PackageManager.NameNotFoundException 找不到对应的包信息
+     * @throws IOException                          IO异常
+     */
     public static List<String> getSourcePaths(Context context) throws PackageManager.NameNotFoundException, IOException {
         ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
         File sourceApk = new File(applicationInfo.sourceDir);
@@ -175,6 +227,12 @@ public class ClassUtils {
         return sourcePaths;
     }
 
+    /**
+     * 阐释加载InstantRun模式下的dex文件
+     *
+     * @param applicationInfo 当前ApplicationInfo
+     * @return 路径集合
+     */
     private static List<String> tryLoadInstantRunDexFile(ApplicationInfo applicationInfo) {
         List<String> instantRunSourcePaths = new ArrayList<>();
 
@@ -185,6 +243,7 @@ public class ClassUtils {
         } else {
             try {
                 // 通过反射获取InstantRun的路径，一遍获取到该模式下所加载的类
+                @SuppressLint("PrivateApi")
                 Class pathsByInstantRun = Class.forName("com.android.tools.fd.runtime.Paths");
                 Method getDexFileDirectory = pathsByInstantRun.getMethod("getDexFileDirectory", String.class);
                 String instantRunDexPath = (String) getDexFileDirectory.invoke(null, applicationInfo.packageName);
@@ -207,15 +266,22 @@ public class ClassUtils {
         return instantRunSourcePaths;
     }
 
+    /**
+     * VM是否支持多分包
+     *
+     * @return VM是否支持多分包
+     */
     private static boolean isVMMultidexCapable() {
         boolean isMultidexCapable = false;
         String vmName = null;
 
         try {
-            if (isYunOS()) {    // YunOS需要特殊判断
+            // YunOS需要特殊判断
+            if (isYunOS()) {
                 vmName = "'YunOS'";
                 isMultidexCapable = Integer.valueOf(System.getProperty("ro.build.version.sdk")) >= 21;
-            } else {    // 非YunOS，原生Android
+            } else {
+                // 非YunOS，原生Android
                 vmName = "'Android'";
                 String versionString = System.getProperty("java.vm.version");
                 if (versionString != null) {

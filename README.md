@@ -1,13 +1,17 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.3-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.3-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.1-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.4-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.4-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.2-brightgreen.svg)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
+### 功能简介
+
+* 简单路由转发
+* 多模块之间路由转发
+* 支持`MultiDex`和`InstantRun`
+* 参数自动注入
+* 路由拦截
+
 ### 效果展示
-
-* 效果图：
-
-  ![screenshot](imgs/screenshot.gif)
 
 * `Demo`下载：
 
@@ -22,9 +26,20 @@
 > 在项目主模块中添加如下依赖
 
 ```groovy
+defaultConfig {
+    //...
+    javaCompileOptions {
+        annotationProcessorOptions {
+            // 多模块路由的基础，需要配置当前模块的名称
+            // 如果不配置此项则使用'DefaultModule'作为默认模块名
+            arguments = [moduleName: "app"]
+        }
+    }
+}
+
 dependencies {
-  compile 'com.yhy.router:erouter:latestVersion'
-  annotationProcessor 'com.yhy.router:erouter-compiler:latestVersion'
+    compile 'com.yhy.router:erouter:latestVersion'
+    annotationProcessor 'com.yhy.router:erouter-compiler:latestVersion'
 }
 ```
 
