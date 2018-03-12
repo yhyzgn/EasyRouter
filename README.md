@@ -55,7 +55,9 @@ public void onCreate() {
   // 初始化
   ERouter.getInstance()
     .init(this)
-    .log(BuildConfig.DEBUG)
+	// debug方法用来控制日志打印和InstantRun模式开关
+    // 只有debug(true)时才打印日志，并启用InstantRun模式
+    .debug(BuildConfig.DEBUG)
     .jsonParser(new EJsonParser() {
       Gson gson = new Gson();
       @Override
