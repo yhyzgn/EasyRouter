@@ -50,26 +50,26 @@ dependencies {
 ```java
 @Override
 public void onCreate() {
-  super.onCreate();
+    super.onCreate();
 
-  // 初始化
-  ERouter.getInstance()
-    .init(this)
-	// debug方法用来控制日志打印和InstantRun模式开关
-    // 只有debug(true)时才打印日志，并启用InstantRun模式
-    .debug(BuildConfig.DEBUG)
-    .jsonParser(new EJsonParser() {
-      Gson gson = new Gson();
-      @Override
-      public <T> T fromJson(String json, Class<T> clazz) {
-        return gson.fromJson(json, clazz);
-      }
-      
-      @Override
-      public <T> String toJson(T obj) {
-        return gson.toJson(obj);
-      }
-    });
+    // 初始化
+    ERouter.getInstance()
+        .init(this)
+        // debug方法用来控制日志打印和InstantRun模式开关
+        // 只有debug(true)时才打印日志，并启用InstantRun模式
+        .debug(BuildConfig.DEBUG)
+        .jsonParser(new EJsonParser() {
+            Gson gson = new Gson();
+            @Override
+            public <T> T fromJson(String json, Class<T> clazz) {
+                return gson.fromJson(json, clazz);
+            }
+
+            @Override
+            public <T> String toJson(T obj) {
+                return gson.toJson(obj);
+            }
+        });
 }
 ```
 
@@ -114,59 +114,59 @@ public void onCreate() {
   ```java
   @Router(url = "/activity/autowried")
   public class AutowiredActivity extends BaseActivity {
-    @Autowired
-    public String defParam;
-    @Autowired("changed")
-    public String chgParam;
-    @Autowired
-    public User objParam;
-    @Autowired
-    private String privParam;
-    @Autowired
-    private User privObjParam;
-    @Autowired
-    public SeriaEntity seriaParam;
+      @Autowired
+      public String defParam;
+      @Autowired("changed")
+      public String chgParam;
+      @Autowired
+      public User objParam;
+      @Autowired
+      private String privParam;
+      @Autowired
+      private User privObjParam;
+      @Autowired
+      public SeriaEntity seriaParam;
 
-    // 不自动注入
-    private String param;
+      // 不自动注入
+      private String param;
 
-    private TextView tvDef;
-    private TextView tvChg;
-    private TextView tvObj;
-    private TextView tvPriv;
-    private TextView tvPrivObj;
+      private TextView tvDef;
+      private TextView tvChg;
+      private TextView tvObj;
+      private TextView tvPriv;
+      private TextView tvPrivObj;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-      // 注入当前对象，触发自动注入操作
-      ERouter.getInstance().inject(this);
-      super.onCreate(savedInstanceState);
-    }
+      @Override
+      protected void onCreate(@Nullable Bundle savedInstanceState) {
+          // 注入当前对象，触发自动注入操作
+          ERouter.getInstance().inject(this);
+          super.onCreate(savedInstanceState);
+      }
 
-    @Override
-    protected int getLayout() {
-      return R.layout.activity_autowired;
-    }
+      @Override
+      protected int getLayout() {
+          return R.layout.activity_autowired;
+      }
 
-    @Override
-    protected void initView() {
-      tvDef = $(R.id.tv_def);
-      tvChg = $(R.id.tv_chg);
-      tvObj = $(R.id.tv_obj);
-      tvPriv = $(R.id.tv_priv);
-      tvPrivObj = $(R.id.tv_priv_obj);
-      tvPrivSeria = $(R.id.tv_priv_seria);
-    }
+      @Override
+      protected void initView() {
+          tvDef = $(R.id.tv_def);
+          tvChg = $(R.id.tv_chg);
+          tvObj = $(R.id.tv_obj);
+          tvPriv = $(R.id.tv_priv);
+          tvPrivObj = $(R.id.tv_priv_obj);
+          tvPrivSeria = $(R.id.tv_priv_seria);
+      }
 
-    @Override
-    protected void initData() {
-      tvDef.setText("默认参数：" + defParam);
-      tvChg.setText("改变过参数：" + chgParam);
-      tvObj.setText("对象参数：" + objParam.toString());
-      tvPriv.setText("私有成员参数：" + privParam);
-      tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
-      tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
-    }
+      @Override
+      protected void initData() {
+          tvDef.setText("默认参数：" + defParam);
+          tvChg.setText("改变过参数：" + chgParam);
+          tvObj.setText("对象参数：" + objParam.toString());
+          tvPriv.setText("私有成员参数：" + privParam);
+          tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
+          tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
+      }
   }
   ```
 
@@ -188,18 +188,18 @@ public void onCreate() {
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("/activity/normal")
-    .go();
+      .with(MainActivity.this)
+      .to("/activity/normal")
+      .go();
   ```
 
 * 分组路由
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("acgp", "/activity/group")
-    .go();
+      .with(MainActivity.this)
+      .to("acgp", "/activity/group")
+      .go();
   ```
 
 * 带参自动注入转发
@@ -208,15 +208,15 @@ public void onCreate() {
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("/activity/autowried")
-    .param("defParam", "默认名称参数")
-    .param("changed", "修改过名称参数")
-    .param("objParam", new User("张三", 25, "男"))
-    .param("privParam", "private参数")
-    .param("privObjParam", new User("李四", 33, "女"))
-    .param("seriaParam", new SeriaEntity("test-test"))
-    .go();
+      .with(MainActivity.this)
+      .to("/activity/autowried")
+      .param("defParam", "默认名称参数")
+      .param("changed", "修改过名称参数")
+      .param("objParam", new User("张三", 25, "男"))
+      .param("privParam", "private参数")
+      .param("privObjParam", new User("李四", 33, "女"))
+      .param("seriaParam", new SeriaEntity("test-test"))
+      .go();
   ```
 
 * 带拦截器路由转发
@@ -230,31 +230,31 @@ public void onCreate() {
   ```java
   // 多个拦截器按设置顺序执行
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("/activity/interceptor")
-    .interceptor("login")
-    .interceptor("LastInterceptor")
-    .go();
+      .with(MainActivity.this)
+      .to("/activity/interceptor")
+      .interceptor("login")
+      .interceptor("LastInterceptor")
+      .go();
   ```
 
 * `Activity`切换动画
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("/activity/transition")
-    .transition(R.anim.slide_in_right, R.anim.slide_out_right)
-    .go();
+      .with(MainActivity.this)
+      .to("/activity/transition")
+      .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+      .go();
   ```
 
 * `Activity`共享元素动画
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .to("/activity/make/anim")
-    .animate("tvAnim", view)
-    .go();
+      .with(MainActivity.this)
+      .to("/activity/make/anim")
+      .animate("tvAnim", view)
+      .go();
   ```
 
 * `Service`中打开`Activity`
@@ -263,10 +263,10 @@ public void onCreate() {
 
   ```java
   ERouter.getInstance()
-    .with(this)
-    .to("/activity/service")
-    .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
-    .go();
+      .with(this)
+      .to("/activity/service")
+      .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
+      .go();
   ```
 
 * 根据`Uri`打开`Activity`
@@ -275,11 +275,11 @@ public void onCreate() {
 
   ```java
   ERouter.getInstance()
-    .with(MainActivity.this)
-    .uri(Uri.parse("http://www.baidu.com"))
-    .action(Intent.ACTION_VIEW)
-    .transition(R.anim.slide_in_right, R.anim.slide_out_right)
-    .go(mCallback); // 设置回调
+      .with(MainActivity.this)
+      .uri(Uri.parse("http://www.baidu.com"))
+      .action(Intent.ACTION_VIEW)
+      .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+      .go(mCallback); // 设置回调
   ```
 
 #### 定义拦截器
@@ -292,27 +292,27 @@ public void onCreate() {
 @Interceptor(name = "login")// 不指定名称时拦截器将以类名作为名称
 public class LoginInterceptor implements EInterceptor {
 
-  @Override
-  public boolean execute(EPoster poster) {
-    // 拦截登录状态
-    User user = App.getInstance().getUser();
-    if (null == user) {
-      Toast.makeText(poster.getContext(), "未登录，先去登录", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean execute(EPoster poster) {
+        // 拦截登录状态
+        User user = App.getInstance().getUser();
+        if (null == user) {
+            Toast.makeText(poster.getContext(), "未登录，先去登录", Toast.LENGTH_SHORT).show();
 
-      // 跳转到登录页面
-      ERouter.getInstance()
-        .with(poster.getContext())
-        .to("/activity/login")
-        .go();
-      
-      // 返回true表示中断原本的路由
-      return true;
+            // 跳转到登录页面
+            ERouter.getInstance()
+                .with(poster.getContext())
+                .to("/activity/login")
+                .go();
+
+            // 返回true表示中断原本的路由
+            return true;
+        }
+
+        Toast.makeText(poster.getContext(), "已经登录，往下执行", Toast.LENGTH_SHORT).show();
+        // 返回false表示继续往下执行
+        return false;
     }
-
-    Toast.makeText(poster.getContext(), "已经登录，往下执行", Toast.LENGTH_SHORT).show();
-    // 返回false表示继续往下执行
-    return false;
-  }
 }
 ```
 
