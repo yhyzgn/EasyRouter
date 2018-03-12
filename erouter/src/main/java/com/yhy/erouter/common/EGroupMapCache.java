@@ -1,5 +1,6 @@
 package com.yhy.erouter.common;
 
+import com.yhy.erouter.ERouter;
 import com.yhy.erouter.utils.LogUtils;
 
 import java.util.HashMap;
@@ -52,7 +53,9 @@ public class EGroupMapCache {
      */
     public void put(String group, Map<String, RouterMeta> value) {
         mMap.put(group, value);
-        LogUtils.i(TAG, "Cache router map of group '" + group + "'.");
+        if (ERouter.getInstance().isDebugEnable()) {
+            LogUtils.i(TAG, "Cache router map of group '" + group + "'.");
+        }
     }
 
     /**
@@ -62,7 +65,9 @@ public class EGroupMapCache {
      * @return 对应的路由集合
      */
     public Map<String, RouterMeta> get(String group) {
-        LogUtils.i(TAG, "Get router map of '" + group + "'.");
+        if (ERouter.getInstance().isDebugEnable()) {
+            LogUtils.i(TAG, "Get router map of '" + group + "'.");
+        }
         return mMap.get(group);
     }
 }

@@ -31,7 +31,7 @@ public class App extends Application {
         // 初始化
         ERouter.getInstance()
                 .init(this)
-                .log(BuildConfig.DEBUG)
+                .debug(BuildConfig.DEBUG)
                 .jsonParser(new EJsonParser() {
                     Gson gson = new Gson();
 

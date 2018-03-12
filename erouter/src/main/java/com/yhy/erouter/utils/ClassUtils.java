@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.yhy.erouter.BuildConfig;
+import com.yhy.erouter.ERouter;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +89,9 @@ public class ClassUtils {
                     List<Class<?>> classList = new ArrayList<>();
                     for (String className : classNameSet) {
                         classList.add(Class.forName(className));
-                        LogUtils.i(TAG, "Loaded class '" + className + "' successful.");
+                        if (ERouter.getInstance().isDebugEnable()) {
+                            LogUtils.i(TAG, "Loaded class '" + className + "' successful.");
+                        }
                     }
                     return classList;
                 }
@@ -158,7 +160,9 @@ public class ClassUtils {
                                 className = dexEntries.nextElement();
                                 if (className.startsWith(packageClassNamePrefix)) {
                                     classNameSet.add(className);
-                                    LogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
+                                    if (ERouter.getInstance().isDebugEnable()) {
+                                        LogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
+                                    }
                                 }
                             }
                         } catch (IOException e) {
@@ -220,7 +224,7 @@ public class ClassUtils {
             }
         }
 
-        if (BuildConfig.DEBUG) {
+        if (ERouter.getInstance().isDebugEnable()) {
             // 只有debug模式下才启用InstantRun
             sourcePaths.addAll(tryLoadInstantRunDexFile(applicationInfo));
         }
@@ -239,7 +243,9 @@ public class ClassUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != applicationInfo.splitSourceDirs) {
             // 添加所有被分割开的apk文件，针对InstantRun模式
             instantRunSourcePaths.addAll(Arrays.asList(applicationInfo.splitSourceDirs));
-            LogUtils.i(TAG, "Found InstantRun support");
+            if (ERouter.getInstance().isDebugEnable()) {
+                LogUtils.i(TAG, "Found InstantRun support");
+            }
         } else {
             try {
                 // 通过反射获取InstantRun的路径，一遍获取到该模式下所加载的类
@@ -256,11 +262,15 @@ public class ClassUtils {
                             instantRunSourcePaths.add(file.getAbsolutePath());
                         }
                     }
-                    LogUtils.i(TAG, "Found InstantRun support");
+                    if (ERouter.getInstance().isDebugEnable()) {
+                        LogUtils.i(TAG, "Found InstantRun support");
+                    }
                 }
 
             } catch (Exception e) {
-                LogUtils.e(TAG, "InstantRun support error, " + e.getMessage());
+                if (ERouter.getInstance().isDebugEnable()) {
+                    LogUtils.e(TAG, "InstantRun support error, " + e.getMessage());
+                }
             }
         }
         return instantRunSourcePaths;
@@ -303,7 +313,9 @@ public class ClassUtils {
             isMultidexCapable = false;
         }
 
-        LogUtils.i(TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
+        if (ERouter.getInstance().isDebugEnable()) {
+            LogUtils.i(TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
+        }
         return isMultidexCapable;
     }
 

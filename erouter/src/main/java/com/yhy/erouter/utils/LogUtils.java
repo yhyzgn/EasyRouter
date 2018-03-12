@@ -45,7 +45,7 @@ import javax.xml.transform.stream.StreamSource;
  * e-mail : yhyzgn@gmail.com
  * time   : 2017-12-23 14:15
  * version: 1.0.0
- * desc   :
+ * desc   : 日志工具
  */
 public class LogUtils {
 

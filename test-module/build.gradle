@@ -32,8 +32,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    implementation 'com.yhy.router:erouter:1.1.6'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.4'
 //    compile project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
+    implementation 'com.yhy.router:erouter:1.1.7'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.4'
 }

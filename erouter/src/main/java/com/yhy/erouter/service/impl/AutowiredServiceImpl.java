@@ -2,6 +2,7 @@ package com.yhy.erouter.service.impl;
 
 import android.util.LruCache;
 
+import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EConsts;
 import com.yhy.erouter.mapper.EAutowiredMapper;
 import com.yhy.erouter.service.AutowiredService;
@@ -42,7 +43,9 @@ public class AutowiredServiceImpl implements AutowiredService {
                 }
                 mapper.inject(target);
                 mClassCache.put(className, mapper);
-                LogUtils.i(TAG, "Mapping autowired fields of class '" + target + "'.");
+                if (ERouter.getInstance().isDebugEnable()) {
+                    LogUtils.i(TAG, "Mapping autowired fields of class '" + target + "'.");
+                }
             }
         } catch (Exception e) {
             // 如果解析器获取失败，说明当前类中没有需要自动注入的参数，就将该类放到黑名单中

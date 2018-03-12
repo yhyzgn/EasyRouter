@@ -27,7 +27,7 @@ public class ERouter {
     private static volatile ERouter instance;
 
     private Application mApp;
-    private boolean mLogEnable;
+    private boolean mDebugEnable;
     private EJsonParser mJsonParser;
 
     /**
@@ -68,18 +68,18 @@ public class ERouter {
     }
 
     /**
-     * 是否开启log
+     * 是否处于Debug模式
      *
-     * @param enable 是否开启log
+     * @param enable 是否处于Debug模式
      * @return 当前对象
      */
-    public ERouter log(boolean enable) {
-        mLogEnable = enable;
+    public ERouter debug(boolean enable) {
+        mDebugEnable = enable;
         LogUtils.getConfig()
-                .setLogEnable(mLogEnable)
-                .setConsoleEnable(mLogEnable)
-                .setLogHeadEnable(mLogEnable)
-                .setBorderEnable(mLogEnable);
+                .setLogEnable(mDebugEnable)
+                .setConsoleEnable(mDebugEnable)
+                .setLogHeadEnable(mDebugEnable)
+                .setBorderEnable(mDebugEnable);
         return this;
     }
 
@@ -104,12 +104,12 @@ public class ERouter {
     }
 
     /**
-     * 获取log开关
+     * 是否处于Debug模式
      *
-     * @return log开关
+     * @return 是否处于Debug模式
      */
-    public boolean getLogEnable() {
-        return mLogEnable;
+    public boolean isDebugEnable() {
+        return mDebugEnable;
     }
 
     /**
