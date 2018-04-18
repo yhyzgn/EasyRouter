@@ -72,6 +72,10 @@ public class MainActivity extends BaseActivity {
                 Simple simple = mSimpleList.get(position);
 
                 if (position == 4) {
+                    List<SeriaEntity> listParam = new ArrayList<>();
+                    listParam.add(new SeriaEntity("list param 01"));
+                    listParam.add(new SeriaEntity("list param 02"));
+
                     // 携带参数
                     ERouter.getInstance()
                             .with(MainActivity.this)
@@ -84,6 +88,7 @@ public class MainActivity extends BaseActivity {
                             .param("seriaParam", new SeriaEntity("test-test"))
                             .param("boolTest", true)
                             .param("intTest", 6666)
+                            .param("listTest", listParam)
                             .go();
                 } else if (position == 5) {
                     // 拦截器

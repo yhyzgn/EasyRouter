@@ -14,7 +14,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath true
-                arguments = [moduleName: "app"]
+                // project.name = app
+                arguments = [moduleName: project.name]
             }
         }
     }
@@ -28,6 +29,13 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    // 打包apk自动生成名称
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "ERouter.apk"
+        }
     }
 }
 
@@ -44,10 +52,10 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.2'
 
-//    compile project(':erouter')
+//    implementation project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
-    implementation 'com.yhy.router:erouter:1.1.7'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.4'
+    implementation 'com.yhy.router:erouter:1.1.8'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.5'
 
     implementation project(':test-module')
 }

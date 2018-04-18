@@ -81,6 +81,9 @@ public class EPoster {
     // Intent Flag List
     private List<Integer> mFlagList;
 
+    // Intent Category List
+    private List<String> mCategoryList;
+
     public EPoster(Context context) {
         this(context, null, null, null, null);
     }
@@ -144,6 +147,7 @@ public class EPoster {
         mInterList = new ArrayList<>();
         mInterMap = new HashMap<>();
         mFlagList = new ArrayList<>();
+        mCategoryList = new ArrayList<>();
     }
 
     /**
@@ -398,6 +402,20 @@ public class EPoster {
         mFlagList.add(flag);
         if (ERouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Add flag '" + flag + "' successfully.");
+        }
+        return this;
+    }
+
+    /**
+     * 添加Intent category
+     *
+     * @param category Intent category
+     * @return 当前对象
+     */
+    public EPoster category(String category) {
+        mCategoryList.add(category);
+        if (ERouter.getInstance().isDebugEnable()) {
+            LogUtils.i(TAG, category + category + "' successfully.");
         }
         return this;
     }
@@ -759,6 +777,7 @@ public class EPoster {
                 // Context中创建服务
                 intent = new Intent(mContext, meta.getDest());
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 mContext.startService(intent);
                 if (ERouter.getInstance().isDebugEnable()) {
@@ -768,6 +787,7 @@ public class EPoster {
                 // Activity中创建服务
                 intent = new Intent(mActivity, meta.getDest());
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 mActivity.startService(intent);
                 if (ERouter.getInstance().isDebugEnable()) {
@@ -777,6 +797,7 @@ public class EPoster {
                 // Fragment中创建服务
                 intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 if (null != mFragmentV4.getActivity()) {
                     mFragmentV4.getActivity().startService(intent);
@@ -790,6 +811,7 @@ public class EPoster {
                 // Fragment中创建服务
                 intent = new Intent(mFragment.getActivity(), meta.getDest());
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 mFragment.getActivity().startService(intent);
                 if (ERouter.getInstance().isDebugEnable()) {
@@ -799,6 +821,7 @@ public class EPoster {
                 // Service中创建服务
                 intent = new Intent(mService, meta.getDest());
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 mService.startService(intent);
                 if (ERouter.getInstance().isDebugEnable()) {
@@ -838,6 +861,7 @@ public class EPoster {
                     throw new UnsupportedOperationException("Can not post uri from context.");
                 }
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -856,6 +880,7 @@ public class EPoster {
                     }
                 }
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 // 设置共享元素动画
                 makeAnimate(mActivity);
@@ -885,6 +910,7 @@ public class EPoster {
                     }
                 }
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 makeAnimate(mFragmentV4.getActivity());
                 if (mRequestCode == -1) {
@@ -904,6 +930,7 @@ public class EPoster {
                     }
                 }
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 makeAnimate(mFragment.getActivity());
                 if (mRequestCode == -1) {
@@ -931,6 +958,7 @@ public class EPoster {
                     }
                 }
                 addFlags(intent);
+                addCategories(intent);
                 intent.putExtras(mParams);
                 mService.startActivity(intent);
             }
@@ -977,6 +1005,19 @@ public class EPoster {
         if (null != intent && null != mFlagList && !mFlagList.isEmpty()) {
             for (int flag : mFlagList) {
                 intent.addFlags(flag);
+            }
+        }
+    }
+
+    /**
+     * 向Intent中添加Category
+     *
+     * @param intent Intent
+     */
+    private void addCategories(Intent intent) {
+        if (null != intent && null != mCategoryList && !mCategoryList.isEmpty()) {
+            for (String category : mCategoryList) {
+                intent.addCategory(category);
             }
         }
     }

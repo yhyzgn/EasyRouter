@@ -99,8 +99,6 @@ public class AutowiredCompiler extends AbstractProcessor {
             try {
                 // 解析
                 parseAutowired(elements);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -116,7 +114,7 @@ public class AutowiredCompiler extends AbstractProcessor {
      * @throws IllegalAccessException 访问异常
      * @throws IOException            IO操作异常
      */
-    private void parseAutowired(Set<? extends Element> elements) throws IllegalAccessException, IOException {
+    private void parseAutowired(Set<? extends Element> elements) throws IOException {
         if (CollectionUtils.isEmpty(elements)) {
             return;
         }
@@ -225,7 +223,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                         // 如果是普通对象类型，就使用EJsonParser解析对象，并设置给获取到的字段，否则就直接将值设置给获取到的字段
                         if (statement.startsWith(EConsts.JSON_PARSER_NAME)) {
                             inject.beginControlFlow("if(null != " + EConsts.JSON_PARSER_NAME + ")", ClassName.get(EConsts.class));
-                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get(elt.asType()));
+                            inject.addStatement(EConsts.PRIVATE_FIELD_NAME + ".set(instance, " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.erouter.reflet", "ETypeToken"), ClassName.get(elt.asType()));
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
@@ -260,7 +258,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                         if (statement.startsWith(EConsts.JSON_PARSER_NAME)) {
                             // 普通对象类型使用EJsonParser解析
                             inject.beginControlFlow("if(null != " + EConsts.JSON_PARSER_NAME + ")", ClassName.get(EConsts.class));
-                            inject.addStatement("instance." + fieldName + " = " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get(elt.asType()));
+                            inject.addStatement("instance." + fieldName + " = " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.erouter.reflet", "ETypeToken"), ClassName.get(elt.asType()));
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + EConsts.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of ERouter!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
@@ -349,7 +347,7 @@ public class AutowiredCompiler extends AbstractProcessor {
             statement = "instance." + (isActivity ? "getIntent().hasExtra($S)" : "getArguments().containsKey($S)") + " ? ($T) instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getSerializableExtra($S)" : "getSerializable($S)") + " : null";
         } else if (type == TypeKind.OBJECT.ordinal()) {
             // 需要Json解析
-            statement = EConsts.JSON_PARSER_NAME + ".fromJson(instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getStringExtra($S)" : "getString($S)") + ", $T.class)";
+            statement = EConsts.JSON_PARSER_NAME + ".fromJson(instance." + (isActivity ? "getIntent()." : "getArguments().") + (isActivity ? "getStringExtra($S)" : "getString($S)") + ", new $T<$T>(){}.getType())";
         }
         return statement;
     }

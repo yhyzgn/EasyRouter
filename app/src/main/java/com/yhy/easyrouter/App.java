@@ -8,6 +8,8 @@ import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EJsonParser;
 
+import java.lang.reflect.Type;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -36,8 +38,8 @@ public class App extends Application {
                     Gson gson = new Gson();
 
                     @Override
-                    public <T> T fromJson(String json, Class<T> clazz) {
-                        return gson.fromJson(json, clazz);
+                    public <T> T fromJson(String json, Type type) {
+                        return gson.fromJson(json, type);
                     }
 
                     @Override

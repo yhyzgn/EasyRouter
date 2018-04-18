@@ -6,8 +6,11 @@ import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.entity.User;
+import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
+
+import java.util.List;
 
 /**
  * author : 颜洪毅
@@ -34,18 +37,13 @@ public class AutowiredActivity extends BaseActivity {
     private boolean boolTest;
     @Autowired
     private int intTest;
+    @Autowired
+    private List<SeriaEntity> listTest;
 
     // 不自动注入
     private String param;
 
-    private TextView tvDef;
-    private TextView tvChg;
-    private TextView tvObj;
-    private TextView tvPriv;
-    private TextView tvPrivObj;
-    private TextView tvPrivSeria;
-    private TextView tvPrivBool;
-    private TextView tvPrivInt;
+    private TextView tvArgs;
 
     @Override
     protected int getLayout() {
@@ -54,26 +52,26 @@ public class AutowiredActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        tvDef = $(R.id.tv_def);
-        tvChg = $(R.id.tv_chg);
-        tvObj = $(R.id.tv_obj);
-        tvPriv = $(R.id.tv_priv);
-        tvPrivObj = $(R.id.tv_priv_obj);
-        tvPrivSeria = $(R.id.tv_priv_seria);
-        tvPrivBool = $(R.id.tv_priv_bool);
-        tvPrivInt = $(R.id.tv_priv_int);
+        tvArgs = $(R.id.tv_args);
     }
 
     @Override
     protected void initData() {
-        getIntent().hasExtra("");
-        tvDef.setText("默认参数：" + defParam);
-        tvChg.setText("改变过参数：" + chgParam);
-        tvObj.setText("对象参数：" + objParam.toString());
-        tvPriv.setText("私有成员参数：" + privParam);
-        tvPrivObj.setText("私有对象参数：" + privObjParam.toString());
-        tvPrivSeria.setText("Serializable对象参数：" + seriaParam.toString());
-        tvPrivBool.setText("Boolean私有参数：" + boolTest);
-        tvPrivInt.setText("Integer私有参数：" + intTest);
+        ERouter.getInstance().inject(this);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb
+                .append("默认参数：" + defParam).append("\n")
+                .append("改变过参数：" + chgParam).append("\n")
+                .append("对象参数：" + objParam).append("\n")
+                .append("私有成员参数：" + privParam).append("\n")
+                .append("私有对象参数：" + privObjParam).append("\n")
+                .append("Serializable对象参数：" + seriaParam).append("\n")
+                .append("Boolean私有参数：" + boolTest).append("\n")
+                .append("Integer私有参数：" + intTest).append("\n")
+                .append("List私有参数：" + listTest);
+
+        tvArgs.setText(sb.toString());
     }
 }

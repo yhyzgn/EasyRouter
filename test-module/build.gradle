@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
 
-
-
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
@@ -13,6 +11,13 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+                // project.name = test-module
+                arguments = [moduleName: project.name]
+            }
+        }
     }
 
     buildTypes {
@@ -21,7 +26,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -32,8 +36,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-//    compile project(':erouter')
+//    implementation project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
-    implementation 'com.yhy.router:erouter:1.1.7'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.4'
+    implementation 'com.yhy.router:erouter:1.1.8'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.5'
 }

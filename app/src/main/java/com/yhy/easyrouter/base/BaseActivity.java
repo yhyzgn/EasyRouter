@@ -5,8 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.yhy.erouter.ERouter;
-
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -23,8 +21,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (layout > 0) {
             setContentView(layout);
         }
-
-        ERouter.getInstance().inject(this);
 
         initView();
         initData();

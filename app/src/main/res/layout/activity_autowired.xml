@@ -6,50 +6,9 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_def"
+        android:id="@+id/tv_args"
         android:layout_width="wrap_content"
+        android:gravity="center"
+        android:lineSpacingExtra="12dp"
         android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tv_chg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_obj"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_priv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_priv_obj"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_priv_seria"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_priv_bool"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/tv_priv_int"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
-
 </LinearLayout>

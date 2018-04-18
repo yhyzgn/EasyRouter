@@ -1,5 +1,5 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.7-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.4-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.2-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.8-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.5-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.3-brightgreen.svg)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
@@ -32,7 +32,8 @@ defaultConfig {
         annotationProcessorOptions {
             // 多模块路由的基础，需要配置当前模块的名称
             // 如果不配置此项则使用'DefaultModule'作为默认模块名
-            arguments = [moduleName: "app"]
+            // project.name = app
+            arguments = [moduleName: project.name]
         }
     }
 }
@@ -61,8 +62,8 @@ public void onCreate() {
         .jsonParser(new EJsonParser() {
             Gson gson = new Gson();
             @Override
-            public <T> T fromJson(String json, Class<T> clazz) {
-                return gson.fromJson(json, clazz);
+            public <T> T fromJson(String json, Type type) {
+                return gson.fromJson(json, type);
             }
 
             @Override

@@ -1,5 +1,7 @@
 package com.yhy.erouter.common;
 
+import java.lang.reflect.Type;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -12,12 +14,12 @@ public interface EJsonParser {
     /**
      * 将Json字符串转换为T对象
      *
-     * @param json  Json字符串
-     * @param clazz 对象字节类型
-     * @param <T>   对象类型
+     * @param json Json字符串
+     * @param type 泛型
+     * @param <T>  对象类型
      * @return 转换后的具体对象
      */
-    <T> T fromJson(String json, Class<T> clazz);
+    <T> T fromJson(String json, Type type);
 
     /**
      * 将T对象转换为Json字符串
