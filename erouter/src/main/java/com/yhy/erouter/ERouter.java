@@ -11,7 +11,7 @@ import com.yhy.erouter.common.EJsonParser;
 import com.yhy.erouter.common.EPoster;
 import com.yhy.erouter.service.AutowiredService;
 import com.yhy.erouter.service.impl.AutowiredServiceImpl;
-import com.yhy.erouter.utils.LogUtils;
+import com.yhy.erouter.utils.ELogUtils;
 
 /**
  * author : 颜洪毅
@@ -63,7 +63,7 @@ public class ERouter {
      */
     public ERouter init(Application app) {
         mApp = app;
-        LogUtils.getConfig().setApp(mApp).setGlobalTag(getClass().getSimpleName());
+        ELogUtils.getConfig().setApp(mApp).setGlobalTag(getClass().getSimpleName());
         return this;
     }
 
@@ -75,7 +75,7 @@ public class ERouter {
      */
     public ERouter debug(boolean enable) {
         mDebugEnable = enable;
-        LogUtils.getConfig()
+        ELogUtils.getConfig()
                 .setLogEnable(mDebugEnable)
                 .setConsoleEnable(mDebugEnable)
                 .setLogHeadEnable(mDebugEnable)

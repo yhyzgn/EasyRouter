@@ -6,7 +6,7 @@ import com.yhy.erouter.ERouter;
 import com.yhy.erouter.common.EConsts;
 import com.yhy.erouter.mapper.EAutowiredMapper;
 import com.yhy.erouter.service.AutowiredService;
-import com.yhy.erouter.utils.LogUtils;
+import com.yhy.erouter.utils.ELogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class AutowiredServiceImpl implements AutowiredService {
                 mapper.inject(target);
                 mClassCache.put(className, mapper);
                 if (ERouter.getInstance().isDebugEnable()) {
-                    LogUtils.i(TAG, "Mapping autowired fields of class '" + target + "'.");
+                    ELogUtils.i(TAG, "Mapping autowired fields of class '" + target + "'.");
                 }
             }
         } catch (Exception e) {

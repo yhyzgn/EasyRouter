@@ -47,7 +47,7 @@ import javax.xml.transform.stream.StreamSource;
  * version: 1.0.0
  * desc   : 日志工具
  */
-public class LogUtils {
+public class ELogUtils {
 
     static final int V = Log.VERBOSE;
     static final int D = Log.DEBUG;
@@ -105,7 +105,7 @@ public class LogUtils {
     /**
      * 构造函数
      */
-    private LogUtils() {
+    private ELogUtils() {
         throw new UnsupportedOperationException("Can not instantiate utils class.");
     }
 

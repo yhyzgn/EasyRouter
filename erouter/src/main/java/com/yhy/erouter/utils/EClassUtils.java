@@ -33,8 +33,8 @@ import dalvik.system.DexFile;
  * desc   : Class工具类
  */
 @SuppressWarnings({"deprecation", "unchecked", "PointlessBitwiseExpression"})
-public class ClassUtils {
-    private static final String TAG = "ClassUtils";
+public class EClassUtils {
+    private static final String TAG = "EClassUtils";
 
     private static final String EXTRACTED_NAME_EXT = ".classes";
     private static final String EXTRACTED_SUFFIX = ".zip";
@@ -47,7 +47,7 @@ public class ClassUtils {
     private static final int VM_WITH_MULTIDEX_VERSION_MAJOR = 2;
     private static final int VM_WITH_MULTIDEX_VERSION_MINOR = 1;
 
-    private ClassUtils() {
+    private EClassUtils() {
         throw new UnsupportedOperationException("Can not be instantiate.");
     }
 
@@ -90,7 +90,7 @@ public class ClassUtils {
                     for (String className : classNameSet) {
                         classList.add(Class.forName(className));
                         if (ERouter.getInstance().isDebugEnable()) {
-                            LogUtils.i(TAG, "Loaded class '" + className + "' successful.");
+                            ELogUtils.i(TAG, "Loaded class '" + className + "' successful.");
                         }
                     }
                     return classList;
@@ -161,7 +161,7 @@ public class ClassUtils {
                                 if (className.startsWith(packageClassNamePrefix)) {
                                     classNameSet.add(className);
                                     if (ERouter.getInstance().isDebugEnable()) {
-                                        LogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
+                                        ELogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
                                     }
                                 }
                             }
@@ -244,7 +244,7 @@ public class ClassUtils {
             // 添加所有被分割开的apk文件，针对InstantRun模式
             instantRunSourcePaths.addAll(Arrays.asList(applicationInfo.splitSourceDirs));
             if (ERouter.getInstance().isDebugEnable()) {
-                LogUtils.i(TAG, "Found InstantRun support");
+                ELogUtils.i(TAG, "Found InstantRun support");
             }
         } else {
             try {
@@ -263,13 +263,13 @@ public class ClassUtils {
                         }
                     }
                     if (ERouter.getInstance().isDebugEnable()) {
-                        LogUtils.i(TAG, "Found InstantRun support");
+                        ELogUtils.i(TAG, "Found InstantRun support");
                     }
                 }
 
             } catch (Exception e) {
                 if (ERouter.getInstance().isDebugEnable()) {
-                    LogUtils.e(TAG, "InstantRun support error, " + e.getMessage());
+                    ELogUtils.e(TAG, "InstantRun support error, " + e.getMessage());
                 }
             }
         }
@@ -314,7 +314,7 @@ public class ClassUtils {
         }
 
         if (ERouter.getInstance().isDebugEnable()) {
-            LogUtils.i(TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
+            ELogUtils.i(TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
         }
         return isMultidexCapable;
     }
