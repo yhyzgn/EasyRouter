@@ -1,5 +1,5 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.1.8-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.5-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.3-brightgreen.svg)
+![erouter](https://img.shields.io/badge/erouter-1.1.8-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.1.6-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.1.3-brightgreen.svg)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 

@@ -18,7 +18,6 @@ import com.yhy.erouter.utils.EUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.util.Comparator;
