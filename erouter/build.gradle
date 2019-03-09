@@ -43,7 +43,7 @@ dependencies {
 //    api project(':erouter-annotation')
 //    annotationProcessor project(':erouter-compiler')
     api 'com.yhy.router:erouter-anno:1.1.3'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.5'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.6'
 }
 
 publish {

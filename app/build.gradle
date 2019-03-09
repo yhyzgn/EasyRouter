@@ -55,7 +55,7 @@ dependencies {
 //    implementation project(':erouter')
 //    annotationProcessor project(':erouter-compiler')
     implementation 'com.yhy.router:erouter:1.1.8'
-    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.5'
+    annotationProcessor 'com.yhy.router:erouter-compiler:1.1.6'
 
     implementation project(':test-module')
 }
