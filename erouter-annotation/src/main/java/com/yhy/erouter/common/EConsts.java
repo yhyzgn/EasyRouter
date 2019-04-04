@@ -20,7 +20,7 @@ public interface EConsts {
     // 路由类型标识
     String ACTIVITY = "android.app.Activity";
     String FRAGMENT = "android.app.Fragment";
-    String FRAGMENT_V4 = "android.support.v4.app.Fragment";
+    String FRAGMENT_X = "androidx.fragment.app.Fragment";
     String SERVICE = "android.app.Service";
 
     // 生成分组类的包名

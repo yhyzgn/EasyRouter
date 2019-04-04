@@ -1,10 +1,11 @@
 package com.yhy.module;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.yhy.erouter.annotation.Router;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * author : 颜洪毅

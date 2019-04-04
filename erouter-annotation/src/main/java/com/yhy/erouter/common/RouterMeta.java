@@ -31,10 +31,11 @@ public class RouterMeta {
     /**
      * 在生成的分组类中解析映射路由调用
      *
-     * @param url   路径
-     * @param dest  目标类
-     * @param type  类型
-     * @param group 分组
+     * @param url        路径
+     * @param dest       目标类
+     * @param type       类型
+     * @param group      分组
+     * @param paramsType 参数类型
      * @return 路由数据
      */
     public static RouterMeta build(String url, Class<?> dest, RouterType type, String group, Map<String, Integer> paramsType) {
@@ -44,9 +45,10 @@ public class RouterMeta {
     /**
      * 构造函数
      *
-     * @param router 路由注解
-     * @param elt    注解元素
-     * @param type   类型
+     * @param router     路由注解
+     * @param elt        注解元素
+     * @param type       类型
+     * @param paramsType 参数类型
      */
     public RouterMeta(Router router, Element elt, RouterType type, Map<String, Integer> paramsType) {
         this(router.url(), elt, null, type, router.group(), paramsType);
@@ -55,10 +57,11 @@ public class RouterMeta {
     /**
      * 构造函数
      *
-     * @param router 路由注解
-     * @param elt    注解元素
-     * @param dest   目标类
-     * @param type   类型
+     * @param router     路由注解
+     * @param elt        注解元素
+     * @param dest       目标类
+     * @param type       类型
+     * @param paramsType 参数类型
      */
     public RouterMeta(Router router, Element elt, Class<?> dest, RouterType type, Map<String, Integer> paramsType) {
         this(router.url(), elt, dest, type, router.group(), paramsType);
@@ -67,10 +70,12 @@ public class RouterMeta {
     /**
      * 构造函数
      *
-     * @param url  路径
-     * @param elt  注解元素
-     * @param dest 目标类
-     * @param type 类型
+     * @param url        路径
+     * @param elt        注解元素
+     * @param dest       目标类
+     * @param type       类型
+     * @param group      分组
+     * @param paramsType 参数类型
      */
     public RouterMeta(String url, Element elt, Class<?> dest, RouterType type, String group, Map<String, Integer> paramsType) {
         mUrl = url;

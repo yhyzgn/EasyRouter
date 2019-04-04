@@ -2,7 +2,6 @@ package com.yhy.easyrouter.service;
 
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.yhy.easyrouter.base.BaseService;
 import com.yhy.easyrouter.utils.ToastUtils;
@@ -10,6 +9,8 @@ import com.yhy.erouter.ERouter;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.erouter.callback.Callback;
 import com.yhy.erouter.common.EPoster;
+
+import androidx.annotation.Nullable;
 
 /**
  * author : 颜洪毅

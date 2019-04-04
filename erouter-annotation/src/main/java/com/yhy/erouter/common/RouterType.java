@@ -11,7 +11,7 @@ public enum RouterType {
     // 定义各种类型
     ACTIVITY(0, "android.app.Activity"),
     SERVICE(1, "android.app.Service"),
-    FRAGMENT_V4(2, "android.support.v4.app.Fragment"),
+    FRAGMENT_X(2, "androidx.fragment.app.Fragment"),
     FRAGMENT(3, "android.app.Fragment"),
     UNKNOWN(-1, "Unknown route type");
 

@@ -128,7 +128,7 @@ public class RouterCompiler extends AbstractProcessor {
         // 定义几种解析的类型
         TypeMirror tmActivity = mEltUtils.getTypeElement(EConsts.ACTIVITY).asType();
         TypeMirror tmFragment = mEltUtils.getTypeElement(EConsts.FRAGMENT).asType();
-        TypeMirror tmFragmentV4 = mEltUtils.getTypeElement(EConsts.FRAGMENT_V4).asType();
+        TypeMirror tmFragmentX = mEltUtils.getTypeElement(EConsts.FRAGMENT_X).asType();
         TypeMirror tmService = mEltUtils.getTypeElement(EConsts.SERVICE).asType();
 
         TypeMirror tm;
@@ -142,9 +142,9 @@ public class RouterCompiler extends AbstractProcessor {
             if (mTypeUtils.isSubtype(tm, tmActivity)) {
                 // 是Activity，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.ACTIVITY, genParamsType(el));
-            } else if (mTypeUtils.isSubtype(tm, tmFragmentV4)) {
+            } else if (mTypeUtils.isSubtype(tm, tmFragmentX)) {
                 // 是Fragment，支持自动注入参数
-                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT_V4, genParamsType(el));
+                rMeta = new RouterMeta(router, el, RouterType.FRAGMENT_X, genParamsType(el));
             } else if (mTypeUtils.isSubtype(tm, tmFragment)) {
                 // 是Fragment，支持自动注入参数
                 rMeta = new RouterMeta(router, el, RouterType.FRAGMENT, genParamsType(el));

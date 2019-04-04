@@ -125,7 +125,7 @@ public class AutowiredCompiler extends AbstractProcessor {
         // 定义几种解析的类型
         TypeMirror tmActivity = mEltUtils.getTypeElement(EConsts.ACTIVITY).asType();
         TypeMirror tmFragment = mEltUtils.getTypeElement(EConsts.FRAGMENT).asType();
-        TypeMirror tmFragmentV4 = mEltUtils.getTypeElement(EConsts.FRAGMENT_V4).asType();
+        TypeMirror tmFragmentX = mEltUtils.getTypeElement(EConsts.FRAGMENT_X).asType();
         TypeMirror tmService = mEltUtils.getTypeElement(EConsts.SERVICE).asType();
 
         TypeElement teAutowired = mEltUtils.getTypeElement(EConsts.AUTO_WIRED_MAPPER);
@@ -215,7 +215,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                             // 是Activity
                             isActivity = true;
                             statement += "getIntent().";
-                        } else if (mTypeUtils.isSubtype(type.asType(), tmFragment) || mTypeUtils.isSubtype(type.asType(), tmFragmentV4)) {
+                        } else if (mTypeUtils.isSubtype(type.asType(), tmFragment) || mTypeUtils.isSubtype(type.asType(), tmFragmentX)) {
                             statement += "getArguments().";
                         }
                         // 拼接statement语句
@@ -250,7 +250,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                             // 是Activity
                             isActivity = true;
                             statement += "getIntent().";
-                        } else if (mTypeUtils.isSubtype(type.asType(), tmFragment) || mTypeUtils.isSubtype(type.asType(), tmFragmentV4)) {
+                        } else if (mTypeUtils.isSubtype(type.asType(), tmFragment) || mTypeUtils.isSubtype(type.asType(), tmFragmentX)) {
                             statement += "getArguments().";
                         }
                         // 拼接statement语句

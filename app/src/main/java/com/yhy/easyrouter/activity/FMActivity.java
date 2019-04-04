@@ -1,13 +1,12 @@
 package com.yhy.easyrouter.activity;
 
-import android.support.v4.app.Fragment;
-
-import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.R;
+import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Autowired;
 import com.yhy.erouter.annotation.Router;
 import com.yhy.fmhelper.FmHelper;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * author : 颜洪毅

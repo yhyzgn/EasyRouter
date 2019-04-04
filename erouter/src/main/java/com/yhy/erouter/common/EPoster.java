@@ -9,9 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -23,8 +20,8 @@ import com.yhy.erouter.interceptor.EInterceptor;
 import com.yhy.erouter.mapper.EInterceptorMapper;
 import com.yhy.erouter.mapper.ERouterGroupMapper;
 import com.yhy.erouter.utils.EClassUtils;
-import com.yhy.erouter.utils.EUtils;
 import com.yhy.erouter.utils.ELogUtils;
+import com.yhy.erouter.utils.EUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +30,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
+import androidx.fragment.app.Fragment;
 
 /**
  * author : 颜洪毅
@@ -48,7 +49,7 @@ public class EPoster {
     // 当前环境
     private Context mContext;
     private Activity mActivity;
-    private Fragment mFragmentV4;
+    private Fragment mFragmentX;
     private android.app.Fragment mFragment;
     private Service mService;
     // 分组
@@ -100,10 +101,10 @@ public class EPoster {
     /**
      * 构造函数
      *
-     * @param fragmentV4 当前Fragment
+     * @param fragmentX 当前Fragment
      */
-    public EPoster(Fragment fragmentV4) {
-        this(null, null, fragmentV4, null, null);
+    public EPoster(Fragment fragmentX) {
+        this(null, null, fragmentX, null, null);
     }
 
     /**
@@ -127,16 +128,16 @@ public class EPoster {
     /**
      * 构造函数
      *
-     * @param context    当前上下文
-     * @param activity   当前Activity
-     * @param fragmentV4 当前Fragment
-     * @param fragment   当前Fragment
-     * @param service    当前Service
+     * @param context   当前上下文
+     * @param activity  当前Activity
+     * @param fragmentX 当前Fragment
+     * @param fragment  当前Fragment
+     * @param service   当前Service
      */
-    private EPoster(Context context, Activity activity, Fragment fragmentV4, android.app.Fragment fragment, Service service) {
+    private EPoster(Context context, Activity activity, Fragment fragmentX, android.app.Fragment fragment, Service service) {
         mContext = context;
         mActivity = activity;
-        mFragmentV4 = fragmentV4;
+        mFragmentX = fragmentX;
         mFragment = fragment;
         mService = service;
 
@@ -567,7 +568,7 @@ public class EPoster {
      * @return 当前路由上下文
      */
     public Context getContext() {
-        return null != mActivity ? mActivity : null != mFragmentV4 ? mFragmentV4.getActivity() : mService;
+        return null != mActivity ? mActivity : null != mFragmentX ? mFragmentX.getActivity() : mService;
     }
 
     /**
@@ -613,8 +614,8 @@ public class EPoster {
                     Intent svInte = postService(meta);
                     return null == svInte ? null : (T) svInte;
                 }
-                case FRAGMENT_V4: {
-                    Fragment fm = postFragmentV4(meta);
+                case FRAGMENT_X: {
+                    Fragment fm = postFragmentX(meta);
                     return null == fm ? null : (T) fm;
                 }
                 case FRAGMENT: {
@@ -708,7 +709,7 @@ public class EPoster {
      * @param meta 路由数据
      * @return 目标Fragment实例
      */
-    private Fragment postFragmentV4(RouterMeta meta) {
+    private Fragment postFragmentX(RouterMeta meta) {
         try {
             Fragment fm = (Fragment) meta.getDest().newInstance();
             fm.setArguments(mParams);
@@ -716,7 +717,7 @@ public class EPoster {
                 mCallback.onPosted(this);
             }
             if (ERouter.getInstance().isDebugEnable()) {
-                ELogUtils.i(TAG, "Post fragment v4.");
+                ELogUtils.i(TAG, "Post fragment x.");
             }
             return fm;
         } catch (InstantiationException e) {
@@ -793,19 +794,19 @@ public class EPoster {
                 if (ERouter.getInstance().isDebugEnable()) {
                     ELogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mActivity + "'.");
                 }
-            } else if (null != mFragmentV4) {
+            } else if (null != mFragmentX) {
                 // Fragment中创建服务
-                intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                intent = new Intent(mFragmentX.getActivity(), meta.getDest());
                 addFlags(intent);
                 addCategories(intent);
                 intent.putExtras(mParams);
-                if (null != mFragmentV4.getActivity()) {
-                    mFragmentV4.getActivity().startService(intent);
+                if (null != mFragmentX.getActivity()) {
+                    mFragmentX.getActivity().startService(intent);
                     if (ERouter.getInstance().isDebugEnable()) {
-                        ELogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragmentV4 + "'.");
+                        ELogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragmentX + "'.");
                     }
                 } else {
-                    ELogUtils.e(TAG, "The activity which attached '" + mFragmentV4 + "' is null.");
+                    ELogUtils.e(TAG, "The activity which attached '" + mFragmentX + "' is null.");
                 }
             } else if (null != mFragment) {
                 // Fragment中创建服务
@@ -899,26 +900,26 @@ public class EPoster {
                 }
                 // 设置切换动画
                 overrideTransition(mActivity);
-            } else if (null != mFragmentV4) {
+            } else if (null != mFragmentX) {
                 // Fragment中跳转Activity
                 if (null == mUri) {
-                    intent = new Intent(mFragmentV4.getActivity(), meta.getDest());
+                    intent = new Intent(mFragmentX.getActivity(), meta.getDest());
                 } else {
                     intent = new Intent(mAction, mUri);
                     if (ERouter.getInstance().isDebugEnable()) {
-                        ELogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragmentV4 + "' with action '" + mAction + "'.");
+                        ELogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragmentX + "' with action '" + mAction + "'.");
                     }
                 }
                 addFlags(intent);
                 addCategories(intent);
                 intent.putExtras(mParams);
-                makeAnimate(mFragmentV4.getActivity());
+                makeAnimate(mFragmentX.getActivity());
                 if (mRequestCode == -1) {
-                    mFragmentV4.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
+                    mFragmentX.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
                 } else {
-                    mFragmentV4.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
+                    mFragmentX.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
                 }
-                overrideTransition(mFragmentV4.getActivity());
+                overrideTransition(mFragmentX.getActivity());
             } else if (null != mFragment) {
                 // Fragment中跳转Activity
                 if (null == mUri) {
@@ -1100,7 +1101,7 @@ public class EPoster {
                     // Activity和Service都返回Xxxx.class
                     return (T) meta.getDest();
                 }
-                case FRAGMENT_V4:
+                case FRAGMENT_X:
                 case FRAGMENT: {
                     // Fragment返回new XxxxFragment()
                     try {

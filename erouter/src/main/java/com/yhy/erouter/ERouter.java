@@ -5,13 +5,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
 import android.content.Context;
-import android.support.v4.app.Fragment;
 
 import com.yhy.erouter.common.EJsonParser;
 import com.yhy.erouter.common.EPoster;
 import com.yhy.erouter.service.AutowiredService;
 import com.yhy.erouter.service.impl.AutowiredServiceImpl;
 import com.yhy.erouter.utils.ELogUtils;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * author : 颜洪毅
@@ -153,6 +154,16 @@ public class ERouter {
      * @return 当前转发器
      */
     public EPoster with(Fragment fragment) {
+        return new EPoster(fragment).init(mApp);
+    }
+
+    /**
+     * 设置当前Fragment
+     *
+     * @param fragment 当前Fragment
+     * @return 当前转发器
+     */
+    public EPoster with(android.app.Fragment fragment) {
         return new EPoster(fragment).init(mApp);
     }
 
