@@ -3,18 +3,16 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <compositeConfiguration>
-          <compositeBuild compositeDefinitionSource="SCRIPT" />
-        </compositeConfiguration>
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/erouter" />
-            <option value="$PROJECT_DIR$/erouter-annotation" />
-            <option value="$PROJECT_DIR$/erouter-compiler" />
+            <option value="$PROJECT_DIR$/router" />
+            <option value="$PROJECT_DIR$/router-annotation" />
+            <option value="$PROJECT_DIR$/router-compiler" />
             <option value="$PROJECT_DIR$/test-module" />
           </set>
         </option>
