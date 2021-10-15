@@ -10,7 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -63,6 +63,8 @@ dependencies {
 
     implementation project(':router')
     annotationProcessor project(':router-compiler')
+//    implementation 'com.github.yhyzgn.EasyRouter:router:1.0.0'
+//    annotationProcessor 'com.github.yhyzgn.EasyRouter:router-compiler:1.0.0'
 
     implementation project(':test-module')
 }

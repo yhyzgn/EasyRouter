@@ -5,12 +5,12 @@ group = 'com.github.yhyzgn.EasyRouter'
 
 dependencies {
     implementation 'com.squareup:javapoet:1.13.0'
-    implementation 'com.google.auto.service:auto-service:1.0-rc5'
-    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc5'
+    implementation 'com.google.auto.service:auto-service:1.0-rc7'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc7'
 
     implementation 'org.apache.commons:commons-lang3:3.4'
     implementation 'org.apache.commons:commons-collections4:4.1'
-	
+
     implementation project(':router-annotation')
 }
 
