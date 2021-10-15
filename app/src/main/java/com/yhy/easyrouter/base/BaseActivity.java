@@ -39,6 +39,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public <T extends View> T $(int id) {
-        return (T) findViewById(id);
+        return findViewById(id);
     }
 }

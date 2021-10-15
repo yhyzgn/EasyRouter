@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 /**
  * author : 颜洪毅
@@ -56,11 +57,6 @@ public class ELogUtils {
     static final int W = Log.WARN;
     static final int E = Log.ERROR;
     static final int A = Log.ASSERT;
-
-    @IntDef({V, D, I, W, E, A})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface TYPE {
-    }
 
     private static final char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};
 
@@ -245,16 +241,6 @@ public class ELogUtils {
     /**
      * 输出到文件
      *
-     * @param type    日志级别
-     * @param content 日志内容
-     */
-    public static void file(@TYPE final int type, final Object content) {
-        log(FILE | type, sGlobalTag, content);
-    }
-
-    /**
-     * 输出到文件
-     *
      * @param tag     tag
      * @param content 日志内容
      */
@@ -269,7 +255,7 @@ public class ELogUtils {
      * @param tag     tag
      * @param content 日志内容
      */
-    public static void file(@TYPE final int type, final String tag, final Object content) {
+    public static void file(final int type, final String tag, final Object content) {
         log(FILE | type, tag, content);
     }
 
@@ -288,7 +274,7 @@ public class ELogUtils {
      * @param type    日志级别
      * @param content json字符串
      */
-    public static void json(@TYPE final int type, final String content) {
+    public static void json(final int type, final String content) {
         log(JSON | type, sGlobalTag, content);
     }
 
@@ -309,7 +295,7 @@ public class ELogUtils {
      * @param tag     tag
      * @param content json字符串
      */
-    public static void json(@TYPE final int type, final String tag, final String content) {
+    public static void json(final int type, final String tag, final String content) {
         log(JSON | type, tag, content);
     }
 
@@ -328,7 +314,7 @@ public class ELogUtils {
      * @param type    日志级别
      * @param content xml字符串
      */
-    public static void xml(@TYPE final int type, final String content) {
+    public static void xml(final int type, final String content) {
         log(XML | type, sGlobalTag, content);
     }
 
@@ -340,17 +326,6 @@ public class ELogUtils {
      */
     public static void xml(final String tag, final String content) {
         log(XML | D, tag, content);
-    }
-
-    /**
-     * 输出xml
-     *
-     * @param type    日志级别
-     * @param tag     tag
-     * @param content xml字符串
-     */
-    public static void xml(@TYPE final int type, final String tag, final String content) {
-        log(XML | type, tag, content);
     }
 
     /**
@@ -898,7 +873,7 @@ public class ELogUtils {
          * @param consoleFilter 控制台过滤器
          * @return 当前对象
          */
-        public Config setConsoleFilter(@TYPE final int consoleFilter) {
+        public Config setConsoleFilter(final int consoleFilter) {
             sConsoleFilter = consoleFilter;
             return this;
         }
@@ -909,7 +884,7 @@ public class ELogUtils {
          * @param fileFilter 文件过滤器
          * @return 当前对象
          */
-        public Config setFileFilter(@TYPE final int fileFilter) {
+        public Config setFileFilter(final int fileFilter) {
             sFileFilter = fileFilter;
             return this;
         }
@@ -930,6 +905,7 @@ public class ELogUtils {
          *
          * @return 日志内容
          */
+        @NonNull
         @Override
         public String toString() {
             return "switch: " + sLogEnable
