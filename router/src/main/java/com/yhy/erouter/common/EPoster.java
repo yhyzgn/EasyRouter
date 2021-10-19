@@ -356,7 +356,7 @@ public class EPoster {
      * @param exit  退出动画
      * @return 当前对象
      */
-    public EPoster transition(int enter, int exit) {
+    public EPoster animate(int enter, int exit) {
         mTransEnter = enter;
         mTransExit = exit;
         if (ERouter.getInstance().isDebugEnable()) {
@@ -375,7 +375,7 @@ public class EPoster {
      * @return 当前对象
      */
     @SuppressWarnings("unchecked")
-    public EPoster animate(String name, View view) {
+    public EPoster transition(String name, View view) {
         // 需要动态控制数组大小，不能直接使用List或者Vector的toArray()方法（类型强制转换失败）
         if (null == mAnimArr) {
             mAnimArr = new Pair[]{Pair.create(view, name)};

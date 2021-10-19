@@ -103,14 +103,14 @@ public class MainActivity extends BaseActivity {
                     ERouter.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
-                            .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+                            .animate(R.anim.slide_in_right, R.anim.slide_out_right)
                             .go();
                 } else if (position == 7) {
                     // 共享元素动画
                     ERouter.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
-                            .animate("tvAnim", view)
+                            .transition("tvAnim", view)
                             .go(mCallback); // 设置回调
                 } else if (position == 8) {
                     // Uri跳转
@@ -118,7 +118,7 @@ public class MainActivity extends BaseActivity {
                             .with(MainActivity.this)
                             .uri(Uri.parse("http://www.baidu.com"))
                             .action(Intent.ACTION_VIEW)
-                            .transition(R.anim.slide_in_right, R.anim.slide_out_right)
+                            .animate(R.anim.slide_in_right, R.anim.slide_out_right)
                             .go(mCallback); // 设置回调
                 } else {
                     // 普通跳转
