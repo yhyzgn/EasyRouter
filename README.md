@@ -1,11 +1,16 @@
 # EasyRouter
-![erouter](https://img.shields.io/badge/erouter-1.2.0-brightgreen.svg) ![erouter-compiler](https://img.shields.io/badge/erouter_compiler-1.2.0-brightgreen.svg) ![erouter-anno](https://img.shields.io/badge/erouter_anno-1.2.0-brightgreen.svg) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+
+![router](https://img.shields.io/github/v/release/yhyzgn/EasyRouter?color=brightgreen&label=router&style=flat-square) ![router-compiler](https://img.shields.io/github/v/release/yhyzgn/EasyRouter?color=brightgreen&label=router-compiler&style=flat-square) ![router-annotation](https://img.shields.io/github/v/release/yhyzgn/EasyRouter?color=brightgreen&label=router-annotation&style=flat-square) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
 > `EasyRouter`是专门针对`Android`开发的简易路由框架，支持路由分组，使用方便，功能全面。主要包含三大模块功能：路由转发、自动注入和路由拦截。
 
 **☆ 注意 ☆**
 
->   **`1.2.0`开始，全面支持`AndroidX`，弃用`support`**
+> **`2.0.0` 开始 `API` 框架改动较大，且不兼容之前版本**
+> **`2.0.0` 开始 `API` 框架改动较大，且不兼容之前版本**
+> **`2.0.0` 开始 `API` 框架改动较大，且不兼容之前版本**
+
+> **`1.2.0`开始，全面支持`AndroidX`，弃用`support`**
 
 ### 功能简介
 
@@ -54,28 +59,28 @@ dependencies {
 
 ```java
 @Override
-public void onCreate() {
-    super.onCreate();
+public void onCreate(){
+        super.onCreate();
 
-    // 初始化
-    Router.getInstance()
+        // 初始化
+        Router.getInstance()
         .init(this)
         // debug方法用来控制日志打印和InstantRun模式开关
         // 只有debug(true)时才打印日志，并启用InstantRun模式
         .debug(BuildConfig.DEBUG)
-        .jsonConverter(new EJsonParser() {
-            Gson gson = new Gson();
-            @Override
-            public <T> T fromJson(String json, Type type) {
-                return gson.fromJson(json, type);
-            }
+        .jsonConverter(new EJsonParser(){
+final Gson gson=new Gson();
+@Override
+public<T> T fromJson(String json,Type type){
+        return gson.fromJson(json,type);
+        }
 
-            @Override
-            public <T> String toJson(T obj) {
-                return gson.toJson(obj);
-            }
+@Override
+public<T> String toJson(T obj){
+        return gson.toJson(obj);
+        }
         });
-}
+        }
 ```
 
 #### 给需要路由转发的对象注册路由
@@ -289,16 +294,19 @@ public void onCreate() {
 
 #### 定义拦截器
 
-> 实现`EInterceptor`接口，在`execute(EPoster poster)`方法中完成拦截操作
+> 实现`TransferInterceptor`接口，在`execute(Transmitter transmitter)`方法中完成拦截操作
 >
-> 注：默认返回`false`，表示不中断路由，如需要中断路由操作返回`true`即可
+> 注：
+> < 2.0.0 版本：默认返回`false`，表示不中断路由，如需要中断路由操作返回`true`即可
+> >= 2.0.0 版本：与上述相反
 
 ```java
+
 @Interceptor(name = "login")// 不指定名称时拦截器将以类名作为名称
-public class LoginInterceptor implements EInterceptor {
+public class LoginInterceptor implements TransferInterceptor {
 
     @Override
-    public boolean execute(EPoster poster) {
+    public boolean execute(Transmitter transmitter) {
         // 拦截登录状态
         User user = App.getInstance().getUser();
         if (null == user) {
@@ -306,17 +314,20 @@ public class LoginInterceptor implements EInterceptor {
 
             // 跳转到登录页面
             Router.getInstance()
-                .with(poster.getContext())
-                .to("/activity/login")
-                .go();
+                    .with(transmitter)
+                    .to("/activity/login")
+                    .param("nextRoute", transmitter.getUrl())
+                    .go();
 
-            // 返回true表示中断原本的路由
-            return true;
+            // < 2.0.0 版本：返回 true 表示中断原本的路由
+            // >= 2.0.0 版本：返回 false 表示中断原本的路由
+            return false;
         }
 
         Toast.makeText(poster.getContext(), "已经登录，往下执行", Toast.LENGTH_SHORT).show();
-        // 返回false表示继续往下执行
-        return false;
+        // < 2.0.0 版本：返回 false 表示继续往下执行
+        // >= 2.0.0 版本：返回 true 表示继续往下执行
+        return true;
     }
 }
 ```
@@ -324,7 +335,7 @@ public class LoginInterceptor implements EInterceptor {
 ----
 
 ```tex
-Copyright 2018 yhyzgn
+Copyright 2022 yhyzgn
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
