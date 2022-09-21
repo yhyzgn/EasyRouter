@@ -2,7 +2,7 @@ package com.yhy.easyrouter.fragment;
 
 import android.app.Fragment;
 
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅

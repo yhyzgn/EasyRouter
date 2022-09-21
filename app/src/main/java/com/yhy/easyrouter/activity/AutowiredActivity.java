@@ -6,9 +6,8 @@ import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.entity.User;
-import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Autowired;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.Router;
+import com.yhy.router.annotation.Autowired;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ import java.util.List;
  * version: 1.0.0
  * desc   :
  */
-@Router(url = "/activity/autowried")
+@com.yhy.router.annotation.Router(url = "/activity/autowried")
 public class AutowiredActivity extends BaseActivity {
     @Autowired
     public String defParam;
@@ -45,6 +44,9 @@ public class AutowiredActivity extends BaseActivity {
 
     private TextView tvArgs;
 
+    public AutowiredActivity() {
+    }
+
     @Override
     protected int getLayout() {
         return R.layout.activity_autowired;
@@ -57,21 +59,18 @@ public class AutowiredActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        ERouter.getInstance().inject(this);
+        Router.getInstance().inject(this);
 
-        StringBuilder sb = new StringBuilder();
+        String sb = "默认参数：" + defParam + "\n" +
+                "改变过参数：" + chgParam + "\n" +
+                "对象参数：" + objParam + "\n" +
+                "私有成员参数：" + privParam + "\n" +
+                "私有对象参数：" + privObjParam + "\n" +
+                "Serializable对象参数：" + seriaParam + "\n" +
+                "Boolean私有参数：" + boolTest + "\n" +
+                "Integer私有参数：" + intTest + "\n" +
+                "List私有参数：" + listTest;
 
-        sb
-                .append("默认参数：" + defParam).append("\n")
-                .append("改变过参数：" + chgParam).append("\n")
-                .append("对象参数：" + objParam).append("\n")
-                .append("私有成员参数：" + privParam).append("\n")
-                .append("私有对象参数：" + privObjParam).append("\n")
-                .append("Serializable对象参数：" + seriaParam).append("\n")
-                .append("Boolean私有参数：" + boolTest).append("\n")
-                .append("Integer私有参数：" + intTest).append("\n")
-                .append("List私有参数：" + listTest);
-
-        tvArgs.setText(sb.toString());
+        tvArgs.setText(sb);
     }
 }

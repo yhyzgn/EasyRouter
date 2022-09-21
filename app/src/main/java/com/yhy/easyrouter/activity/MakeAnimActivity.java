@@ -4,7 +4,7 @@ import android.widget.TextView;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅

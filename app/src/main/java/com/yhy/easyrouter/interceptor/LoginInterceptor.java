@@ -3,10 +3,9 @@ package com.yhy.easyrouter.interceptor;
 import com.yhy.easyrouter.App;
 import com.yhy.easyrouter.entity.User;
 import com.yhy.easyrouter.utils.ToastUtils;
-import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Interceptor;
-import com.yhy.erouter.common.EPoster;
-import com.yhy.erouter.interceptor.EInterceptor;
+import com.yhy.router.Router;
+import com.yhy.router.common.Transmitter;
+import com.yhy.router.interceptor.TransferInterceptor;
 
 /**
  * author : 颜洪毅
@@ -15,17 +14,17 @@ import com.yhy.erouter.interceptor.EInterceptor;
  * version: 1.0.0
  * desc   :
  */
-@Interceptor(name = "login")
-public class LoginInterceptor implements EInterceptor {
+@com.yhy.router.annotation.Interceptor(name = "login")
+public class LoginInterceptor implements TransferInterceptor {
 
     @Override
-    public boolean execute(EPoster poster) {
+    public boolean execute(Transmitter transmitter) {
         User user = App.getInstance().getUser();
         if (null == user) {
             ToastUtils.toast("未登录，先去登录");
 
-            ERouter.getInstance()
-                    .with(poster.getContext())
+            Router.getInstance()
+                    .with(transmitter.getContext())
                     .to("/activity/login")
                     .go();
             return true;

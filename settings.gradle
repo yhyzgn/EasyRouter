@@ -1,1 +1,24 @@
-include ':app', ':router-annotation', ':router-compiler', ':router', ':test-module'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+rootProject.name = "EasyRouter"
+include ':app'
+include ':router-annotation'
+include ':router-compiler'
+include ':router'
+include ':test-module'

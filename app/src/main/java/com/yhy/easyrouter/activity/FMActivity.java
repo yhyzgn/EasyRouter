@@ -4,8 +4,7 @@ import androidx.fragment.app.Fragment;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
-import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.Router;
 import com.yhy.fmhelper.FmHelper;
 
 /**
@@ -15,7 +14,7 @@ import com.yhy.fmhelper.FmHelper;
  * version: 1.0.0
  * desc   :
  */
-@Router(url = "/activity/fragment")
+@com.yhy.router.annotation.Router(url = "/activity/fragment")
 public class FMActivity extends BaseActivity {
 
     private FmHelper mHelper;
@@ -28,7 +27,7 @@ public class FMActivity extends BaseActivity {
     @Override
     protected void initView() {
         mHelper = new FmHelper.Builder(this, R.id.fl_content).build();
-        Fragment fm = ERouter.getInstance().with(this).to("/fragment/v4/normal").go();
+        Fragment fm = Router.getInstance().with(this).to("/fragment/v4/normal").go();
         mHelper.open(fm);
     }
 }

@@ -18,15 +18,14 @@ import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.entity.Simple;
 import com.yhy.easyrouter.entity.User;
 import com.yhy.easyrouter.utils.ToastUtils;
-import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Router;
-import com.yhy.erouter.callback.Callback;
-import com.yhy.erouter.common.EPoster;
+import com.yhy.router.Router;
+import com.yhy.router.callback.Callback;
+import com.yhy.router.common.Transmitter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Router(url = "/activity/main")
+@com.yhy.router.annotation.Router(url = "/activity/main")
 public class MainActivity extends BaseActivity {
 
     private ListView lvSimples;
@@ -77,7 +76,7 @@ public class MainActivity extends BaseActivity {
                     listParam.add(new SeriaEntity("list param 02"));
 
                     // 携带参数
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mUrl)
                             .param("defParam", "默认名称参数")
@@ -92,7 +91,7 @@ public class MainActivity extends BaseActivity {
                             .go();
                 } else if (position == 5) {
                     // 拦截器
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mUrl)
                             .interceptor("login")
@@ -100,21 +99,21 @@ public class MainActivity extends BaseActivity {
                             .go();
                 } else if (position == 6) {
                     // 切换动画
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
                             .animate(R.anim.slide_in_right, R.anim.slide_out_right)
                             .go();
                 } else if (position == 7) {
                     // 共享元素动画
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
                             .transition("tvAnim", view)
                             .go(mCallback); // 设置回调
                 } else if (position == 8) {
                     // Uri跳转
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .uri(Uri.parse("http://www.baidu.com"))
                             .action(Intent.ACTION_VIEW)
@@ -122,7 +121,7 @@ public class MainActivity extends BaseActivity {
                             .go(mCallback); // 设置回调
                 } else {
                     // 普通跳转
-                    ERouter.getInstance()
+                    Router.getInstance()
                             .with(MainActivity.this)
                             .to(simple.mGroup, simple.mUrl)
                             .go();
@@ -163,13 +162,13 @@ public class MainActivity extends BaseActivity {
 
     private class TestCallback implements Callback {
         @Override
-        public void onPosted(EPoster poster) {
+        public void onPosted(Transmitter poster) {
             // 路由转发成功
             ToastUtils.toast("路由转发成功");
         }
 
         @Override
-        public void onError(EPoster poster, Throwable e) {
+        public void onError(Transmitter poster, Throwable e) {
             // 发生错误
             e.printStackTrace();
         }

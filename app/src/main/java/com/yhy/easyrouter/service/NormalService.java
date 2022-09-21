@@ -5,10 +5,9 @@ import android.os.IBinder;
 
 import com.yhy.easyrouter.base.BaseService;
 import com.yhy.easyrouter.utils.ToastUtils;
-import com.yhy.erouter.ERouter;
-import com.yhy.erouter.annotation.Router;
-import com.yhy.erouter.callback.Callback;
-import com.yhy.erouter.common.EPoster;
+import com.yhy.router.Router;
+import com.yhy.router.callback.Callback;
+import com.yhy.router.common.Transmitter;
 
 import androidx.annotation.Nullable;
 
@@ -19,7 +18,7 @@ import androidx.annotation.Nullable;
  * version: 1.0.0
  * desc   :
  */
-@Router(url = "/service/normal")
+@com.yhy.router.annotation.Router(url = "/service/normal")
 public class NormalService extends BaseService {
 
     @Nullable
@@ -36,18 +35,18 @@ public class NormalService extends BaseService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ERouter.getInstance()
+        Router.getInstance()
                 .with(this)
                 .to("/activity/service")
                 .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
                 .go(new Callback() {
                     @Override
-                    public void onPosted(EPoster poster) {
+                    public void onPosted(Transmitter poster) {
                         ToastUtils.toast("服务跳转Activity成功");
                     }
 
                     @Override
-                    public void onError(EPoster poster, Throwable e) {
+                    public void onError(Transmitter poster, Throwable e) {
                         e.printStackTrace();
                     }
                 });

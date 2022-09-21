@@ -1,0 +1,86 @@
+package com.yhy.router.common;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+
+import static com.yhy.router.common.Constant.BOOLEAN;
+import static com.yhy.router.common.Constant.BYTE;
+import static com.yhy.router.common.Constant.DOUBEL;
+import static com.yhy.router.common.Constant.FLOAT;
+import static com.yhy.router.common.Constant.INTEGER;
+import static com.yhy.router.common.Constant.LONG;
+import static com.yhy.router.common.Constant.SERIALIZABLE;
+import static com.yhy.router.common.Constant.PARCELABLE;
+import static com.yhy.router.common.Constant.SHORT;
+import static com.yhy.router.common.Constant.STRING;
+
+/**
+ * author : 颜洪毅
+ * e-mail : yhyzgn@gmail.com
+ * time   : 2017-10-19 13:59
+ * version: 1.0.0
+ * desc   : Java类型判断工具
+ */
+public class TypeExchanger {
+
+    private Types mTypeUtils;
+    private Elements mEltUtils;
+    private TypeMirror mSerializableType;
+    private TypeMirror mParcelableType;
+
+    public TypeExchanger(Types typeUtils, Elements eltUtils) {
+        this.mTypeUtils = typeUtils;
+        this.mEltUtils = eltUtils;
+
+        mSerializableType = mEltUtils.getTypeElement(SERIALIZABLE).asType();
+        mParcelableType = mEltUtils.getTypeElement(PARCELABLE).asType();
+    }
+
+    /**
+     * 判断元素对应的类型
+     *
+     * @param element 元素
+     * @return Java类型
+     */
+    public int exchange(Element element) {
+        TypeMirror typeMirror = element.asType();
+
+        // Primitive
+        if (typeMirror.getKind().isPrimitive()) {
+            return element.asType().getKind().ordinal();
+        }
+
+        switch (typeMirror.toString()) {
+            case BYTE:
+                return TypeKind.BYTE.ordinal();
+            case SHORT:
+                return TypeKind.SHORT.ordinal();
+            case INTEGER:
+                return TypeKind.INT.ordinal();
+            case LONG:
+                return TypeKind.LONG.ordinal();
+            case FLOAT:
+                return TypeKind.FLOAT.ordinal();
+            case DOUBEL:
+                return TypeKind.DOUBLE.ordinal();
+            case BOOLEAN:
+                return TypeKind.BOOLEAN.ordinal();
+            case STRING:
+                return TypeKind.STRING.ordinal();
+            default:
+                // 其他类型，包括Serializable和Parcelable
+                if (mTypeUtils.isSubtype(typeMirror, mSerializableType)) {
+                    // Serializable
+                    return TypeKind.SERIALIZABLE.ordinal();
+                } else if (mTypeUtils.isSubtype(typeMirror, mParcelableType)) {
+                    // Parcelable
+                    return TypeKind.PARCELABLE.ordinal();
+                } else {
+                    // 普通对象类型
+                    return TypeKind.OBJECT.ordinal();
+                }
+        }
+    }
+}

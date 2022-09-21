@@ -4,7 +4,7 @@ import com.yhy.easyrouter.App;
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.entity.User;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅

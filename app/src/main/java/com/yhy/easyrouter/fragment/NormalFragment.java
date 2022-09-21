@@ -4,8 +4,8 @@ import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseFragment;
 import com.yhy.easyrouter.entity.SeriaEntity;
 import com.yhy.easyrouter.utils.ToastUtils;
-import com.yhy.erouter.annotation.Autowired;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Autowired;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅

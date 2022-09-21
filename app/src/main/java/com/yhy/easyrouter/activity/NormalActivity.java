@@ -2,8 +2,7 @@ package com.yhy.easyrouter.activity;
 
 import com.yhy.easyrouter.base.BaseActivity;
 import com.yhy.easyrouter.R;
-import com.yhy.erouter.annotation.Autowired;
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅

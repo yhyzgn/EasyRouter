@@ -2,7 +2,7 @@ package com.yhy.module;
 
 import android.os.Bundle;
 
-import com.yhy.erouter.annotation.Router;
+import com.yhy.router.annotation.Router;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
