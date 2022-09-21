@@ -223,7 +223,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                         // 如果是普通对象类型，就使用EJsonParser解析对象，并设置给获取到的字段，否则就直接将值设置给获取到的字段
                         if (statement.startsWith(Constant.JSON_PARSER_NAME)) {
                             inject.beginControlFlow("if(null != " + Constant.JSON_PARSER_NAME + ")", ClassName.get(Constant.class));
-                            inject.addStatement(Constant.PRIVATE_FIELD_NAME + ".set(instance, " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.router.reflet", "ETypeToken"), ClassName.get(elt.asType()));
+                            inject.addStatement(Constant.PRIVATE_FIELD_NAME + ".set(instance, " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.router.reflet", "TypeToken"), ClassName.get(elt.asType()));
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + Constant.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of Router!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();
@@ -258,7 +258,7 @@ public class AutowiredCompiler extends AbstractProcessor {
                         if (statement.startsWith(Constant.JSON_PARSER_NAME)) {
                             // 普通对象类型使用EJsonParser解析
                             inject.beginControlFlow("if(null != " + Constant.JSON_PARSER_NAME + ")", ClassName.get(Constant.class));
-                            inject.addStatement("instance." + fieldName + " = " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.router.reflet", "ETypeToken"), ClassName.get(elt.asType()));
+                            inject.addStatement("instance." + fieldName + " = " + statement, StringUtils.isEmpty(autowired.value()) ? elt.getSimpleName().toString() : autowired.value(), ClassName.get("com.yhy.router.reflet", "TypeToken"), ClassName.get(elt.asType()));
                             inject.nextControlFlow("else");
                             inject.addStatement("$T.e(\"" + Constant.PREFIX_OF_LOGGER + "\", \"If you want to autowired the field '" + fieldName + "' in class '$T', you must set EJsonParser in initialization of Router!\")", AndroidLog, ClassName.get(type));
                             inject.endControlFlow();

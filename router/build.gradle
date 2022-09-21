@@ -4,11 +4,11 @@ apply plugin: 'maven-publish'
 group = 'com.github.yhyzgn.EasyRouter'
 
 android {
-    compileSdkVersion 32
+    compileSdk 32
 
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 32
+        minSdk 24
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
