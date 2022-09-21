@@ -2,10 +2,11 @@ package com.yhy.easyrouter.fragment;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseFragment;
-import com.yhy.easyrouter.entity.SeriaEntity;
+import com.yhy.easyrouter.entity.SerializedEntity;
 import com.yhy.easyrouter.utils.ToastUtils;
 import com.yhy.router.annotation.Autowired;
 import com.yhy.router.annotation.Router;
+import com.yhy.router.utils.LogUtils;
 
 /**
  * author : 颜洪毅
@@ -16,10 +17,10 @@ import com.yhy.router.annotation.Router;
  */
 @Router(url = "/fragment/v4/normal")
 public class NormalFragment extends BaseFragment {
-    @Autowired("fmNomal")
-    public String fmNomal;
+    @Autowired("fmNormal")
+    public String fmNormal;
     @Autowired
-    private SeriaEntity seriaParam;
+    private SerializedEntity serializedParam;
 
     @Override
     protected int getLayout() {
@@ -28,6 +29,7 @@ public class NormalFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        ToastUtils.toast(seriaParam + "");
+        LogUtils.i("NormalFragment", serializedParam);
+        ToastUtils.toast(fmNormal + "");
     }
 }

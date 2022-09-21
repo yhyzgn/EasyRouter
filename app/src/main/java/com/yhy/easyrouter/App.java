@@ -5,7 +5,7 @@ import android.app.Application;
 import com.google.gson.Gson;
 import com.yhy.easyrouter.entity.User;
 import com.yhy.easyrouter.utils.ToastUtils;
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 import com.yhy.router.common.JsonConverter;
 
 import java.lang.reflect.Type;
@@ -31,11 +31,11 @@ public class App extends Application {
         ToastUtils.init(this);
 
         // 初始化
-        Router.getInstance()
+        EasyRouter.getInstance()
                 .init(this)
                 .debug(BuildConfig.DEBUG)
                 .jsonParser(new JsonConverter() {
-                    Gson gson = new Gson();
+                    final Gson gson = new Gson();
 
                     @Override
                     public <T> T fromJson(String json, Type type) {

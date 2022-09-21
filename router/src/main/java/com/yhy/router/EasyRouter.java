@@ -21,11 +21,11 @@ import com.yhy.router.utils.LogUtils;
  * version: 1.0.0
  * desc   : 路由管理器
  */
-public class Router {
+public class EasyRouter {
 
     // 单例对象
     @SuppressLint("StaticFieldLeak")
-    private static volatile Router instance;
+    private static volatile EasyRouter instance;
 
     private final AutowiredService mAutowiredService;
 
@@ -36,7 +36,7 @@ public class Router {
     /**
      * 构造函数
      */
-    private Router() {
+    private EasyRouter() {
         if (null != instance) {
             throw new UnsupportedOperationException("Can not call constructor manual.");
         }
@@ -48,11 +48,11 @@ public class Router {
      *
      * @return 单例对象
      */
-    public static Router getInstance() {
+    public static EasyRouter getInstance() {
         if (null == instance) {
-            synchronized (Router.class) {
+            synchronized (EasyRouter.class) {
                 if (null == instance) {
-                    instance = new Router();
+                    instance = new EasyRouter();
                 }
             }
         }
@@ -65,7 +65,7 @@ public class Router {
      * @param app 当前应用Application
      * @return 当前对象
      */
-    public Router init(Application app) {
+    public EasyRouter init(Application app) {
         mApp = app;
         LogUtils.getConfig().setApp(mApp).setGlobalTag(getClass().getSimpleName());
         return this;
@@ -77,7 +77,7 @@ public class Router {
      * @param enable 是否处于Debug模式
      * @return 当前对象
      */
-    public Router debug(boolean enable) {
+    public EasyRouter debug(boolean enable) {
         mDebugEnable = enable;
         LogUtils.getConfig()
                 .setLogEnable(mDebugEnable)
@@ -93,7 +93,7 @@ public class Router {
      * @param parser Json解析器
      * @return 当前对象
      */
-    public Router jsonParser(JsonConverter parser) {
+    public EasyRouter jsonParser(JsonConverter parser) {
         mJsonConverter = parser;
         return this;
     }
@@ -117,11 +117,11 @@ public class Router {
     }
 
     /**
-     * 获取EJsonParser
+     * 获取 JsonConverter
      *
-     * @return Json解析器
+     * @return Json转换器
      */
-    public JsonConverter getJsonParser() {
+    public JsonConverter getJsonConverter() {
         return mJsonConverter;
     }
 
@@ -139,6 +139,17 @@ public class Router {
         }
         return new Transmitter(ctx).init(mApp);
     }
+
+    /**
+     * 设置一个 Transmitter 对象
+     *
+     * @param transmitter 某个 Transmitter 对象
+     * @return 当前转发器
+     */
+    public Transmitter with(Transmitter transmitter) {
+        return new Transmitter(transmitter.getContext()).init(transmitter.getApp());
+    }
+
 
     /**
      * 设置当前Activity

@@ -14,15 +14,15 @@ public interface Callback {
     /**
      * 转发成功
      *
-     * @param poster 当前转发器
+     * @param transmitter 当前转发器
      */
-    void onPosted(Transmitter poster);
+    void onSuccess(Transmitter transmitter);
 
     /**
      * 发生错误
      *
-     * @param poster 当前转发器
+     * @param transmitter 当前转发器
      * @param e      异常信息
      */
-    void onError(Transmitter poster, Throwable e);
+    void onError(Transmitter transmitter, Throwable e);
 }

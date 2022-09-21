@@ -1,5 +1,4 @@
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
 
 group = 'com.github.yhyzgn.EasyRouter'
 
@@ -11,15 +10,4 @@ targetCompatibility = "11"
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            group = 'com.github.yhyzgn.EasyRouter'
-            artifactId = "router-annotation"
-
-            from components.java
-        }
-    }
 }

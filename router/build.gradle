@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 
 group = 'com.github.yhyzgn.EasyRouter'
 
@@ -7,7 +6,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        minSdk 24
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -35,74 +34,17 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0-alpha05', {
+    androidTestImplementation 'androidx.test:runner:1.5.0-alpha04'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.5.0-alpha07', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-	
-    implementation 'androidx.appcompat:appcompat:1.5.0'
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
 
     api project(':router-annotation')
     annotationProcessor project(':router-compiler')
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                group = 'com.github.yhyzgn.EasyRouter'
-                artifactId = "router"
-
-                // Adds javadocs and sources as separate jars.
-                artifact androidJavadocsJar
-                artifact(sourceJar)
-
-                pom {
-                    name = "Widgets"
-                    description = 'Android Easy Router.'
-                    url = 'https://github.com/yhyzgn/EasyRouter'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'yhyzgn'
-                            name = 'yhyzgn'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git@github.com/yhyzgn/EasyRouter.git'
-                        developerConnection = 'scm:git@github.com/yhyzgn/EasyRouter.git'
-                        url = 'https://github.com/yhyzgn/EasyRouter'
-                    }
-                }
-            }
-        }
-    }
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            owner.classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-    exclude '**/R.html', '**/R.*.html', '**/index.html'
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    archiveClassifier.set('javadoc')
-    from androidJavadocs.destinationDir
-}
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }

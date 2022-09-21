@@ -111,8 +111,7 @@ public class AutowiredCompiler extends AbstractProcessor {
      * 解析自动注入操作过程
      *
      * @param elements 所有被注解的字段
-     * @throws IllegalAccessException 访问异常
-     * @throws IOException            IO操作异常
+     * @throws IOException IO操作异常
      */
     private void parseAutowired(Set<? extends Element> elements) throws IOException {
         if (CollectionUtils.isEmpty(elements)) {
@@ -129,10 +128,10 @@ public class AutowiredCompiler extends AbstractProcessor {
         TypeMirror tmService = mEltUtils.getTypeElement(Constant.SERVICE).asType();
 
         TypeElement teAutowired = mEltUtils.getTypeElement(Constant.AUTO_WIRED_MAPPER);
-        TypeElement teJsonParser = mEltUtils.getTypeElement(Constant.JSON_PARSER);
+        TypeElement teJsonParser = mEltUtils.getTypeElement(Constant.JSON_CONVERTER);
 
         // 构建方法参数
-        ParameterSpec targetParams = ParameterSpec.builder(TypeName.OBJECT, Constant.METHOD_AUTOWIRED_INJECT_ARG).build();
+        ParameterSpec targetParams = ParameterSpec.builder(TypeName.OBJECT, Constant.METHOD_AUTOWIRED_INJECT_TARGET).build();
 
         //声明一些字段
         TypeElement type;
@@ -141,7 +140,7 @@ public class AutowiredCompiler extends AbstractProcessor {
         String packageName;
         String className;
         FieldSpec privField;
-        FieldSpec jsonParser;
+        FieldSpec jsonConverter;
         MethodSpec.Builder inject;
         TypeSpec.Builder clazz;
         Autowired autowired;
@@ -172,17 +171,17 @@ public class AutowiredCompiler extends AbstractProcessor {
                         .addJavadoc("Private field\r\n")
                         .build();
 
-                // 声明EJsonParser，后边用来解析Json数据的解析器
-                jsonParser = FieldSpec.builder(ClassName.get(teJsonParser.asType()), Constant.JSON_PARSER_NAME)
+                // 声明 JsonConverter，后边用来解析 Json 数据的解析器
+                jsonConverter = FieldSpec.builder(ClassName.get(teJsonParser.asType()), Constant.JSON_PARSER_NAME)
                         .addModifiers(Modifier.PRIVATE)
-                        .addJavadoc("Json parser\r\n")
+                        .addJavadoc("Json converter\r\n")
                         .build();
 
                 // 加载自动注入的方法
                 inject = MethodSpec.methodBuilder(Constant.METHOD_AUTOWIRED_INJECT)
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
-                        .addJavadoc("Inject parameters\r\n\r\n@param " + Constant.METHOD_AUTOWIRED_INJECT_ARG + " Current environment\r\n")
+                        .addJavadoc("Inject parameters\r\n\r\n@param " + Constant.METHOD_AUTOWIRED_INJECT_TARGET + " The target.\r\n")
                         .addParameter(targetParams);
 
                 // 生成类
@@ -191,14 +190,13 @@ public class AutowiredCompiler extends AbstractProcessor {
                         .addSuperinterface(ClassName.get(teAutowired))
                         .addJavadoc("Autowired injecter\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n");
 
-                inject.addStatement(Constant.JSON_PARSER_NAME + " = $T.getInstance().getJsonParser()", ClassName.get(tmRouter));
+                inject.addStatement(Constant.JSON_PARSER_NAME + " = $T.getInstance().getJsonConverter()", ClassName.get(tmRouter));
                 inject.addStatement("$T instance = ($T)target", ClassName.get(type), ClassName.get(type));
 
                 // 遍历父元素下每个被注解的成员，将赋值操作的代码生成在上边声明的inject方法中
                 for (Element elt : fields) {
                     autowired = elt.getAnnotation(Autowired.class);
                     fieldName = elt.getSimpleName().toString();
-
 
                     // 如果字段为private，就通过反射注入，否则直接给字段赋值即可
                     if (elt.getModifiers().contains(Modifier.PRIVATE)) {
@@ -217,6 +215,8 @@ public class AutowiredCompiler extends AbstractProcessor {
                             statement += "getIntent().";
                         } else if (mTypeUtils.isSubtype(type.asType(), tmFragment) || mTypeUtils.isSubtype(type.asType(), tmFragmentX)) {
                             statement += "getArguments().";
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported method what inject arguments.");
                         }
                         // 拼接statement语句
                         statement = buildStatement(isActivity, getPrivateParamDefValue(mExchanger.exchange(elt)), statement, mExchanger.exchange(elt)) + ")";
@@ -276,7 +276,7 @@ public class AutowiredCompiler extends AbstractProcessor {
 
                 // 添加字段和方法
                 clazz.addField(privField);
-                clazz.addField(jsonParser);
+                clazz.addField(jsonConverter);
                 clazz.addMethod(inject.build());
 
                 // 创建Java文件

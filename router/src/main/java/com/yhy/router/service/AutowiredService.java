@@ -12,7 +12,7 @@ public interface AutowiredService {
     /**
      * 自动注入
      *
-     * @param instance 当前需要自动注入的类
+     * @param target 当前需要自动注入的类
      */
-    void autowired(Object instance);
+    void autowired(Object target);
 }

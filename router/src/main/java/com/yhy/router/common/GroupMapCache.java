@@ -1,6 +1,6 @@
 package com.yhy.router.common;
 
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 import com.yhy.router.utils.LogUtils;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class GroupMapCache {
      */
     public void put(String group, Map<String, RouterMeta> value) {
         mMap.put(group, value);
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Cache router map of group '" + group + "'.");
         }
     }
@@ -65,7 +65,7 @@ public class GroupMapCache {
      * @return 对应的路由集合
      */
     public Map<String, RouterMeta> get(String group) {
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Get router map of '" + group + "'.");
         }
         return mMap.get(group);

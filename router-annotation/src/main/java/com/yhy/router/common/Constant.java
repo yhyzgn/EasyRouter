@@ -10,7 +10,7 @@ package com.yhy.router.common;
 public interface Constant {
 
     // 路由入口
-    String E_ROUTER = "com.yhy.router.Router";
+    String E_ROUTER = "com.yhy.router.EasyRouter";
 
     // 日志打印前缀
     String PREFIX_OF_LOGGER = "::RouterLogger::";
@@ -40,10 +40,10 @@ public interface Constant {
     String SUFFIX_AUTOWIRED = "Autowired";
     // 用来执行自动注入操作的方法名称和参数名称
     String METHOD_AUTOWIRED_INJECT = "inject";
-    String METHOD_AUTOWIRED_INJECT_ARG = "target";
+    String METHOD_AUTOWIRED_INJECT_TARGET = "target";
 
-    // Json解析器接口
-    String JSON_PARSER = "com.yhy.router.common.JsonConverter";
+    // Json转换器接口
+    String JSON_CONVERTER = "com.yhy.router.common.JsonConverter";
     // private字段名称，反射中使用
     String PRIVATE_FIELD_NAME = "field";
     // Json解析字段名称

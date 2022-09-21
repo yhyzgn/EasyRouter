@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,7 +37,7 @@ public abstract class BaseFragment extends Fragment {
             mView = inflater.inflate(layout, container, false);
         }
 
-        Router.getInstance().inject(this);
+        EasyRouter.getInstance().inject(this);
 
         initView();
         return mView;

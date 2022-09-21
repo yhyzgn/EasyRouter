@@ -4,10 +4,11 @@ import android.widget.TextView;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
-import com.yhy.easyrouter.entity.SeriaEntity;
+import com.yhy.easyrouter.entity.SerializedEntity;
 import com.yhy.easyrouter.entity.User;
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 import com.yhy.router.annotation.Autowired;
+import com.yhy.router.annotation.Router;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * version: 1.0.0
  * desc   :
  */
-@com.yhy.router.annotation.Router(url = "/activity/autowried")
+@Router(url = "/activity/autowried")
 public class AutowiredActivity extends BaseActivity {
     @Autowired
     public String defParam;
@@ -31,13 +32,13 @@ public class AutowiredActivity extends BaseActivity {
     @Autowired
     private User privObjParam;
     @Autowired
-    public SeriaEntity seriaParam;
+    public SerializedEntity seriaParam;
     @Autowired
     private boolean boolTest;
     @Autowired
     private int intTest;
     @Autowired
-    private List<SeriaEntity> listTest;
+    private List<SerializedEntity> listTest;
 
     // 不自动注入
     private String param;
@@ -59,7 +60,7 @@ public class AutowiredActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        Router.getInstance().inject(this);
+        EasyRouter.getInstance().inject(this);
 
         String sb = "默认参数：" + defParam + "\n" +
                 "改变过参数：" + chgParam + "\n" +

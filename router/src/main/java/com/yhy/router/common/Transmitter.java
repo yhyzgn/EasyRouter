@@ -16,7 +16,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 import com.yhy.router.callback.Callback;
 import com.yhy.router.expt.IllegalOperationException;
 import com.yhy.router.expt.UrlMatchException;
@@ -58,8 +58,6 @@ public class Transmitter {
     private String mGroup;
     // 路径
     private String mUrl;
-    // 保存 url 和路由数据的集合
-    private Map<String, RouterMeta> mMetaMap;
     // 目标 Activity 的 Uri
     private Uri mUri;
     // Activity 跳转时的 Action
@@ -147,7 +145,6 @@ public class Transmitter {
 
         // 初始化
         mRequestCode = -1;
-        mMetaMap = new HashMap<>();
         mParamBundle = new Bundle();
         mInterList = new ArrayList<>();
         mInterMap = new HashMap<>();
@@ -206,7 +203,7 @@ public class Transmitter {
     public Transmitter to(String group, String url) {
         mGroup = TextUtils.isEmpty(group) ? EUtils.getGroupFromUrl(url) : group;
         mUrl = url;
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Set url as '" + mUrl + "'.");
         }
         return this;
@@ -357,7 +354,7 @@ public class Transmitter {
     public Transmitter interceptor(String name) {
         if (!mInterList.contains(name)) {
             mInterList.add(name);
-            if (Router.getInstance().isDebugEnable()) {
+            if (EasyRouter.getInstance().isDebugEnable()) {
                 LogUtils.i(TAG, "Add interceptor '" + name + "' successfully.");
             }
         }
@@ -374,7 +371,7 @@ public class Transmitter {
     public Transmitter animate(int enter, int exit) {
         mTransEnter = enter;
         mTransExit = exit;
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Set animation of enter and exit are '" + enter + "' and '" + exit + "' successfully.");
         }
         return this;
@@ -402,7 +399,7 @@ public class Transmitter {
             System.arraycopy(temp, 0, mAnimArr, 0, temp.length);
             mAnimArr[mAnimArr.length - 1] = Pair.create(view, name);
         }
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Add shared animation '" + name + "' on '" + view + "' successfully.");
         }
         return this;
@@ -416,7 +413,7 @@ public class Transmitter {
      */
     public Transmitter flag(int flag) {
         mFlagList.add(flag);
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Add flag '" + flag + "' successfully.");
         }
         return this;
@@ -430,7 +427,7 @@ public class Transmitter {
      */
     public Transmitter category(String category) {
         mCategoryList.add(category);
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, category + category + "' successfully.");
         }
         return this;
@@ -444,7 +441,7 @@ public class Transmitter {
      */
     public Transmitter uri(Uri uri) {
         mUri = uri;
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Set uri as '" + uri + "'.");
         }
         return this;
@@ -458,7 +455,7 @@ public class Transmitter {
      */
     public Transmitter action(String action) {
         mAction = action;
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Set action as '" + action + "'.");
         }
         return this;
@@ -471,12 +468,12 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     public <T> T get() {
-        return getMetaCurrent();
+        return getTarget();
     }
 
     /**
@@ -486,9 +483,9 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     public <T> T go() {
         return go(mRequestCode, null);
@@ -502,9 +499,9 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     public <T> T go(int requestCode) {
         return go(requestCode, null);
@@ -518,9 +515,9 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     public <T> T go(Callback callback) {
         return go(mRequestCode, callback);
@@ -535,15 +532,15 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     public <T> T go(int requestCode, Callback callback) {
         mRequestCode = requestCode;
         mCallback = callback;
 
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Post to '" + mUrl + "' start.");
         }
 
@@ -553,11 +550,7 @@ public class Transmitter {
         }
 
         // 执行路由
-        RouterMeta meta = getMetaCurrent();
-        if (null != meta) {
-            return post(meta);
-        }
-        return null;
+        return post(getMetaMap().get(mUrl));
     }
 
     /**
@@ -610,15 +603,15 @@ public class Transmitter {
      *
      * @return 当前路由的 meta 数据集
      */
-    private <T> T getMetaCurrent() {
+    private <T> T getTarget() {
         // 先尝试从缓存中获取
-        RouterMeta meta = mMetaMap.get(mUrl);
-        if (null == meta) {
-            // 缓存中没有再从路由映射器中获取
-            mMetaMap = getMetaMap();
-            meta = mMetaMap.get(mUrl);
-        }
-        return parseResult(meta);
+//        RouterMeta meta = mMetaMap.get(mUrl);
+//        if (null == meta) {
+//            // 缓存中没有再从路由映射器中获取
+//            mMetaMap = getMetaMap();
+//            meta = mMetaMap.get(mUrl);
+//        }
+        return parseTarget(getMetaMap().get(mUrl));
     }
 
     /**
@@ -641,12 +634,12 @@ public class Transmitter {
                 for (String name : mInterList) {
                     interceptor = mInterMap.get(name);
                     if (null != interceptor) {
-                        if (Router.getInstance().isDebugEnable()) {
+                        if (EasyRouter.getInstance().isDebugEnable()) {
                             LogUtils.i(TAG, "Execute interceptor named '" + name + "' that '" + interceptor + "'.");
                         }
                         if (!interceptor.execute(this)) {
                             // 中断路由
-                            if (Router.getInstance().isDebugEnable()) {
+                            if (EasyRouter.getInstance().isDebugEnable()) {
                                 LogUtils.i(TAG, "The interceptor named '" + name + "' that '" + interceptor + "' interrupted current router.");
                             }
                             return null;
@@ -659,12 +652,12 @@ public class Transmitter {
             // 针对不同的路由类型，选择对应的路由转发
             switch (meta.getType()) {
                 case ACTIVITY: {
-                    Intent acInte = postActivity(meta);
-                    return null == acInte ? null : (T) acInte;
+                    Intent acIntent = postActivity(meta);
+                    return null == acIntent ? null : (T) acIntent;
                 }
                 case SERVICE: {
-                    Intent svInte = postService(meta);
-                    return null == svInte ? null : (T) svInte;
+                    Intent svIntent = postService(meta);
+                    return null == svIntent ? null : (T) svIntent;
                 }
                 case FRAGMENT_X: {
                     Fragment fm = postFragmentX(meta);
@@ -700,7 +693,7 @@ public class Transmitter {
                     inject(interceptor);
                     // 缓存之
                     mInterMap.put(name, interceptor);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Load interceptor '" + name + "' that '" + interceptor + "'.");
                     }
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -759,9 +752,9 @@ public class Transmitter {
             Fragment fm = (Fragment) meta.getDest().newInstance();
             fm.setArguments(mParamBundle);
             if (null != mCallback) {
-                mCallback.onPosted(this);
+                mCallback.onSuccess(this);
             }
-            if (Router.getInstance().isDebugEnable()) {
+            if (EasyRouter.getInstance().isDebugEnable()) {
                 LogUtils.i(TAG, "Post fragment x.");
             }
             return fm;
@@ -785,9 +778,9 @@ public class Transmitter {
             android.app.Fragment fm = (android.app.Fragment) meta.getDest().newInstance();
             fm.setArguments(mParamBundle);
             if (null != mCallback) {
-                mCallback.onPosted(this);
+                mCallback.onSuccess(this);
             }
-            if (Router.getInstance().isDebugEnable()) {
+            if (EasyRouter.getInstance().isDebugEnable()) {
                 LogUtils.i(TAG, "Post fragment.");
             }
             return fm;
@@ -816,7 +809,7 @@ public class Transmitter {
                 addCategories(intent);
                 intent.putExtras(mParamBundle);
                 mContext.startService(intent);
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mContext + "'.");
                 }
             } else if (null != mActivity) {
@@ -826,7 +819,7 @@ public class Transmitter {
                 addCategories(intent);
                 intent.putExtras(mParamBundle);
                 mActivity.startService(intent);
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mActivity + "'.");
                 }
             } else if (null != mFragmentX) {
@@ -837,7 +830,7 @@ public class Transmitter {
                 intent.putExtras(mParamBundle);
                 if (null != mFragmentX.getActivity()) {
                     mFragmentX.getActivity().startService(intent);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragmentX + "'.");
                     }
                 } else {
@@ -850,7 +843,7 @@ public class Transmitter {
                 addCategories(intent);
                 intent.putExtras(mParamBundle);
                 mFragment.getActivity().startService(intent);
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mFragment + "'.");
                 }
             } else if (null != mService) {
@@ -860,13 +853,13 @@ public class Transmitter {
                 addCategories(intent);
                 intent.putExtras(mParamBundle);
                 mService.startService(intent);
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, "Post to '" + mUrl + "' from '" + mService + "'.");
                 }
             }
             // 成功转发回调
             if (null != mCallback) {
-                mCallback.onPosted(this);
+                mCallback.onSuccess(this);
             }
         } catch (Exception e) {
             if (null != mCallback) {
@@ -911,7 +904,7 @@ public class Transmitter {
                     intent = new Intent(mActivity, meta.getDest());
                 } else {
                     intent = new Intent(mAction, mUri);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Post to uri '" + mUri + "' from '" + mActivity + "' with action '" + mAction + "'.");
                     }
                 }
@@ -941,7 +934,7 @@ public class Transmitter {
                     intent = new Intent(mFragmentX.getActivity(), meta.getDest());
                 } else {
                     intent = new Intent(mAction, mUri);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragmentX + "' with action '" + mAction + "'.");
                     }
                 }
@@ -961,7 +954,7 @@ public class Transmitter {
                     intent = new Intent(mFragment.getActivity(), meta.getDest());
                 } else {
                     intent = new Intent(mAction, mUri);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mFragment + "' with action '" + mAction + "'.");
                     }
                 }
@@ -989,7 +982,7 @@ public class Transmitter {
                     intent = new Intent(mService, meta.getDest());
                 } else {
                     intent = new Intent(mAction, mUri);
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Post to '" + mUri.getPath() + "' from '" + mService + "' with action '" + mAction + "'.");
                     }
                 }
@@ -1000,7 +993,7 @@ public class Transmitter {
             }
             // 成功转发回调
             if (null != mCallback) {
-                mCallback.onPosted(this);
+                mCallback.onSuccess(this);
             }
         } catch (Exception e) {
             if (null != mCallback) {
@@ -1080,7 +1073,7 @@ public class Transmitter {
             mParamBundle.putParcelable(name, (Parcelable) value);
         } else if (type == TypeKind.OBJECT.ordinal()) {
             // 将对象转换为Json传递
-            JsonConverter jsonConverter = Router.getInstance().getJsonParser();
+            JsonConverter jsonConverter = EasyRouter.getInstance().getJsonConverter();
             if (null == jsonConverter) {
                 throw new IllegalOperationException("If you want to use EJsonParser, must set EJsonParser in initialization of Router!");
             }
@@ -1109,7 +1102,7 @@ public class Transmitter {
                 mParamBundle.putString(name, strVal);
             }
         }
-        if (Router.getInstance().isDebugEnable()) {
+        if (EasyRouter.getInstance().isDebugEnable()) {
             LogUtils.i(TAG, "Add arg '" + name + "' successfully, value is '" + value + "'.");
         }
         return this;
@@ -1123,22 +1116,22 @@ public class Transmitter {
      * @return 目标对象
      * <p>
      * 值：
-     * Activity :: XxxxActivity.class
-     * Fragment :: new XxxxFragment()
-     * Service  :: XxxxService.class
+     * Activity :: XxActivity.class
+     * Fragment :: new XxFragment()
+     * Service  :: XxService.class
      */
     @SuppressWarnings("unchecked")
-    private <T> T parseResult(RouterMeta meta) {
+    private <T> T parseTarget(RouterMeta meta) {
         if (null != meta) {
             switch (meta.getType()) {
                 case ACTIVITY:
                 case SERVICE: {
-                    // Activity和Service都返回Xxxx.class
+                    // Activity 和 Service 都返回 Xx.class
                     return (T) meta.getDest();
                 }
                 case FRAGMENT_X:
                 case FRAGMENT: {
-                    // Fragment返回new XxxxFragment()
+                    // Fragment 返回 new XxFragment()
                     try {
                         return (T) meta.getDest().newInstance();
                     } catch (InstantiationException | IllegalAccessException e) {
@@ -1176,7 +1169,7 @@ public class Transmitter {
                 Class<?>[] interfaces;
                 Method loadGroup;
                 RouterGroupMapper erg;
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, clazzList.toString());
                 }
                 for (Class<?> clazz : clazzList) {
@@ -1187,7 +1180,7 @@ public class Transmitter {
                         continue;
                     }
 
-                    if (Router.getInstance().isDebugEnable()) {
+                    if (EasyRouter.getInstance().isDebugEnable()) {
                         LogUtils.i(TAG, "Loading class '" + clazz.getName() + "' into router mapper.");
                     }
 

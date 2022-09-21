@@ -4,8 +4,10 @@ import androidx.fragment.app.Fragment;
 
 import com.yhy.easyrouter.R;
 import com.yhy.easyrouter.base.BaseActivity;
-import com.yhy.router.Router;
+import com.yhy.easyrouter.entity.SerializedEntity;
 import com.yhy.fmhelper.FmHelper;
+import com.yhy.router.EasyRouter;
+import com.yhy.router.annotation.Router;
 
 /**
  * author : 颜洪毅
@@ -14,10 +16,8 @@ import com.yhy.fmhelper.FmHelper;
  * version: 1.0.0
  * desc   :
  */
-@com.yhy.router.annotation.Router(url = "/activity/fragment")
+@Router(url = "/activity/fragment")
 public class FMActivity extends BaseActivity {
-
-    private FmHelper mHelper;
 
     @Override
     protected int getLayout() {
@@ -26,8 +26,13 @@ public class FMActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mHelper = new FmHelper.Builder(this, R.id.fl_content).build();
-        Fragment fm = Router.getInstance().with(this).to("/fragment/v4/normal").go();
+        FmHelper mHelper = new FmHelper.Builder(this, R.id.fl_content).build();
+        Fragment fm = EasyRouter.getInstance()
+                .with(this)
+                .to("/fragment/v4/normal")
+                .param("fmNormal", "FM传参")
+                .param("serializedParam", new SerializedEntity("复杂对象传参"))
+                .go();
         mHelper.open(fm);
     }
 }

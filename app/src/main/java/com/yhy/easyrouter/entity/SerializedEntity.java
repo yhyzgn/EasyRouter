@@ -9,17 +9,17 @@ import java.io.Serializable;
  * version: 1.0.0
  * desc   :
  */
-public class SeriaEntity implements Serializable {
+public class SerializedEntity implements Serializable {
 
     public String test;
 
-    public SeriaEntity(String test) {
+    public SerializedEntity(String test) {
         this.test = test;
     }
 
     @Override
     public String toString() {
-        return "SeriaEntity{" +
+        return "SerializedEntity{" +
                 "test='" + test + '\'' +
                 '}';
     }

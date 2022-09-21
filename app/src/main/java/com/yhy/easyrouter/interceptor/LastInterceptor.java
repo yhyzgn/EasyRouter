@@ -1,6 +1,7 @@
 package com.yhy.easyrouter.interceptor;
 
 import com.yhy.easyrouter.utils.ToastUtils;
+import com.yhy.router.annotation.Interceptor;
 import com.yhy.router.common.Transmitter;
 import com.yhy.router.interceptor.TransferInterceptor;
 
@@ -11,12 +12,12 @@ import com.yhy.router.interceptor.TransferInterceptor;
  * version: 1.0.0
  * desc   :
  */
-@com.yhy.router.annotation.Interceptor
+@Interceptor
 public class LastInterceptor implements TransferInterceptor {
 
     @Override
     public boolean execute(Transmitter transmitter) {
         ToastUtils.toast("最后一个拦截器执行完毕");
-        return false;
+        return true;
     }
 }

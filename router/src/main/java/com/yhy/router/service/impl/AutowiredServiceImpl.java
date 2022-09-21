@@ -2,7 +2,7 @@ package com.yhy.router.service.impl;
 
 import android.util.LruCache;
 
-import com.yhy.router.Router;
+import com.yhy.router.EasyRouter;
 import com.yhy.router.common.Constant;
 import com.yhy.router.mapper.AutowiredMapper;
 import com.yhy.router.service.AutowiredService;
@@ -43,7 +43,7 @@ public class AutowiredServiceImpl implements AutowiredService {
                 }
                 mapper.inject(target);
                 mClassCache.put(className, mapper);
-                if (Router.getInstance().isDebugEnable()) {
+                if (EasyRouter.getInstance().isDebugEnable()) {
                     LogUtils.i(TAG, "Mapping autowired fields of class '" + target + "'.");
                 }
             }
