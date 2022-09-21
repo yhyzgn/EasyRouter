@@ -65,12 +65,12 @@ public void onCreate(){
     super.onCreate();
 
     // 初始化
-    Router.getInstance()
+    EasyRouter.getInstance()
     .init(this)
     // debug方法用来控制日志打印和InstantRun模式开关
     // 只有debug(true)时才打印日志，并启用InstantRun模式
     .debug(BuildConfig.DEBUG)
-    .jsonConverter(new EJsonParser(){
+    .jsonConverter(new JsonConverter(){
         final Gson gson=new Gson();
         
         @Override
@@ -152,7 +152,7 @@ public void onCreate(){
       @Override
       protected void onCreate(@Nullable Bundle savedInstanceState) {
           // 注入当前对象，触发自动注入操作
-          Router.getInstance().inject(this);
+          EasyRouter.getInstance().inject(this);
           super.onCreate(savedInstanceState);
       }
 
@@ -191,7 +191,7 @@ public void onCreate(){
 
   ```java
   FmHelper helper = new FmHelper.Builder(this, R.id.fl_content).build();
-  Fragment fm = Router.getInstance().with(this).to("/fragment/v4/normal").go();
+  Fragment fm = EasyRouter.getInstance().with(this).to("/fragment/v4/normal").go();
   helper.open(fm);
   ```
 
@@ -200,7 +200,7 @@ public void onCreate(){
 * 普通路由
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("/activity/normal")
       .go();
@@ -209,7 +209,7 @@ public void onCreate(){
 * 分组路由
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("acgp", "/activity/group")
       .go();
@@ -220,7 +220,7 @@ public void onCreate(){
   > 注：如果目标中不手动设置参数名的话，需要保持设置的参数名与目标成员字段名相同
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("/activity/autowried")
       .param("defParam", "默认名称参数")
@@ -242,7 +242,7 @@ public void onCreate(){
 
   ```java
   // 多个拦截器按设置顺序执行
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("/activity/interceptor")
       .interceptor("login")
@@ -253,7 +253,7 @@ public void onCreate(){
 * `Activity`切换动画
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("/activity/transition")
       .transition(R.anim.slide_in_right, R.anim.slide_out_right)
@@ -263,7 +263,7 @@ public void onCreate(){
 * `Activity`共享元素动画
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .to("/activity/make/anim")
       .animate("tvAnim", view)
@@ -275,7 +275,7 @@ public void onCreate(){
   > 这里主要说明针对`Intent`的`flag`方法
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(this)
       .to("/activity/service")
       .flag(Intent.FLAG_ACTIVITY_NEW_TASK) // Service跳转Activity时最好加上改flag
@@ -287,7 +287,7 @@ public void onCreate(){
   > 设置`Uri`后，不在根据`Url`跳转，切目标只能是`Activity`。不过设置参数、`flag`等功能还是支持的
 
   ```java
-  Router.getInstance()
+  EasyRouter.getInstance()
       .with(MainActivity.this)
       .uri(Uri.parse("http://www.baidu.com"))
       .action(Intent.ACTION_VIEW)
@@ -316,7 +316,7 @@ public class LoginInterceptor implements TransferInterceptor {
             Toast.makeText(poster.getContext(), "未登录，先去登录", Toast.LENGTH_SHORT).show();
 
             // 跳转到登录页面
-            Router.getInstance()
+            EasyRouter.getInstance()
                     .with(transmitter)
                     .to("/activity/login")
                     .param("nextRoute", transmitter.getUrl())
