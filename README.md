@@ -62,27 +62,28 @@ dependencies {
 ```java
 @Override
 public void onCreate(){
-        super.onCreate();
+    super.onCreate();
 
-        // 初始化
-        Router.getInstance()
-        .init(this)
-        // debug方法用来控制日志打印和InstantRun模式开关
-        // 只有debug(true)时才打印日志，并启用InstantRun模式
-        .debug(BuildConfig.DEBUG)
-        .jsonConverter(new EJsonParser(){
-final Gson gson=new Gson();
-@Override
-public<T> T fromJson(String json,Type type){
-        return gson.fromJson(json,type);
+    // 初始化
+    Router.getInstance()
+    .init(this)
+    // debug方法用来控制日志打印和InstantRun模式开关
+    // 只有debug(true)时才打印日志，并启用InstantRun模式
+    .debug(BuildConfig.DEBUG)
+    .jsonConverter(new EJsonParser(){
+        final Gson gson=new Gson();
+        
+        @Override
+        public<T> T fromJson(String json,Type type){
+            return gson.fromJson(json,type);
         }
 
-@Override
-public<T> String toJson(T obj){
-        return gson.toJson(obj);
+        @Override
+        public<T> String toJson(T obj){
+            return gson.toJson(obj);
         }
-        });
-        }
+    });
+}
 ```
 
 #### 给需要路由转发的对象注册路由
