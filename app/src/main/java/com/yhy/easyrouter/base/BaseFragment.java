@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.yhy.router.EasyRouter;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -31,7 +32,7 @@ public abstract class BaseFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         int layout = getLayout();
         if (layout > 0) {
             mView = inflater.inflate(layout, container, false);

@@ -1,5 +1,7 @@
 package com.yhy.easyrouter.entity;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -17,6 +19,7 @@ public class SerializedEntity implements Serializable {
         this.test = test;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SerializedEntity{" +

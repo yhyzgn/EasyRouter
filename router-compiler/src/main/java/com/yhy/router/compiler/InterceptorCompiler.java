@@ -43,7 +43,7 @@ import javax.lang.model.util.Types;
  * desc   : 拦截器编译器
  */
 @AutoService(Processor.class)
-public class InterceptorComiler extends AbstractProcessor {
+public class InterceptorCompiler extends AbstractProcessor {
     // 该编译器所支持的注解
     private static final Set<String> AUTOWIRED_SUPPORTED_TYPES = new HashSet<>();
     private static final ClassName AndroidLog = ClassName.get("android.util", "Log");

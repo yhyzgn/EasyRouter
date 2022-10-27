@@ -20,7 +20,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -256,16 +255,13 @@ public class RouterCompiler extends AbstractProcessor {
         if (varifyMeta(meta)) {
             Set<RouterMeta> metas = mGroupMap.get(meta.getGroup());
             if (null == metas) {
-                metas = new TreeSet<>(new Comparator<RouterMeta>() {
-                    @Override
-                    public int compare(RouterMeta r1, RouterMeta r2) {
-                        // 将每个分组按url排序
-                        try {
-                            return r1.getUrl().compareTo(r2.getUrl());
-                        } catch (NullPointerException npe) {
-                            npe.printStackTrace();
-                            return 0;
-                        }
+                metas = new TreeSet<>((r1, r2) -> {
+                    // 将每个分组按url排序
+                    try {
+                        return r1.getUrl().compareTo(r2.getUrl());
+                    } catch (NullPointerException npe) {
+                        npe.printStackTrace();
+                        return 0;
                     }
                 });
                 metas.add(meta);

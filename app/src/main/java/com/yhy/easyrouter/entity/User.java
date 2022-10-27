@@ -1,5 +1,7 @@
 package com.yhy.easyrouter.entity;
 
+import androidx.annotation.NonNull;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -19,6 +21,7 @@ public class User {
         this.sex = sex;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

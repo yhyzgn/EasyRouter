@@ -47,22 +47,20 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void initEvent() {
-        tvText.setOnClickListener(v -> {
-            EasyRouter.getInstance()
-                    .with(LoginActivity.this)
-                    .to(nextRoute)
-                    .go(new Callback() {
-                        @Override
-                        public void onSuccess(Transmitter transmitter) {
-                            // 跳转成功，关闭该页面
-                            finish();
-                        }
+        tvText.setOnClickListener(v -> EasyRouter.getInstance()
+                .with(LoginActivity.this)
+                .to(nextRoute)
+                .go(new Callback() {
+                    @Override
+                    public void onSuccess(Transmitter transmitter) {
+                        // 跳转成功，关闭该页面
+                        finish();
+                    }
 
-                        @Override
-                        public void onError(Transmitter transmitter, Throwable e) {
-                            ToastUtils.toast("跳转失败啦");
-                        }
-                    });
-        });
+                    @Override
+                    public void onError(Transmitter transmitter, Throwable e) {
+                        ToastUtils.toast("跳转失败啦");
+                    }
+                }));
     }
 }

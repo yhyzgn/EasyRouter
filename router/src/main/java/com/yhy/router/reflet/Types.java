@@ -1,5 +1,7 @@
 package com.yhy.router.reflet;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
@@ -8,6 +10,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * author : 颜洪毅
@@ -52,7 +55,7 @@ public class Types {
      * @return 是否相等
      */
     private static boolean equal(Object a, Object b) {
-        return a == b || (a != null && a.equals(b));
+        return Objects.equals(a, b);
     }
 
     /**
@@ -188,6 +191,7 @@ public class Types {
          *
          * @return 外层泛型类型
          */
+        @NonNull
         public Type getGenericComponentType() {
             return componentType;
         }
@@ -202,6 +206,7 @@ public class Types {
             return componentType.hashCode();
         }
 
+        @NonNull
         @Override
         public String toString() {
             return typeToString(componentType) + "[]";
@@ -248,6 +253,7 @@ public class Types {
          *
          * @return 参数列表
          */
+        @NonNull
         public Type[] getActualTypeArguments() {
             return typeArguments.clone();
         }
@@ -257,6 +263,7 @@ public class Types {
          *
          * @return 泛型
          */
+        @NonNull
         public Type getRawType() {
             return rawType;
         }
@@ -280,6 +287,7 @@ public class Types {
             return Arrays.hashCode(typeArguments) ^ rawType.hashCode() ^ hashCodeOrZero(ownerType);
         }
 
+        @NonNull
         @Override
         public String toString() {
             int length = typeArguments.length;
@@ -335,6 +343,7 @@ public class Types {
          *
          * @return 通配符上限
          */
+        @NonNull
         public Type[] getUpperBounds() {
             return new Type[]{upperBound};
         }
@@ -344,6 +353,7 @@ public class Types {
          *
          * @return 通配符下限
          */
+        @NonNull
         public Type[] getLowerBounds() {
             return lowerBound != null ? new Type[]{lowerBound} : EMPTY_TYPE_ARRAY;
         }
@@ -359,6 +369,7 @@ public class Types {
             return (lowerBound != null ? 31 + lowerBound.hashCode() : 1) ^ (31 + upperBound.hashCode());
         }
 
+        @NonNull
         @Override
         public String toString() {
             if (lowerBound != null) {

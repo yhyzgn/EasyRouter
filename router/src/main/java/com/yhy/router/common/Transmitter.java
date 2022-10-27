@@ -12,6 +12,8 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
@@ -78,6 +80,8 @@ public class Transmitter {
     // Activity 共享元素动画
     private Pair<View, String>[] mAnimArr;
     private ActivityOptionsCompat mOptions;
+
+    private ActivityResultCallback<ActivityResult> mActivityResultCallback;
 
     // Intent Flag List
     private final List<Integer> mFlagList;
@@ -604,13 +608,6 @@ public class Transmitter {
      * @return 当前路由的 meta 数据集
      */
     private <T> T getTarget() {
-        // 先尝试从缓存中获取
-//        RouterMeta meta = mMetaMap.get(mUrl);
-//        if (null == meta) {
-//            // 缓存中没有再从路由映射器中获取
-//            mMetaMap = getMetaMap();
-//            meta = mMetaMap.get(mUrl);
-//        }
         return parseTarget(getMetaMap().get(mUrl));
     }
 
@@ -946,6 +943,12 @@ public class Transmitter {
                     mFragmentX.startActivity(intent, null == mOptions ? null : mOptions.toBundle());
                 } else {
                     mFragmentX.startActivityForResult(intent, mRequestCode, null == mOptions ? null : mOptions.toBundle());
+                    // TODO 可升级为以下形式
+                    // mFragmentX.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                    //     if (null != mActivityResultCallback) {
+                    //         mActivityResultCallback.onActivityResult(result);
+                    //     }
+                    // });
                 }
                 overrideTransition(mFragmentX.getActivity());
             } else if (null != mFragment) {

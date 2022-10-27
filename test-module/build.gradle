@@ -1,13 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdk 32
+    namespace 'com.yhy.module'
+    compileSdk 33
 	
     defaultConfig {
         minSdk 26
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        targetSdk 33
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -28,14 +27,14 @@ android {
         }
     }
 
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
     }
 }
 

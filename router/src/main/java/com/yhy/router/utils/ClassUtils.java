@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
@@ -137,39 +138,36 @@ public class ClassUtils {
             final String packageClassNamePrefix = TextUtils.isEmpty(classNamePrefix) ? packageName : packageName + "." + classNamePrefix;
 
             for (final String path : pathList) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DexFile df = null;
-                        try {
-                            if (path.endsWith(EXTRACTED_SUFFIX)) {
-                                df = DexFile.loadDex(path, path + ".tmp", 0);
-                            } else {
-                                df = new DexFile(path);
-                            }
-
-                            Enumeration<String> dexEntries = df.entries();
-                            String className;
-                            while (dexEntries.hasMoreElements()) {
-                                className = dexEntries.nextElement();
-                                if (className.startsWith(packageClassNamePrefix)) {
-                                    classNameSet.add(className);
-                                    if (EasyRouter.getInstance().isDebugEnable()) {
-                                        LogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
-                                    }
-                                }
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (null != df) {
-                                try {
-                                    df.close();
-                                } catch (Throwable ignore) {
-                                }
-                            }
-                            parserCdl.countDown();
+                new Thread(() -> {
+                    DexFile df = null;
+                    try {
+                        if (path.endsWith(EXTRACTED_SUFFIX)) {
+                            df = DexFile.loadDex(path, path + ".tmp", 0);
+                        } else {
+                            df = new DexFile(path);
                         }
+
+                        Enumeration<String> dexEntries = df.entries();
+                        String className;
+                        while (dexEntries.hasMoreElements()) {
+                            className = dexEntries.nextElement();
+                            if (className.startsWith(packageClassNamePrefix)) {
+                                classNameSet.add(className);
+                                if (EasyRouter.getInstance().isDebugEnable()) {
+                                    LogUtils.i(TAG, "Find className: '" + className + "' in package '" + packageName + "'.");
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (null != df) {
+                            try {
+                                df.close();
+                            } catch (Throwable ignore) {
+                            }
+                        }
+                        parserCdl.countDown();
                     }
                 }).start();
             }
@@ -244,7 +242,7 @@ public class ClassUtils {
             try {
                 // 通过反射获取InstantRun的路径，一遍获取到该模式下所加载的类
                 @SuppressLint("PrivateApi")
-                Class pathsByInstantRun = Class.forName("com.android.tools.fd.runtime.Paths");
+                Class<?> pathsByInstantRun = Class.forName("com.android.tools.fd.runtime.Paths");
                 Method getDexFileDirectory = pathsByInstantRun.getMethod("getDexFileDirectory", String.class);
                 String instantRunDexPath = (String) getDexFileDirectory.invoke(null, applicationInfo.packageName);
 
@@ -283,7 +281,7 @@ public class ClassUtils {
             // YunOS需要特殊判断
             if (isYunOS()) {
                 vmName = "'YunOS'";
-                isMultidexCapable = Integer.valueOf(System.getProperty("ro.build.version.sdk")) >= 21;
+                isMultidexCapable = Integer.parseInt(Objects.requireNonNull(System.getProperty("ro.build.version.sdk"))) >= 21;
             } else {
                 // 非YunOS，原生Android
                 vmName = "'Android'";
@@ -292,8 +290,8 @@ public class ClassUtils {
                     Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
                     if (matcher.matches()) {
                         try {
-                            int major = Integer.parseInt(matcher.group(1));
-                            int minor = Integer.parseInt(matcher.group(2));
+                            int major = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
+                            int minor = Integer.parseInt(Objects.requireNonNull(matcher.group(2)));
                             isMultidexCapable = (major > VM_WITH_MULTIDEX_VERSION_MAJOR)
                                     || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
                                     && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
