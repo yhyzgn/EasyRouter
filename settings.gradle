@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         maven { url 'https://jitpack.io' }
         maven { url "https://maven.aliyun.com/repository/public" }
         mavenCentral()
@@ -11,6 +12,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        mavenLocal()
         maven { url 'https://jitpack.io' }
         maven { url "https://maven.aliyun.com/repository/public" }
         mavenCentral()

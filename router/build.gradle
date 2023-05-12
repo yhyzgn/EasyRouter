@@ -27,9 +27,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     lint {
         abortOnError false
         checkReleaseBuilds false
+    }
+
+    publishing {
+        singleVariant("release")
     }
 }
 
@@ -50,16 +55,25 @@ tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
 
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main
+    archiveClassifier = 'sources'
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        release(MavenPublication) {
             groupId = "${group}"
-            artifactId = "router"
+            artifactId = "${project.name}"
             version = "2.0.6"
+            afterEvaluate {
+                from components.release
+            }
         }
     }
     // 发布的仓库配置
     repositories {
+        mavenLocal()
         maven {
             url "https://jitpack.io"
         }

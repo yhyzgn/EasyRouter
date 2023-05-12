@@ -17,14 +17,18 @@ tasks.withType(JavaCompile) {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        release(MavenPublication) {
             groupId = "${group}"
-            artifactId = "router-annotation"
+            artifactId = "${project.name}"
             version = "2.0.6"
+            afterEvaluate {
+                from components.java
+            }
         }
     }
     // 发布的仓库配置
     repositories {
+        mavenLocal()
         maven {
             url "https://jitpack.io"
         }
