@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 group = 'com.github.yhyzgn.EasyRouter'
@@ -47,4 +48,20 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "${group}"
+            artifactId = "router"
+            version = "2.0.6"
+        }
+    }
+    // 发布的仓库配置
+    repositories {
+        maven {
+            url "https://jitpack.io"
+        }
+    }
 }
