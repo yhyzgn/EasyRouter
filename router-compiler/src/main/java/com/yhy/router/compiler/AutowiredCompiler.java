@@ -12,6 +12,7 @@ import com.yhy.router.annotation.Autowired;
 import com.yhy.router.common.Constant;
 import com.yhy.router.common.TypeExchanger;
 import com.yhy.router.common.TypeKind;
+import com.yhy.router.compiler.base.BaseEasyRouterProcessor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -47,9 +47,9 @@ import javax.lang.model.util.Types;
  * desc   : 自动注入编译器
  */
 @AutoService(Processor.class)
-public class AutowiredCompiler extends AbstractProcessor {
+public class AutowiredCompiler extends BaseEasyRouterProcessor {
     // 该编译器所支持的注解
-    private static final Set<String> AUTOWIRED_SUPPORTED_TYPES = new HashSet<>();
+    private static final Set<String> SUPPORTED_TYPES = new HashSet<>();
     private static final ClassName AndroidLog = ClassName.get("android.util", "Log");
 
     private Filer mFilter;
@@ -77,9 +77,11 @@ public class AutowiredCompiler extends AbstractProcessor {
 
         mTypeMap = new HashMap<>();
 
+        initOptions();
+
         // 设置支持的注解
-        AUTOWIRED_SUPPORTED_TYPES.clear();
-        AUTOWIRED_SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
+        SUPPORTED_TYPES.clear();
+        SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
     }
 
     /**
@@ -119,7 +121,7 @@ public class AutowiredCompiler extends AbstractProcessor {
         }
 
         // 获取到路由入口对象
-        TypeMirror tmRouter = mEltUtils.getTypeElement(Constant.E_ROUTER).asType();
+        TypeMirror tmRouter = mEltUtils.getTypeElement(Constant.EASY_ROUTER).asType();
 
         // 定义几种解析的类型
         TypeMirror tmActivity = mEltUtils.getTypeElement(Constant.ACTIVITY).asType();
@@ -133,7 +135,7 @@ public class AutowiredCompiler extends AbstractProcessor {
         // 构建方法参数
         ParameterSpec targetParams = ParameterSpec.builder(TypeName.OBJECT, Constant.METHOD_AUTOWIRED_INJECT_TARGET).build();
 
-        //声明一些字段
+        // 声明一些字段
         TypeElement type;
         List<Element> fields;
         String qualifiedName;
@@ -167,28 +169,28 @@ public class AutowiredCompiler extends AbstractProcessor {
 
                 // 声明Field类型的成员变量，后边用来通过反射注入值
                 privField = FieldSpec.builder(ClassName.get(Field.class), Constant.PRIVATE_FIELD_NAME)
-                        .addModifiers(Modifier.PRIVATE)
-                        .addJavadoc("Private field\r\n")
-                        .build();
+                    .addModifiers(Modifier.PRIVATE)
+                    .addJavadoc("Private field\r\n")
+                    .build();
 
                 // 声明 JsonConverter，后边用来解析 Json 数据的解析器
                 jsonConverter = FieldSpec.builder(ClassName.get(teJsonParser.asType()), Constant.JSON_PARSER_NAME)
-                        .addModifiers(Modifier.PRIVATE)
-                        .addJavadoc("Json converter\r\n")
-                        .build();
+                    .addModifiers(Modifier.PRIVATE)
+                    .addJavadoc("Json converter\r\n")
+                    .build();
 
                 // 加载自动注入的方法
                 inject = MethodSpec.methodBuilder(Constant.METHOD_AUTOWIRED_INJECT)
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addJavadoc("Inject parameters\r\n\r\n@param " + Constant.METHOD_AUTOWIRED_INJECT_TARGET + " The target.\r\n")
-                        .addParameter(targetParams);
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addJavadoc("Inject parameters\r\n\r\n@param " + Constant.METHOD_AUTOWIRED_INJECT_TARGET + " The target.\r\n")
+                    .addParameter(targetParams);
 
                 // 生成类
                 clazz = TypeSpec.classBuilder(className)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addSuperinterface(ClassName.get(teAutowired))
-                        .addJavadoc("Autowired injecter\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n");
+                    .addModifiers(Modifier.PUBLIC)
+                    .addSuperinterface(ClassName.get(teAutowired))
+                    .addJavadoc("Autowired injecter\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n");
 
                 inject.addStatement(Constant.JSON_PARSER_NAME + " = $T.getInstance().getJsonConverter()", ClassName.get(tmRouter));
                 inject.addStatement("$T instance = ($T)target", ClassName.get(type), ClassName.get(type));
@@ -384,7 +386,7 @@ public class AutowiredCompiler extends AbstractProcessor {
      */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return AUTOWIRED_SUPPORTED_TYPES;
+        return SUPPORTED_TYPES;
     }
 
     /**

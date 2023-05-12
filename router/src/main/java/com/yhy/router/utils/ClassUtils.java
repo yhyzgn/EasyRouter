@@ -293,8 +293,8 @@ public class ClassUtils {
                             int major = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
                             int minor = Integer.parseInt(Objects.requireNonNull(matcher.group(2)));
                             isMultidexCapable = (major > VM_WITH_MULTIDEX_VERSION_MAJOR)
-                                    || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
-                                    && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
+                                || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
+                                && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
                         } catch (NumberFormatException ignore) {
                             isMultidexCapable = false;
                         }

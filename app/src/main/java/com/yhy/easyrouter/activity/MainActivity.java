@@ -75,54 +75,54 @@ public class MainActivity extends BaseActivity {
 
                 // 携带参数
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .to(simple.mUrl)
-                        .param("defParam", "默认名称参数")
-                        .param("changed", "修改过名称参数")
-                        .param("objParam", new User("张三", 25, "男"))
-                        .param("privParam", "private参数")
-                        .param("privObjParam", new User("李四", 33, "女"))
-                        .param("seriaParam", new SerializedEntity("test-test"))
-                        .param("boolTest", true)
-                        .param("intTest", 6666)
-                        .param("listTest", listParam)
-                        .go();
+                    .with(MainActivity.this)
+                    .to(simple.mUrl)
+                    .param("defParam", "默认名称参数")
+                    .param("changed", "修改过名称参数")
+                    .param("objParam", new User("张三", 25, "男"))
+                    .param("privParam", "private参数")
+                    .param("privObjParam", new User("李四", 33, "女"))
+                    .param("seriaParam", new SerializedEntity("test-test"))
+                    .param("boolTest", true)
+                    .param("intTest", 6666)
+                    .param("listTest", listParam)
+                    .go();
             } else if (position == 5) {
                 // 拦截器
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .to(simple.mUrl)
-                        .interceptor("login")
-                        .interceptor("LastInterceptor")
-                        .go();
+                    .with(MainActivity.this)
+                    .to(simple.mUrl)
+                    .interceptor("login")
+                    .interceptor("LastInterceptor")
+                    .go();
             } else if (position == 6) {
                 // 切换动画
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .to(simple.mGroup, simple.mUrl)
-                        .animate(R.anim.slide_in_right, R.anim.slide_out_right)
-                        .go();
+                    .with(MainActivity.this)
+                    .to(simple.mGroup, simple.mUrl)
+                    .animate(R.anim.slide_in_right, R.anim.slide_out_right)
+                    .go();
             } else if (position == 7) {
                 // 共享元素动画
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .to(simple.mGroup, simple.mUrl)
-                        .transition("tvAnim", view)
-                        .go(mCallback); // 设置回调
+                    .with(MainActivity.this)
+                    .to(simple.mGroup, simple.mUrl)
+                    .transition("tvAnim", view)
+                    .go(mCallback); // 设置回调
             } else if (position == 8) {
                 // Uri跳转
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .uri(Uri.parse("http://www.baidu.com"))
-                        .action(Intent.ACTION_VIEW)
-                        .animate(R.anim.slide_in_right, R.anim.slide_out_right)
-                        .go(mCallback); // 设置回调
+                    .with(MainActivity.this)
+                    .uri(Uri.parse("http://www.baidu.com"))
+                    .action(Intent.ACTION_VIEW)
+                    .animate(R.anim.slide_in_right, R.anim.slide_out_right)
+                    .go(mCallback); // 设置回调
             } else {
                 // 普通跳转
                 EasyRouter.getInstance()
-                        .with(MainActivity.this)
-                        .to(simple.mGroup, simple.mUrl)
-                        .go();
+                    .with(MainActivity.this)
+                    .to(simple.mGroup, simple.mUrl)
+                    .go();
             }
         });
     }

@@ -13,6 +13,7 @@ import com.yhy.router.common.Constant;
 import com.yhy.router.common.RouterMeta;
 import com.yhy.router.common.RouterType;
 import com.yhy.router.common.TypeExchanger;
+import com.yhy.router.compiler.base.BaseEasyRouterProcessor;
 import com.yhy.router.utils.EUtils;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -47,14 +47,13 @@ import javax.lang.model.util.Types;
  * desc   : 路由编译器
  */
 @AutoService(Processor.class)
-public class RouterCompiler extends AbstractProcessor {
+public class RouterCompiler extends BaseEasyRouterProcessor {
     // 该编译器所支持的注解
-    private static final Set<String> ROUTER_SUPPORTED_TYPES = new HashSet<>();
+    private static final Set<String> SUPPORTED_TYPES = new HashSet<>();
 
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private String mModuleName;
     private TypeExchanger mExchanger;
 
     // 存储路由数据按分组分类后的集合
@@ -74,25 +73,15 @@ public class RouterCompiler extends AbstractProcessor {
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
 
-        // 获取模块名称
-        Map<String, String> options = processingEnv.getOptions();
-        if (MapUtils.isNotEmpty(options) && options.containsKey("moduleName")) {
-            mModuleName = options.get("moduleName");
-        }
-        if (StringUtils.isEmpty(mModuleName)) {
-            mModuleName = Constant.DEF_MODULE_NAME;
-        } else {
-            mModuleName = EUtils.upCaseFirst(EUtils.line2Hump(mModuleName));
-        }
-
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
-
         mGroupMap = new HashMap<>();
 
+        initOptions();
+
         // 设置支持的注解
-        ROUTER_SUPPORTED_TYPES.clear();
-        ROUTER_SUPPORTED_TYPES.add(Router.class.getCanonicalName());
-        ROUTER_SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
+        SUPPORTED_TYPES.clear();
+        SUPPORTED_TYPES.add(Router.class.getCanonicalName());
+        SUPPORTED_TYPES.add(Autowired.class.getCanonicalName());
     }
 
     /**
@@ -202,10 +191,10 @@ public class RouterCompiler extends AbstractProcessor {
 
             // 加载路由的方法
             loadGroup = MethodSpec.methodBuilder(Constant.METHOD_ROUTER_LOAD)
-                    .addAnnotation(Override.class)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addJavadoc("Router loader\r\n\r\n@param " + Constant.METHOD_ROUTER_LOAD_ARG + " Map of saving router\r\n")
-                    .addParameter(groupParams);
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addJavadoc("Router loader\r\n\r\n@param " + Constant.METHOD_ROUTER_LOAD_ARG + " Map of saving router\r\n")
+                .addParameter(groupParams);
 
             // 遍历每个分组中的所有路由元素，将每个元素映射到加载路由的方法中
             for (RouterMeta meta : metas) {
@@ -220,23 +209,23 @@ public class RouterCompiler extends AbstractProcessor {
 
                 // 这里生成自动注入参数集合的参数不参与格式化，因为有些地方不需要注入，此时该参数为null，无法按HashMap进行格式化，所以这里直接写成java.util.HashMap即可
                 loadGroup.addStatement(Constant.METHOD_ROUTER_LOAD_ARG + ".put($S, $T.build($S, $T.class, $T." + meta.getType() + ", $S, " + (StringUtils.isEmpty(paramsBody) ? null : "new java.util.HashMap(){{" + paramsBody + "}}") + "))",
-                        meta.getUrl(),
-                        ClassName.get(RouterMeta.class),
-                        meta.getUrl().toLowerCase(),
-                        ClassName.get((TypeElement) meta.getElement()),
-                        ClassName.get(RouterType.class),
-                        meta.getGroup().toLowerCase()
+                    meta.getUrl(),
+                    ClassName.get(RouterMeta.class),
+                    meta.getUrl().toLowerCase(),
+                    ClassName.get((TypeElement) meta.getElement()),
+                    ClassName.get(RouterType.class),
+                    meta.getGroup().toLowerCase()
                 );
             }
 
             // 映射器类
             // 类名为 固定前缀 + 首字母大写的分组名
             groupType = TypeSpec.classBuilder(Constant.PREFIX_OF_GROUP + EUtils.upCaseFirst(group) + Constant.SEPARATOR + mModuleName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addSuperinterface(ClassName.get(teGroup))
-                    .addMethod(loadGroup.build())
-                    .addJavadoc("Router mapper\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n")
-                    .build();
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(ClassName.get(teGroup))
+                .addMethod(loadGroup.build())
+                .addJavadoc("Router mapper\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n")
+                .build();
 
             // Java文件 包名固定
             groupFile = JavaFile.builder(Constant.GROUP_PACKAGE, groupType).build();
@@ -296,7 +285,7 @@ public class RouterCompiler extends AbstractProcessor {
      */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return ROUTER_SUPPORTED_TYPES;
+        return SUPPORTED_TYPES;
     }
 
     /**

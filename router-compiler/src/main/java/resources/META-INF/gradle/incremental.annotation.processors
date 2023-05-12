@@ -1,0 +1,3 @@
+com.yhy.router.compiler.RouterCompiler,dynamic
+com.yhy.router.compiler.AutowiredCompiler,dynamic
+com.yhy.router.compiler.InterceptorCompiler,dynamic

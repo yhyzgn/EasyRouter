@@ -11,7 +11,7 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.yhy.router.annotation.Interceptor;
 import com.yhy.router.common.Constant;
 import com.yhy.router.common.TypeExchanger;
-import com.yhy.router.utils.EUtils;
+import com.yhy.router.compiler.base.BaseEasyRouterProcessor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -43,17 +42,15 @@ import javax.lang.model.util.Types;
  * desc   : 拦截器编译器
  */
 @AutoService(Processor.class)
-public class InterceptorCompiler extends AbstractProcessor {
+public class InterceptorCompiler extends BaseEasyRouterProcessor {
     // 该编译器所支持的注解
-    private static final Set<String> AUTOWIRED_SUPPORTED_TYPES = new HashSet<>();
+    private static final Set<String> SUPPORTED_TYPES = new HashSet<>();
     private static final ClassName AndroidLog = ClassName.get("android.util", "Log");
 
     private Filer mFilter;
     private Types mTypeUtils;
     private Elements mEltUtils;
-    private String mModuleName;
     private TypeExchanger mExchanger;
-
     // 用来保存拦截器名称及其所注解元素的集合
     private Map<String, Element> mEltMap;
 
@@ -71,24 +68,14 @@ public class InterceptorCompiler extends AbstractProcessor {
         mTypeUtils = proEnv.getTypeUtils();
         mEltUtils = proEnv.getElementUtils();
 
-        // 获取模块名称
-        Map<String, String> options = processingEnv.getOptions();
-        if (MapUtils.isNotEmpty(options) && options.containsKey("moduleName")) {
-            mModuleName = options.get("moduleName");
-        }
-        if (StringUtils.isEmpty(mModuleName)) {
-            mModuleName = Constant.DEF_MODULE_NAME;
-        } else {
-            mModuleName = EUtils.upCaseFirst(EUtils.line2Hump(mModuleName));
-        }
-
         mExchanger = new TypeExchanger(mTypeUtils, mEltUtils);
-
         mEltMap = new HashMap<>();
 
+        initOptions();
+
         // 设置支持的注解
-        AUTOWIRED_SUPPORTED_TYPES.clear();
-        AUTOWIRED_SUPPORTED_TYPES.add(Interceptor.class.getCanonicalName());
+        SUPPORTED_TYPES.clear();
+        SUPPORTED_TYPES.add(Interceptor.class.getCanonicalName());
     }
 
     /**
@@ -157,10 +144,10 @@ public class InterceptorCompiler extends AbstractProcessor {
 
         // 创建映射器加载映射关系的方法
         MethodSpec.Builder loadInter = MethodSpec.methodBuilder(Constant.INTERCEPTOR_MAPPER_LOAD)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addJavadoc("Load interceptors\r\n\r\n@param " + Constant.INTERCEPTOR_MAPPER_LOAD_ARG + " Map of saving interceptors\r\n")
-                .addParameter(interParam);
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .addJavadoc("Load interceptors\r\n\r\n@param " + Constant.INTERCEPTOR_MAPPER_LOAD_ARG + " Map of saving interceptors\r\n")
+            .addParameter(interParam);
 
         // 添加映射关系
         if (MapUtils.isNotEmpty(mEltMap)) {
@@ -171,11 +158,11 @@ public class InterceptorCompiler extends AbstractProcessor {
 
         // 创建映射器类
         TypeSpec clazz = TypeSpec.classBuilder(teInterMapper.getSimpleName() + Constant.SUFFIX_INTERCEPTOR_CLASS + Constant.SEPARATOR + mModuleName)
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(ClassName.get(teInterMapper))
-                .addJavadoc("Interceptors loader\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n")
-                .addMethod(loadInter.build())
-                .build();
+            .addModifiers(Modifier.PUBLIC)
+            .addSuperinterface(ClassName.get(teInterMapper))
+            .addJavadoc("Interceptors loader\r\n\r\n@author : " + Constant.AUTHOR + "\r\n@e-mail : " + Constant.E_MAIL + "\r\n@github : " + Constant.GITHUB_URL + "\r\n")
+            .addMethod(loadInter.build())
+            .build();
 
         // 创建Java文件
         JavaFile.builder(Constant.INTERCEPTOR_PACKAGE, clazz).build().writeTo(mFilter);
@@ -188,7 +175,7 @@ public class InterceptorCompiler extends AbstractProcessor {
      */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return AUTOWIRED_SUPPORTED_TYPES;
+        return SUPPORTED_TYPES;
     }
 
     /**

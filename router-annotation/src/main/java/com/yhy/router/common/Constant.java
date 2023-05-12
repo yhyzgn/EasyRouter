@@ -10,7 +10,13 @@ package com.yhy.router.common;
 public interface Constant {
 
     // 路由入口
-    String E_ROUTER = "com.yhy.router.EasyRouter";
+    String EASY_ROUTER = "com.yhy.router.EasyRouter";
+
+    // 模块名
+    String MODULE_NAME = "module.name";
+
+    // 增量编译开关
+    String ENABLE_INCREMENTAL = "router.incremental";
 
     // 日志打印前缀
     String PREFIX_OF_LOGGER = "::RouterLogger::";
