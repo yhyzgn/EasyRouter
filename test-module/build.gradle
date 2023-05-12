@@ -1,4 +1,6 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+}
 
 android {
     namespace 'com.yhy.module'
@@ -47,7 +49,7 @@ dependencies {
 
     implementation project(':router')
     annotationProcessor project(':router-compiler')
-    
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.6.0-alpha02'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.5.0-alpha07', {

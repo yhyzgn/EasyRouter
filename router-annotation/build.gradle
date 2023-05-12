@@ -1,4 +1,7 @@
-apply plugin: 'java-library'
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
 
 group = 'com.github.yhyzgn.EasyRouter'
 
