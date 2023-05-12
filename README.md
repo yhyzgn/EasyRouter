@@ -44,7 +44,10 @@ defaultConfig {
             // 多模块路由的基础，需要配置当前模块的名称
             // 如果不配置此项则使用'DefaultModule'作为默认模块名
             // project.name = app
-            arguments = [moduleName: project.name]
+            arguments = [
+                  "module.name"       : project.name,
+                  "router.incremental": "true"
+            ]
         }
     }
 }
